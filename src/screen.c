@@ -26,7 +26,7 @@
 #define CHAR_BLOCK_2 ((vu16 *) 0x06008000)
 #define CHAR_BLOCK_3 ((vu16 *) 0x0600c000)
 
-#define SPR_TILESET ((vu16 *) 0x06010000)
+#define OBJ_TILESET ((vu16 *) 0x06010000)
 
 #define BG0_CONTROL *((vu16 *) 0x04000008)
 #define BG1_CONTROL *((vu16 *) 0x0400000a)
@@ -34,7 +34,7 @@
 #define BG3_CONTROL *((vu16 *) 0x0400000e)
 
 #define BG_PALETTE  ((vu16 *) 0x05000000)
-#define SPR_PALETTE ((vu16 *) 0x05000200)
+#define OBJ_PALETTE ((vu16 *) 0x05000200)
 
 void screen_init(void) {
     // TODO ...
