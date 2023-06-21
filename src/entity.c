@@ -24,23 +24,21 @@ const struct Entity *entity_list[ENTITY_TYPES] = {
     // ...
 };
 
-#define BITS_PER_TILE (3 + LEVEL_TILE_SIZE)
-
 #ifdef TILE_ENABLE
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct entity_Data *data,
                                     i32 xm, i32 ym) {
     const struct Entity *entity = entity_type(data);
 
-    i32 xto0 = (data->x - entity->xr)     >> BITS_PER_TILE;
-    i32 yto0 = (data->y - entity->yr)     >> BITS_PER_TILE;
-    i32 xto1 = (data->x + entity->xr - 1) >> BITS_PER_TILE;
-    i32 yto1 = (data->y + entity->yr - 1) >> BITS_PER_TILE;
+    i32 xto0 = (data->x - entity->xr)     >> LEVEL_TILE_SIZE;
+    i32 yto0 = (data->y - entity->yr)     >> LEVEL_TILE_SIZE;
+    i32 xto1 = (data->x + entity->xr - 1) >> LEVEL_TILE_SIZE;
+    i32 yto1 = (data->y + entity->yr - 1) >> LEVEL_TILE_SIZE;
 
-    i32 xt0 = (data->x + xm - entity->xr)     >> BITS_PER_TILE;
-    i32 yt0 = (data->y + ym - entity->yr)     >> BITS_PER_TILE;
-    i32 xt1 = (data->x + xm + entity->xr - 1) >> BITS_PER_TILE;
-    i32 yt1 = (data->y + ym + entity->yr - 1) >> BITS_PER_TILE;
+    i32 xt0 = (data->x + xm - entity->xr)     >> LEVEL_TILE_SIZE;
+    i32 yt0 = (data->y + ym - entity->yr)     >> LEVEL_TILE_SIZE;
+    i32 xt1 = (data->x + xm + entity->xr - 1) >> LEVEL_TILE_SIZE;
+    i32 yt1 = (data->y + ym + entity->yr - 1) >> LEVEL_TILE_SIZE;
 
     for(i32 y = yt0; y <= yt1; y++) {
         for(i32 x = xt0; x <= xt1; x++) {

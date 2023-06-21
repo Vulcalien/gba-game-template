@@ -23,6 +23,8 @@
 
 #define ENTITY_TYPES (0)
 
+#define ENTITY_INVALID (-1)
+
 // If specific entity types need bytes to store their data, change this
 // value. The 'data' array can then be cast into whatever struct of the
 // same size.
@@ -34,10 +36,13 @@
 
 struct Level;
 struct entity_Data {
-    i8 type;
+    u8 type;
 
     i32 x;
     i32 y;
+
+    u8 should_remove : 1;
+    u8 solid_id : 7;
 
     #if ENTITY_EXTRA_DATA_SIZE > 0
         u8 data[ENTITY_EXTRA_DATA_SIZE];
@@ -48,6 +53,8 @@ struct Entity {
     // entity radius (width and height)
     u8 xr;
     u8 yr;
+
+    bool is_solid;
 
     void (*tick)(struct Level *level, struct entity_Data *data);
 

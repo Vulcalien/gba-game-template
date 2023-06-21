@@ -23,7 +23,7 @@
 
 #define TILE_TYPES (0)
 
-#define TILE_INVALID (255)
+#define TILE_INVALID (-1)
 
 struct Level;
 struct Tile {
