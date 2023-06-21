@@ -21,6 +21,7 @@
 #define ENTITY_TYPES (0)
 
 #if ENTITY_TYPES
+struct Level;
 
 // If specific entity types need bytes to store their data, change this
 // value. The 'data' array can then be cast into whatever struct of the
@@ -47,10 +48,11 @@ struct Entity {
     u8 xr;
     u8 yr;
 
-    void (*tick)(struct entity_Data *data);
+    void (*tick)(struct Level *level, struct entity_Data *data);
 
     // returns how many sprites were used
-    u32 (*draw)(struct entity_Data *data, u32 used_sprites);
+    u32 (*draw)(struct Level *level, struct entity_Data *data,
+                u32 used_sprites);
 };
 
 extern const struct Entity *entity_list[ENTITY_TYPES];
@@ -81,7 +83,6 @@ inline bool entity_touches(struct entity_Data *data1,
         data2->x + e2->xr - 1, data2->y + e2->yr - 1
     );
 }
-
 #endif // ENTITY_TYPES
 
 #endif // VULC_TEMPLATE_ENTITY

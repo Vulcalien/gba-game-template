@@ -13,31 +13,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_TILE
-#define VULC_TEMPLATE_TILE
+#include "level.h"
 
-#include "main.h"
-
-#define TILE_TYPES (0)
-
-#define TILE_INVALID (255)
-
-#if TILE_TYPES
-struct Level;
-
-struct Tile {
-    bool is_solid;
-
-    void (*draw)(struct Level *level, i32 x, i32 y);
-};
-
-extern const struct Tile tile_list[TILE_TYPES];
-
-inline const struct Tile *tile_type(u8 id) {
-    if(id < TILE_TYPES)
-        return &tile_list[id];
-    return NULL;
+IWRAM_SECTION
+void level_tick(struct Level *level) {
+    // ...
 }
-#endif // TILE_TYPES
 
-#endif // VULC_TEMPLATE_TILE
+IWRAM_SECTION
+void level_draw(struct Level *level) {
+    // ...
+}
