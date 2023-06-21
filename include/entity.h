@@ -23,8 +23,6 @@
 
 #define ENTITY_TYPES (0)
 
-struct Level;
-
 // If specific entity types need bytes to store their data, change this
 // value. The 'data' array can then be cast into whatever struct of the
 // same size.
@@ -34,6 +32,7 @@ struct Level;
 // the necessary data into that array.
 #define ENTITY_EXTRA_DATA_SIZE (0)
 
+struct Level;
 struct entity_Data {
     i8 type;
 
@@ -64,6 +63,10 @@ inline const struct Entity *entity_type(struct entity_Data *data) {
         return entity_list[data->type];
     return NULL;
 }
+
+// returns 'true' if the entity was moved by (xm, ym)
+extern bool entity_move(struct Level *level, struct entity_Data *data,
+                        i32 xm, i32 ym);
 
 inline bool entity_intersects(struct entity_Data *data,
                               i32 x0, i32 y0, i32 x1, i32 y1) {

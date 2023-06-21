@@ -26,6 +26,9 @@
     #define LEVEL_W (30)
     #define LEVEL_H (20)
     #define LEVEL_SIZE (LEVEL_W * LEVEL_H)
+
+    // 0 = 8x8, 1 = 16x16
+    #define LEVEL_TILE_SIZE (0)
 #endif
 
 #if ENTITY_TYPES > 0

@@ -15,10 +15,81 @@
  */
 #include "entity.h"
 
+#include "level.h"
+#include "tile.h"
+
 #ifdef ENTITY_ENABLE
 
 const struct Entity *entity_list[ENTITY_TYPES] = {
     // ...
 };
+
+#define BITS_PER_TILE (3 + LEVEL_TILE_SIZE)
+
+#ifdef TILE_ENABLE
+static inline bool blocked_by_tiles(struct Level *level,
+                                    struct entity_Data *data,
+                                    i32 xm, i32 ym) {
+    const struct Entity *entity = entity_type(data);
+
+    i32 xto0 = (data->x - entity->xr)     >> BITS_PER_TILE;
+    i32 yto0 = (data->y - entity->yr)     >> BITS_PER_TILE;
+    i32 xto1 = (data->x + entity->xr - 1) >> BITS_PER_TILE;
+    i32 yto1 = (data->y + entity->yr - 1) >> BITS_PER_TILE;
+
+    i32 xt0 = (data->x + xm - entity->xr)     >> BITS_PER_TILE;
+    i32 yt0 = (data->y + ym - entity->yr)     >> BITS_PER_TILE;
+    i32 xt1 = (data->x + xm + entity->xr - 1) >> BITS_PER_TILE;
+    i32 yt1 = (data->y + ym + entity->yr - 1) >> BITS_PER_TILE;
+
+    for(i32 y = yt0; y <= yt1; y++) {
+        for(i32 x = xt0; x <= xt1; x++) {
+            if(x >= xto0 && x <= xto1 && y >= yto0 && y <= yto1)
+                continue;
+
+            const struct Tile *tile = tile_type(
+                level_get_tile(level, x, y)
+            );
+
+            if(!tile || tile->is_solid)
+                return true;
+        }
+    }
+    return false;
+}
+#endif // TILE_ENABLE
+
+IWRAM_SECTION
+static bool move2(struct Level *level, struct entity_Data *data,
+                  i32 xm, i32 ym) {
+    #ifdef TILE_ENABLE
+        if(blocked_by_tiles(level, data, xm, ym))
+            return false;
+    #endif
+
+    #ifdef ENTITY_ENABLE
+        /*if(blocked_by_entities(level, data, xm, ym))*/
+            /*return false;*/
+    #endif
+
+    data->x += xm;
+    data->y += ym;
+    return true;
+}
+
+IWRAM_SECTION
+bool entity_move(struct Level *level, struct entity_Data *data,
+                 i32 xm, i32 ym) {
+    if(xm == 0 && ym == 0)
+        return true;
+
+    bool stopped = true;
+    if(xm != 0 && move2(level, data, xm, 0))
+        stopped = false;
+    if(ym != 0 && move2(level, data, 0, ym))
+        stopped = false;
+
+    return !stopped;
+}
 
 #endif // ENTITY_ENABLE

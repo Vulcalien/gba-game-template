@@ -26,7 +26,6 @@
 #define TILE_INVALID (255)
 
 struct Level;
-
 struct Tile {
     bool is_solid;
 
