@@ -43,14 +43,14 @@ struct entity_Data {
 };
 
 struct Entity {
+    // entity radius (width and height)
+    u8 xr;
+    u8 yr;
+
     void (*tick)(struct entity_Data *data);
 
     // returns how many sprites were used
     u32 (*draw)(struct entity_Data *data, u32 used_sprites);
-
-    // entity radius (width and height)
-    u8 xr;
-    u8 yr;
 };
 
 extern const struct Entity *entity_list[ENTITY_TYPES];
