@@ -15,7 +15,7 @@
  */
 #include "entity.h"
 
-#if ENTITY_TYPES
+#if ENTITY_TYPES > 0
 
 const struct Entity *entity_list[ENTITY_TYPES] = {
     // ...

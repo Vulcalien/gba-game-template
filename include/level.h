@@ -22,18 +22,22 @@
 #include "entity.h"
 
 // Level size (in tiles)
-#define LEVEL_W (30)
-#define LEVEL_H (20)
-#define LEVEL_SIZE (LEVEL_W * LEVEL_H)
+#if TILE_TYPES > 0
+    #define LEVEL_W (30)
+    #define LEVEL_H (20)
+    #define LEVEL_SIZE (LEVEL_W * LEVEL_H)
+#endif
 
-#define LEVEL_ENTITY_LIMIT (255)
+#if ENTITY_TYPES > 0
+    #define LEVEL_ENTITY_LIMIT (255)
+#endif
 
 struct Level {
-    #if LEVEL_SIZE
+    #if LEVEL_SIZE > 0
         u8 tiles[LEVEL_SIZE];
     #endif
 
-    #if LEVEL_ENTITY_LIMIT
+    #if LEVEL_ENTITY_LIMIT > 0
         struct entity_Data entities[LEVEL_ENTITY_LIMIT];
     #endif
 };
@@ -41,7 +45,7 @@ struct Level {
 extern void level_tick(struct Level *level);
 extern void level_draw(struct Level *level);
 
-#if LEVEL_SIZE
+#if LEVEL_SIZE > 0
 inline u8 level_get_tile(struct Level *level, i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];

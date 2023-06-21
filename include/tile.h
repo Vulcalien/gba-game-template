@@ -22,7 +22,7 @@
 
 #define TILE_INVALID (255)
 
-#if TILE_TYPES
+#if TILE_TYPES > 0
 struct Level;
 
 struct Tile {

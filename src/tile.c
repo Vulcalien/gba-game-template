@@ -15,7 +15,7 @@
  */
 #include "tile.h"
 
-#if TILE_TYPES
+#if TILE_TYPES > 0
 
 const struct Tile tile_list[TILE_TYPES] = {
     // ...

@@ -20,7 +20,7 @@
 
 #define ENTITY_TYPES (0)
 
-#if ENTITY_TYPES
+#if ENTITY_TYPES > 0
 struct Level;
 
 // If specific entity types need bytes to store their data, change this
@@ -38,7 +38,7 @@ struct entity_Data {
     i32 x;
     i32 y;
 
-    #if ENTITY_EXTRA_DATA_SIZE
+    #if ENTITY_EXTRA_DATA_SIZE > 0
         u8 data[ENTITY_EXTRA_DATA_SIZE];
     #endif
 };
