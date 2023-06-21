@@ -77,8 +77,8 @@ inline bool entity_touches(struct entity_Data *data1,
 
     return entity_intersects(
         data1,
-        data2->x - e2->xr, data2->y - e2->yr,
-        data2->x + e2->xr, data2->y + e2->yr
+        data2->x - e2->xr,     data2->y - e2->yr,
+        data2->x + e2->xr - 1, data2->y + e2->yr - 1
     );
 }
 
