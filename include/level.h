@@ -22,7 +22,7 @@
 #include "entity.h"
 
 // Level size (in tiles)
-#if TILE_TYPES > 0
+#ifdef TILE_ENABLE
     #define LEVEL_W (30)
     #define LEVEL_H (20)
     #define LEVEL_SIZE (LEVEL_W * LEVEL_H)

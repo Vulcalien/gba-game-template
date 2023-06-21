@@ -15,10 +15,10 @@
  */
 #include "entity.h"
 
-#if ENTITY_TYPES > 0
+#ifdef ENTITY_ENABLE
 
 const struct Entity *entity_list[ENTITY_TYPES] = {
     // ...
 };
 
-#endif // ENTITY_TYPES
+#endif // ENTITY_ENABLE

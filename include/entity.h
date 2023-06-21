@@ -18,9 +18,11 @@
 
 #include "main.h"
 
+//#define ENTITY_ENABLE
+#ifdef ENTITY_ENABLE
+
 #define ENTITY_TYPES (0)
 
-#if ENTITY_TYPES > 0
 struct Level;
 
 // If specific entity types need bytes to store their data, change this
@@ -83,6 +85,6 @@ inline bool entity_touches(struct entity_Data *data1,
         data2->x + e2->xr - 1, data2->y + e2->yr - 1
     );
 }
-#endif // ENTITY_TYPES
+#endif // ENTITY_ENABLE
 
 #endif // VULC_TEMPLATE_ENTITY
