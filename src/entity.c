@@ -57,6 +57,56 @@ static inline bool blocked_by_tiles(struct Level *level,
 }
 #endif // TILE_ENABLE
 
+#ifdef ENTITY_ENABLE
+static inline bool blocked_by_entities(struct Level *level,
+                                       struct entity_Data *data,
+                                       i32 xm, i32 ym) {
+    const struct Entity *entity = entity_type(data);
+
+    i32 x0 = data->x + xm - entity->xr;
+    i32 y0 = data->y + ym - entity->yr;
+    i32 x1 = data->x + xm + entity->xr - 1;
+    i32 y1 = data->y + ym + entity->yr - 1;
+
+    i32 xt0 = (x0 >> LEVEL_TILE_SIZE) - 1;
+    i32 yt0 = (y0 >> LEVEL_TILE_SIZE) - 1;
+    i32 xt1 = (x1 >> LEVEL_TILE_SIZE) + 1;
+    i32 yt1 = (y1 >> LEVEL_TILE_SIZE) + 1;
+
+    if(xt0 < 0) xt0 = 0;
+    if(yt0 < 0) yt0 = 0;
+    if(xt1 >= LEVEL_W) xt1 = LEVEL_W - 1;
+    if(yt1 >= LEVEL_H) yt1 = LEVEL_H - 1;
+
+    bool blocked = false;
+    for(u32 y = yt0; y <= yt1; y++) {
+        for(u32 x = xt0; x <= xt1; x++) {
+            const u32 tile = x + y * LEVEL_W;
+
+            for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
+                const u32 entity_id = level->solid_entities[tile][i];
+                if(entity_id >= LEVEL_ENTITY_LIMIT)
+                    continue;
+
+                struct entity_Data *data2 = &level->entities[entity_id];
+                if(data2 == data)
+                    continue;
+
+                if(entity_intersects(data2, x0, y0, x1, y1)) {
+                    // if the second entity is not already touching the
+                    // first one, then the first one is blocked by it.
+                    if(!blocked && !entity_touches(data2, data))
+                        blocked = true;
+
+                    // TODO entity touch event
+                }
+            }
+        }
+    }
+    return blocked;
+}
+#endif // ENTITY_ENABLE
+
 IWRAM_SECTION
 static bool move2(struct Level *level, struct entity_Data *data,
                   i32 xm, i32 ym) {
@@ -66,8 +116,8 @@ static bool move2(struct Level *level, struct entity_Data *data,
     #endif
 
     #ifdef ENTITY_ENABLE
-        /*if(blocked_by_entities(level, data, xm, ym))*/
-            /*return false;*/
+        if(blocked_by_entities(level, data, xm, ym))
+            return false;
     #endif
 
     data->x += xm;
