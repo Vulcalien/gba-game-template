@@ -15,6 +15,7 @@
  */
 #include "interrupt.h"
 
+#include "sound.h"
 #include "performance.h"
 
 #define IME *((vu32 *) 0x04000208)
@@ -33,6 +34,7 @@ static void interrupt_handler(void) {
         IF_BIOS |= VBLANK;
         IF = VBLANK;
 
+        sound_vblank();
         performance_vblank();
     }
 }
