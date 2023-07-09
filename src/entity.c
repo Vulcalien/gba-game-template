@@ -18,13 +18,10 @@
 #include "level.h"
 #include "tile.h"
 
-#ifdef ENTITY_ENABLE
-
 const struct Entity *entity_list[ENTITY_TYPES] = {
     // ...
 };
 
-#ifdef TILE_ENABLE
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct entity_Data *data,
                                     i32 xm, i32 ym) {
@@ -55,9 +52,7 @@ static inline bool blocked_by_tiles(struct Level *level,
     }
     return false;
 }
-#endif // TILE_ENABLE
 
-#ifdef ENTITY_ENABLE
 static inline bool blocked_by_entities(struct Level *level,
                                        struct entity_Data *data,
                                        i32 xm, i32 ym) {
@@ -105,20 +100,15 @@ static inline bool blocked_by_entities(struct Level *level,
     }
     return blocked;
 }
-#endif // ENTITY_ENABLE
 
 IWRAM_SECTION
 static bool move2(struct Level *level, struct entity_Data *data,
                   i32 xm, i32 ym) {
-    #ifdef TILE_ENABLE
-        if(blocked_by_tiles(level, data, xm, ym))
-            return false;
-    #endif
+    if(blocked_by_tiles(level, data, xm, ym))
+        return false;
 
-    #ifdef ENTITY_ENABLE
-        if(blocked_by_entities(level, data, xm, ym))
-            return false;
-    #endif
+    if(blocked_by_entities(level, data, xm, ym))
+        return false;
 
     data->x += xm;
     data->y += ym;
@@ -139,5 +129,3 @@ bool entity_move(struct Level *level, struct entity_Data *data,
 
     return !stopped;
 }
-
-#endif // ENTITY_ENABLE

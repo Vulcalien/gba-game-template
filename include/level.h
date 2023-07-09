@@ -29,30 +29,22 @@
 // Tile size: 3 = 8x8, 4 = 16x16, 5 = 32x32
 #define LEVEL_TILE_SIZE (3)
 
-#ifdef ENTITY_ENABLE
-    // If this value is more than 255, then change the type of
-    // 'solid_entities' to a u16 array.
-    #define LEVEL_ENTITY_LIMIT (255)
+// If this value is more than 255, then change the type of
+// 'solid_entities' to a u16 array.
+#define LEVEL_ENTITY_LIMIT (255)
 
-    #define LEVEL_SOLID_ENTITIES_IN_TILE (4)
-#endif
+#define LEVEL_SOLID_ENTITIES_IN_TILE (4)
 
 struct Level {
-    #ifdef TILE_ENABLE
-        u8 tiles[LEVEL_SIZE];
-    #endif
+    u8 tiles[LEVEL_SIZE];
 
-    #ifdef ENTITY_ENABLE
-        struct entity_Data entities[LEVEL_ENTITY_LIMIT];
-
-        u8 solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
-    #endif
+    struct entity_Data entities[LEVEL_ENTITY_LIMIT];
+    u8 solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
 };
 
 extern void level_tick(struct Level *level);
 extern void level_draw(struct Level *level);
 
-#ifdef TILE_ENABLE
 inline u8 level_get_tile(struct Level *level, i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];
@@ -63,6 +55,5 @@ inline void level_set_tile(struct Level *level, i32 x, i32 y, u8 id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;
 }
-#endif // TILE_ENABLE
 
 #endif // VULC_TEMPLATE_LEVEL

@@ -18,9 +18,6 @@
 
 #include "main.h"
 
-//#define ENTITY_ENABLE
-#ifdef ENTITY_ENABLE
-
 #define ENTITY_TYPES (0)
 
 #define ENTITY_INVALID (-1)
@@ -95,6 +92,5 @@ inline bool entity_touches(struct entity_Data *data1,
         data2->x + e2->xr - 1, data2->y + e2->yr - 1
     );
 }
-#endif // ENTITY_ENABLE
 
 #endif // VULC_TEMPLATE_ENTITY

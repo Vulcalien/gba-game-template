@@ -15,10 +15,6 @@
  */
 #include "tile.h"
 
-#ifdef TILE_ENABLE
-
 const struct Tile tile_list[TILE_TYPES] = {
     // ...
 };
-
-#endif // TILE_ENABLE

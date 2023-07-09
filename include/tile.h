@@ -18,9 +18,6 @@
 
 #include "main.h"
 
-//#define TILE_ENABLE
-#ifdef TILE_ENABLE
-
 #define TILE_TYPES (0)
 
 #define TILE_INVALID (-1)
@@ -39,7 +36,5 @@ inline const struct Tile *tile_type(u8 id) {
         return &tile_list[id];
     return NULL;
 }
-
-#endif // TILE_ENABLE
 
 #endif // VULC_TEMPLATE_TILE
