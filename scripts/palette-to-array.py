@@ -1,11 +1,12 @@
 #!/bin/python
 
-# Automatically generate a GBA palette with a 16-pixel image.
+# Convert a 16-pixel image into a GBA palette array.
 # The output is a C array of type 'const u16' and length 16.
 #
-# Usage: palette-to-array.py <palette_image_file> <array_name>
+# Run 'palette-to-array.py -h' for help.
 
 import sys, argparse
+from sys import exit
 from PIL import Image
 
 # Setup argparse
@@ -29,8 +30,7 @@ args = parser.parse_args()
 img = Image.open(args.palette_filename).convert('RGB')
 
 if img.width * img.height != 16:
-    print('Error: the palette image file must contain exactly 16 pixels')
-    exit()
+    exit('Error: the palette image file must contain exactly 16 pixels')
 
 # Get and convert colors
 colors = []
@@ -46,7 +46,7 @@ for i in range(16):
     color_code = '0x' + hex(col)[2:].zfill(4)
     colors.append(color_code)
 
-# Print output
+# Write output
 f = args.output
 
 f.write('const u16 ' + args.array_name + '[16] = {')
