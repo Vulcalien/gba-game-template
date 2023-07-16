@@ -1,7 +1,25 @@
 #!/bin/python
 
-# Convert a 16-pixel image into a GBA palette array.
-# The output is a C array of type 'const u16' and length 16.
+# Copyright 2023 Vulcalien
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# ==================================================================== #
+
+# Convert an image into a GBA palette array.
+# The output is a C array of type 'const u16' and the size of the image
+# as length.
 #
 # Run 'palette-to-array.py -h' for help.
 
@@ -11,7 +29,7 @@ from PIL import Image
 
 # Setup argparse
 parser = argparse.ArgumentParser(
-    description='Generate a GBA palette from a 16-pixel image'
+    description='Generate a GBA palette from an image'
 )
 
 parser.add_argument('palette_filename',
@@ -33,12 +51,11 @@ args = parser.parse_args()
 # Open and validate image
 img = Image.open(args.palette_filename).convert('RGB')
 
-if img.width * img.height != 16:
-    exit('Error: the palette image file must contain exactly 16 pixels')
+palette_size = img.width * img.height
 
 # Get and convert colors
 colors = []
-for i in range(16):
+for i in range(palette_size):
     pix = img.getpixel( (i % img.width, i // img.width) )
 
     r = pix[0] >> 3
@@ -55,12 +72,31 @@ f = args.output
 
 if args.static:
     f.write('static ')
+f.write('const u16 ' + args.array_name + '[')
 
-f.write('const u16 ' + args.array_name + '[16] = {')
-for i in range(16):
+# Write the array size as (A * 16 + B)
+if palette_size // 16 != 0:
+    f.write(str(palette_size // 16) + ' * 16')
+    if palette_size % 16 != 0:
+        f.write(' + ')
+if palette_size % 16 != 0:
+    f.write(str(palette_size % 16))
+
+f.write('] = {')
+for i in range(palette_size):
+    # Add a whiteline every 16 colors
+    if i % 16 == 0 and i != 0:
+        f.write('\n')
+
+    # Have a maximum of 8 colors per line
     if i % 8 == 0:
         f.write('\n    ')
+
     f.write(colors[i])
-    if i != 15:
-        f.write(', ')
+
+    # Add the comma after a color, if necessary
+    if i != palette_size - 1:
+        f.write(',')
+        if i % 8 != 7:
+            f.write(' ')
 f.write('\n};\n')
