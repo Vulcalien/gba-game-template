@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# ==================================================================== #
 
 # Convert a tileset image into a GBA tileset array.
 # The output is a C array of type 'const u16' and the exact amount of
@@ -22,6 +23,7 @@
 #
 # Run 'tileset-to-array.py -h' for help.
 
+# ==================================================================== #
 
 # --- THE FORMAT --- #
 #
@@ -63,6 +65,7 @@
 # The output can be directly read by GBA. The 8x8 tiles forming a bigger
 # tile are contiguous in the output.
 
+# ==================================================================== #
 
 import sys, argparse
 from sys import exit
@@ -117,17 +120,18 @@ if tile_width == 0 or tile_width == 0:
          'Make sure that the top-left tile contains a rectangle made ' +
          'of white (#ffffff) pixels in its top-left corner.')
 
-# Make sure that 'tileset_8x8_w' is a multiple of 'tile_width'
-if tileset_8x8_w % tile_width != 0:
-    print('Warning: the tileset image contains unaligned columns of ' +
-          'tiles that will be ignored')
-    tileset_8x8_w -= (tileset_8x8_w % tile_width)
+# Crop the image, if necessary
+if img.width % (8 * tile_width):
+    print('Warning: the tileset image contains columns of pixels ' +
+          'that will be cropped',
+          file=sys.stderr)
+    tileset_8x8_w = (img.width // (8 * tile_width)) * tile_width
 
-# Make sure that 'tileset_8x8_h' is a multiple of 'tile_height'
-if tileset_8x8_h % tile_height != 0:
-    print('Warning: the tileset image contains unaligned rows of ' +
-          'tiles that will be ignored')
-    tileset_8x8_h -= (tileset_8x8_h % tile_height)
+if img.height % (8 * tile_height):
+    print('Warning: the tileset image contains rows of pixels ' +
+          'that will be cropped',
+          file=sys.stderr)
+    tileset_8x8_h = (img.height // (8 * tile_height)) * tile_height
 
 # Calculate how many tile rows are dedicated to the metadata. This is
 # usually the same value of 'tile_height'. However, if both 'tile_width'
@@ -179,7 +183,7 @@ for yt in range(tileset_h):
                 for ypix in range(8):
                     for xpix in (1, 0, 3, 2, 5, 4, 7, 6):
                         pix = img.getpixel((
-                            (xt * tile_width + xsubtile)                  * 8 + xpix,
+                            (xt * tile_width                  + xsubtile) * 8 + xpix,
                             (yt * tile_height + metadata_rows + ysubtile) * 8 + ypix
                         ))
 
