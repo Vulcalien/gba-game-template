@@ -82,6 +82,10 @@ parser.add_argument('array_name',
 parser.add_argument('-o', '--output',
                     type=argparse.FileType('w'), default=sys.stdout,
                     help='specify the output file (default: stdout)')
+parser.add_argument('-s', '--static',
+                    action=argparse.BooleanOptionalAction,
+                    help='add the \'static\' modifier to the output ' +
+                         'array')
 
 args = parser.parse_args()
 
@@ -160,6 +164,9 @@ for yt in range(metadata_rows):
 
 # Scan the tileset and write output
 f = args.output
+
+if args.static:
+    f.write('static ')
 
 f.write('const u8 ' + args.array_name + '[' +
         str(tileset_w * tileset_h) + ' * ' +

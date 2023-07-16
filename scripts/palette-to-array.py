@@ -23,6 +23,10 @@ parser.add_argument('array_name',
 parser.add_argument('-o', '--output',
                     type=argparse.FileType('w'), default=sys.stdout,
                     help='specify the output file (default: stdout)')
+parser.add_argument('-s', '--static',
+                    action=argparse.BooleanOptionalAction,
+                    help='add the \'static\' modifier to the output ' +
+                         'array')
 
 args = parser.parse_args()
 
@@ -48,6 +52,9 @@ for i in range(16):
 
 # Write output
 f = args.output
+
+if args.static:
+    f.write('static ')
 
 f.write('const u16 ' + args.array_name + '[16] = {')
 for i in range(16):
