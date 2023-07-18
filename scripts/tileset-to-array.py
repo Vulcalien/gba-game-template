@@ -40,11 +40,10 @@
 # tile.
 #
 # - Palettes -
-# The equivalent of a row of bigger tiles is reserved for palette tiles.
-# Note: to ensure that there always is at least one palette tile, if the
-# image is only one 8x8 tile in width and the size of a bigger tile is
-# the same as one 8x8 tile, then the second row will be reserved for
-# a palette tile.
+# The first row of 8x8 tiles (except for the top-left tile) is reserved
+# for palette tiles. Note: to ensure that there always is at least one
+# palette tile, if the a row of tiles only contains one 8x8 tile, then
+# the second row will be reserved for a palette tile.
 #
 # A palette tile is a 8x8 tile and contains 4 palettes each. A palette
 # is used to map the RGB colors to palette indexes. Each palette is made
@@ -95,10 +94,10 @@ args = parser.parse_args()
 # Open and validate image
 img = Image.open(args.tileset_filename).convert('RGB')
 
-tileset_8x8_w = img.width  // 8
-tileset_8x8_h = img.height // 8
+image_8x8_w = img.width  // 8
+image_8x8_h = img.height // 8
 
-if tileset_8x8_w * tileset_8x8_h < 2:
+if image_8x8_w * image_8x8_h < 2:
     exit('Error: the tileset image must contain at least 2 8x8 tiles')
 
 ### READ TILESET METADATA ###
@@ -120,36 +119,30 @@ if tile_width == 0 or tile_width == 0:
          'Make sure that the top-left tile contains a rectangle made ' +
          'of white (#ffffff) pixels in its top-left corner.')
 
-# Crop the image, if necessary
-if img.width % (8 * tile_width):
+# Find out how many tile rows are dedicated to the metadata. This is
+# usually 1. However, if 'image_8x8_w' is 1, then 'metadata_rows' will
+# be 2, to ensure that there is at least one palette tile.
+metadata_rows = 2 if image_8x8_w == 1 else 1
+
+# Calculate the tileset size, cropping any misaligned 8x8 tiles
+tileset_w = image_8x8_w // tile_width
+tileset_h = (image_8x8_h - metadata_rows) // tile_height
+
+# Check if any pixel has been cropped
+if tileset_w * tile_width * 8 != img.width:
     print('Warning: the tileset image contains columns of pixels ' +
           'that will be cropped',
           file=sys.stderr)
-    tileset_8x8_w = (img.width // (8 * tile_width)) * tile_width
 
-if img.height % (8 * tile_height):
+if (tileset_h * tile_height + metadata_rows) * 8 != img.height:
     print('Warning: the tileset image contains rows of pixels ' +
           'that will be cropped',
           file=sys.stderr)
-    tileset_8x8_h = (img.height // (8 * tile_height)) * tile_height
-
-# Calculate how many tile rows are dedicated to the metadata. This is
-# usually the same value of 'tile_height'. However, if both 'tile_width'
-# and 'tile_height' are 1 and 'tileset_8x8_w' is 1, then 'metadata_rows'
-# will be 2, to ensure that there is at least one palette tile.
-# Otherwise, the "tile size" tile would be the only metadata tile.
-if tile_width == 1 and tile_height == 1 and tileset_8x8_w == 1:
-    metadata_rows = 2
-else:
-    metadata_rows = tile_height
-
-tileset_w = tileset_8x8_w // tile_width
-tileset_h = (tileset_8x8_h - metadata_rows) // tile_height
 
 # Map the colors by reading the palettes
 color_map = {}
 for yt in range(metadata_rows):
-    for xt in range(tileset_8x8_w):
+    for xt in range(tileset_w * tile_width):
 
         # skip the top-left tile (the one used to decide the tile size)
         if (xt, yt) == (0, 0):
