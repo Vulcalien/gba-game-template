@@ -73,7 +73,7 @@ _start:
 @@@@@@@@@@@@@@@@@@@@@@@@@@
 
     @ Cart Backup ID
-        .ascii  "FLASH1M_Vnnn"
+        .ascii  "SRAM_Vnnn"
 
 .align
 .arm
