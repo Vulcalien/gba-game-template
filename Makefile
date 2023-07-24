@@ -57,14 +57,27 @@ else ifeq ($(CURRENT_OS),WINDOWS)
 endif
 
 # === OTHER ===
-SRC := $(wildcard $(SRC_DIR)/*.c)\
-       $(foreach DIR,$(SRC_SUBDIRS),$(wildcard $(SRC_DIR)/$(DIR)/*.c))
-OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+# list of source file extensions
+SRC_EXT := s c
+
+# list of source files
+SRC := $(foreach EXT,$(SRC_EXT),\
+           $(wildcard $(SRC_DIR)/*.$(EXT))\
+           $(foreach DIR,$(SRC_SUBDIRS),\
+               $(wildcard $(SRC_DIR)/$(DIR)/*.$(EXT))))
+
+# list of object files
+OBJ := $(foreach EXT,$(SRC_EXT),\
+           $(patsubst $(SRC_DIR)/%.$(EXT),$(OBJ_DIR)/$(EXT)/%.o,\
+               $(filter %.$(EXT),$(SRC))))
+
+OBJ_DIRECTORIES := $(foreach EXT,$(SRC_EXT),\
+                       $(OBJ_DIR)/$(EXT)\
+                       $(foreach DIR,$(SRC_SUBDIRS),\
+                           $(OBJ_DIR)/$(EXT)/$(DIR)))
 
 OUT_ELF := $(BIN_DIR)/$(OUT_FILENAME).elf
 OUT     := $(BIN_DIR)/$(OUT_FILENAME).gba
-
-OBJ_DIRECTORIES := $(OBJ_DIR) $(foreach DIR,$(SRC_SUBDIRS),$(OBJ_DIR)/$(DIR))
 
 # === TARGETS ===
 .PHONY: all run build clean
@@ -79,16 +92,20 @@ build: $(OUT)
 clean:
 	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR)
 
+# generate .gba file
 $(OUT): $(OUT_ELF)
 	$(OBJCOPY) -O binary $^ $@
 
-$(OUT_ELF): $(OBJ_DIR)/crt0.o $(OBJ) | $(BIN_DIR)
+# generate .elf file
+$(OUT_ELF): $(OBJ) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-$(OBJ_DIR)/crt0.o: $(SRC_DIR)/crt0.s | $(OBJ_DIRECTORIES)
+# compile .s files
+$(OBJ_DIR)/s/%.o: $(SRC_DIR)/%.s | $(OBJ_DIRECTORIES)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIRECTORIES)
+# compile .c files
+$(OBJ_DIR)/c/%.o: $(SRC_DIR)/%.c | $(OBJ_DIRECTORIES)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 $(BIN_DIR) $(OBJ_DIRECTORIES):
