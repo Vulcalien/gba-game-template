@@ -15,7 +15,7 @@
 
 @ Based on crt0.S v1.28 by Jeff Frohwein
 
-.text
+.section .crt0, "ax"
 
 .global _start
 .arm
