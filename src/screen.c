@@ -37,6 +37,31 @@
 #define OBJ_PALETTE ((vu16 *) 0x05000200)
 
 void screen_init(void) {
+    DISPLAY_CONTROL = 0 << 0  | // Video mode
+                      1 << 6  | // OBJ character mapping (1 is linear)
+                      1 << 7  | // Forced blank
+                      0 << 8  | // Enable BG 0
+                      0 << 9  | // Enable BG 1
+                      0 << 10 | // Enable BG 2
+                      0 << 11 | // Enable BG 3
+                      1 << 12;  // Enable OBJs
+
+    BG0_CONTROL = 0 << 0 | // BG Priority (0 is highest, 3 is lowest)
+                  0 << 2 | // Tileset character block (=16K)
+                  0 << 8;  // Tilemap screen block (=2K)
+
+    BG1_CONTROL = 1 << 0 | // BG Priority (0 is highest, 3 is lowest)
+                  0 << 2 | // Tileset character block (=16K)
+                  0 << 8;  // Tilemap screen block (=2K)
+
+    BG2_CONTROL = 2 << 0 | // BG Priority (0 is highest, 3 is lowest)
+                  0 << 2 | // Tileset character block (=16K)
+                  0 << 8;  // Tilemap screen block (=2K)
+
+    BG3_CONTROL = 3 << 0 | // BG Priority (0 is highest, 3 is lowest)
+                  0 << 2 | // Tileset character block (=16K)
+                  0 << 8;  // Tilemap screen block (=2K)
+
     // TODO ...
 
     // hide all sprites
@@ -45,6 +70,9 @@ void screen_init(void) {
 
     // enable V-Blank IRQ
     DISPLAY_STATUS = (1 << 3);
+
+    // disable forced blank
+    DISPLAY_CONTROL &= ~(1 << 7);
 }
 
 IWRAM_SECTION
