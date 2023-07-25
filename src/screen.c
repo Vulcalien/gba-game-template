@@ -74,8 +74,3 @@ void screen_init(void) {
     // disable forced blank
     DISPLAY_CONTROL &= ~(1 << 7);
 }
-
-IWRAM_SECTION
-void vsync(void) {
-    __asm__ volatile ("swi 0x05 << 16");
-}

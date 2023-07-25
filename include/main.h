@@ -18,6 +18,7 @@
 
 #include "types.h"
 #include "util.h"
+#include "bios.h"
 
 #define THUMB __attribute__((target("thumb")))
 
