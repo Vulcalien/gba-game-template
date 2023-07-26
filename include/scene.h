@@ -26,13 +26,15 @@ struct Scene {
 
 extern const struct Scene *scene;
 
-extern const struct Scene scene_start;
-
 inline void scene_set(const struct Scene *new_scene, u32 flags) {
     scene = new_scene;
 
     if(flags && scene->init)
         scene->init(flags);
 }
+
+// Scenes
+extern const struct Scene
+    scene_start;
 
 #endif // VULC_TEMPLATE_SCENE

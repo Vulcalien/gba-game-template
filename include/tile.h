@@ -37,4 +37,8 @@ inline const struct Tile *tile_type(u8 id) {
     return NULL;
 }
 
+// Tiles
+//extern const struct Tile
+    // ...
+
 #endif // VULC_TEMPLATE_TILE

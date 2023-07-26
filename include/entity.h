@@ -93,4 +93,8 @@ inline bool entity_touches(struct entity_Data *data1,
     );
 }
 
+// Entities
+//extern const struct Entity
+    // ...
+
 #endif // VULC_TEMPLATE_ENTITY
