@@ -39,4 +39,67 @@
 
 extern void screen_init(void);
 
+struct screen_Sprite {
+    // Position
+    u32 x : 9;
+    u32 y : 8;
+
+    // Behavior
+    u32 disable  : 1;
+    u32 mode     : 2;
+    u32 priority : 2;
+
+    // Shape, Size and Flip
+    u32 shape : 2; // 0 = square, 1 = horizontal, 2 = vertical
+    u32 size  : 2;
+    u32 flip  : 2;
+
+    // Tile and Palette
+    u32 tile    : 10;
+    u32 palette : 4;
+
+    // Affine Transformation
+    u32 affine_transformation : 1;
+    u32 affine_parameter      : 5;
+    u32 double_size           : 1;
+
+    // Other
+    u32 mosaic     : 1;
+    u32 color_mode : 1; // 0 = 16/16 palettes, 1 = 256/1 palette
+};
+
+inline void screen_set_sprite(struct screen_Sprite *sprite, u32 id) {
+    if(id >= 128)
+        return;
+
+    vu16 *attribs = &OAM[id * 4];
+
+    u32 attr0_bit_9;
+    u32 attr1_bits_9_13;
+
+    if(sprite->affine_transformation) {
+        attr0_bit_9     = sprite->double_size;
+        attr1_bits_9_13 = sprite->affine_parameter;
+    } else {
+        attr0_bit_9     = sprite->disable;
+        attr1_bits_9_13 = sprite->flip << 3;
+    }
+
+    attribs[0] = sprite->y                     << 0  |
+                 sprite->affine_transformation << 8  |
+                 attr0_bit_9                   << 9  |
+                 sprite->mode                  << 10 |
+                 sprite->mosaic                << 12 |
+                 sprite->color_mode            << 13 |
+                 sprite->shape                 << 14;
+
+    attribs[1] = sprite->x       << 0  |
+                 attr1_bits_9_13 << 9  |
+                 sprite->size    << 14;
+
+    attribs[2] = sprite->tile     << 0  |
+                 sprite->priority << 10 |
+                 sprite->palette  << 12;
+}
+
 #endif // VULC_TEMPLATE_SCREEN
