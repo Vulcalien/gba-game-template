@@ -25,8 +25,6 @@
 struct Level;
 struct Tile {
     bool is_solid;
-
-    void (*draw)(struct Level *level, i32 x, i32 y);
 };
 
 extern const struct Tile tile_list[TILE_TYPES];
