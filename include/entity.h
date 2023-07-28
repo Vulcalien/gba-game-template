@@ -31,7 +31,6 @@
 // the necessary data into that array.
 #define ENTITY_EXTRA_DATA_SIZE (0)
 
-struct Level;
 struct entity_Data {
     u8 type;
 
@@ -46,6 +45,7 @@ struct entity_Data {
     #endif
 };
 
+struct Level;
 struct Entity {
     // entity radius (width and height)
     u8 xr;
