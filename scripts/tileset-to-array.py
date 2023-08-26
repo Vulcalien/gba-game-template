@@ -18,7 +18,7 @@
 # ==================================================================== #
 
 # Convert a tileset image into a GBA tileset array.
-# The output is a C array of type 'const u16' and the exact amount of
+# The output is a C array of type 'const u8' and the exact amount of
 # bytes required as length.
 #
 # Run 'tileset-to-array.py -h' for help.
