@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ==================================================================== #
-
 import sys, argparse
 from sys import exit
 from PIL import Image
@@ -91,9 +89,8 @@ if args.bpp == 16:
             b = pix[2] >> 3
 
             col = (b << 10) | (g << 5) | r
-            val = '0x' + hex(col)[2:].zfill(4)
 
-            f.write(val + ',')
+            f.write('0x' + hex(col)[2:].zfill(4) + ',')
             if x % 8 == 7:
                 f.write('\n')
         f.write('\n')
@@ -110,9 +107,7 @@ elif args.bpp == 8:
                 exit('Error: color not present in the palette: ' +
                      '#' + col)
 
-            val = '0x' + hex(color_map[pix])[2:].zfill(2)
-
-            f.write(val + ',')
+            f.write('0x' + hex(color_map[pix])[2:].zfill(2) + ',')
             if x % 8 == 7:
                 f.write('\n')
         f.write('\n')
