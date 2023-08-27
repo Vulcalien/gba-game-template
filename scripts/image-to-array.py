@@ -104,8 +104,7 @@ elif args.bpp == 8:
             if pix not in color_map:
                 col = pix[0] << 16 | pix[1] << 8 | pix[2]
                 col = hex(col)[2:].zfill(6)
-                exit('Error: color not present in the palette: ' +
-                     '#' + col)
+                exit('Error: color not present in the palette: #' + col)
 
             f.write('0x' + hex(color_map[pix])[2:].zfill(2) + ',')
             if x % 8 == 7:

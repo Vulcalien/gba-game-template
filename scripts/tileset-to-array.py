@@ -95,8 +95,7 @@ def scan_8pixel_line(x0, y):
             if pix not in color_map:
                 col = pix[0] << 16 | pix[1] << 8 | pix[2]
                 col = hex(col)[2:].zfill(6)
-                exit('Error: color not present in the palette: ' +
-                     '#' + col)
+                exit('Error: color not present in the palette: #' + col)
 
             f.write('0x' + hex(color_map[pix])[2:].zfill(2) + ',')
 
@@ -108,8 +107,7 @@ def scan_8pixel_line(x0, y):
             if pix not in color_map:
                 col = pix[0] << 16 | pix[1] << 8 | pix[2]
                 col = hex(col)[2:].zfill(6)
-                exit('Error: color not present in the palette: ' +
-                     '#' + col)
+                exit('Error: color not present in the palette: #' + col)
 
             if xpix & 1 == 1:
                 f.write('0x')

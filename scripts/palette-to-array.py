@@ -16,7 +16,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import sys, argparse
-from sys import exit
 from PIL import Image
 
 # Setup argparse
