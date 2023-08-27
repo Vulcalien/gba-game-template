@@ -15,57 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ==================================================================== #
-
-# Convert a tileset image into a GBA tileset array.
-# The output is a C array of type 'const u8' and the exact amount of
-# bytes required as length.
-#
-# Run 'tileset-to-array.py -h' for help.
-
-# ==================================================================== #
-
-# --- THE FORMAT --- #
-#
-# A tileset file is an image containing a 'metadata' section and a
-# 'data' section. The image is composed of 8x8 tiles. These 8x8 tiles
-# are arranged in bigger tiles with a certain width and height.
-#
-# -- METADATA --
-#
-# - Tile Size -
-# The top-left 8x8 tile is used to specify how many 8x8 tiles make up a
-# bigger tile. A rectangle of white (#ffffff) pixels in its top-left
-# corner is used to specify this. Each white pixel represents one 8x8
-# tile.
-#
-# - Palettes -
-# The first row of 8x8 tiles (except for the top-left tile) is reserved
-# for palette tiles. Note: to ensure that there always is at least one
-# palette tile, if the a row of tiles only contains one 8x8 tile, then
-# the second row will be reserved for a palette tile.
-#
-# A palette tile is a 8x8 tile and contains 4 palettes each. A palette
-# is used to map the RGB colors to palette indexes. Each palette is made
-# up of 16 pixels (2 rows of 8 pixels). The colors are indexed
-# left-to-right, then top-to-bottom. The palettes are processed
-# top-to-bottom, while the palette 8x8 tiles are processed
-# left-to-right, then top-to-bottom.
-#
-# If a color has already been indexed, it will be ignored.
-#
-# -- DATA --
-#
-# To generate the output, each bigger tile is processed individually.
-# The scanning order for bigger tiles is left-to-right, then
-# top-to-bottom. Each 8x8 tile that makes up the bigger tile is then
-# processed with regard to the same scanning order.
-#
-# The output can be directly read by GBA. The 8x8 tiles forming a bigger
-# tile are contiguous in the output.
-
-# ==================================================================== #
-
 import sys, argparse
 from sys import exit
 from PIL import Image
@@ -75,11 +24,25 @@ parser = argparse.ArgumentParser(
     description='Generate a GBA tileset from a tileset image'
 )
 
-parser.add_argument('tileset_filename',
-                    type=argparse.FileType('rb'),
-                    help='specify the filename of the tileset image')
-parser.add_argument('array_name',
+parser.add_argument('-i', '--input',
+                    type=argparse.FileType('rb'), required=True,
+                    help='specify the filename of the image file')
+parser.add_argument('-n', '--name',
+                    required=True,
                     help='specify the name of the output array')
+parser.add_argument('--bpp',
+                    type=int, choices=[4, 8], required=True,
+                    help='specify the bits per pixel')
+parser.add_argument('--tile-width',
+                    type=int, required=True,
+                    help='specify the width of a tile')
+parser.add_argument('--tile-height',
+                    type=int, required=True,
+                    help='specify the height of a tile')
+
+parser.add_argument('--palette',
+                    type=argparse.FileType('rb'), required=True,
+                    help='specify the filename of the palette file')
 
 parser.add_argument('-o', '--output',
                     type=argparse.FileType('w'), default=sys.stdout,
@@ -91,108 +54,81 @@ parser.add_argument('-s', '--static',
 
 args = parser.parse_args()
 
-# Open and validate image
-img = Image.open(args.tileset_filename).convert('RGB')
+# Open image
+img = Image.open(args.input).convert('RGB')
 
-image_8x8_w = img.width  // 8
-image_8x8_h = img.height // 8
+tileset_w = (img.width  // 8) // args.tile_width
+tileset_h = (img.height // 8) // args.tile_height
 
-if image_8x8_w * image_8x8_h < 2:
-    exit('Error: the tileset image must contain at least 2 8x8 tiles')
-
-### READ TILESET METADATA ###
-
-# Determine tile size by reading the top-left 8x8 tile
-tile_width  = 0
-tile_height = 0
-for i in range(8):
-    x_pix = img.getpixel( (i, 0) )
-    y_pix = img.getpixel( (0, i) )
-
-    if x_pix == (0xff, 0xff, 0xff):
-        tile_width = 1 + i
-    if y_pix == (0xff, 0xff, 0xff):
-        tile_height = 1 + i
-
-if tile_width == 0 or tile_width == 0:
-    exit('Error: the specified tile size is "0 by 0"\n' +
-         'Make sure that the top-left tile contains a rectangle made ' +
-         'of white (#ffffff) pixels in its top-left corner.')
-
-# Find out how many tile rows are dedicated to the metadata. This is
-# usually 1. However, if 'image_8x8_w' is 1, then 'metadata_rows' will
-# be 2, to ensure that there is at least one palette tile.
-metadata_rows = 2 if image_8x8_w == 1 else 1
-
-# Calculate the tileset size, cropping any misaligned 8x8 tiles
-tileset_w = image_8x8_w // tile_width
-tileset_h = (image_8x8_h - metadata_rows) // tile_height
-
-# Check if any pixel has been cropped
-if tileset_w * tile_width * 8 != img.width:
-    print('Warning: the tileset image contains columns of pixels ' +
-          'that will be cropped',
-          file=sys.stderr)
-
-if (tileset_h * tile_height + metadata_rows) * 8 != img.height:
-    print('Warning: the tileset image contains rows of pixels ' +
-          'that will be cropped',
-          file=sys.stderr)
-
-# Map the colors by reading the palettes
+# Map the colors by reading the palette image
 color_map = {}
-for yt in range(metadata_rows):
-    for xt in range(tileset_w * tile_width):
 
-        # skip the top-left tile (the one used to decide the tile size)
-        if (xt, yt) == (0, 0):
-            continue
+palette_img = Image.open(args.palette).convert('RGB')
+for y in range(palette_img.height):
+    for x in range(palette_img.width):
+        pix = palette_img.getpixel( (x, y) )
 
-        for pal in range(4):
-            for i in range(16):
-                pix = img.getpixel(
-                    (xt * 8 + i % 8, yt * 8 + pal * 2 + i // 8)
-                )
-
-                if pix not in color_map:
-                    color_map[pix] = i
-
-### READ TILESET DATA ###
+        if pix not in color_map:
+            i = (x + y * palette_img.width) % (2 ** args.bpp)
+            color_map[pix] = i
 
 # Scan the tileset and write output
 f = args.output
 
-if args.static:
-    f.write('static ')
+f.write(
+    '{static} const u8 {name}[{a} * {b} * {c}] = {{\n'.format(
+        static=('static' if args.static else ''),
+        name=args.name,
+        a=(tileset_w * tileset_h),
+        b=(args.tile_width * args.tile_height),
+        c=(32 if args.bpp == 4 else 64)
+    )
+)
 
-f.write('const u8 ' + args.array_name + '[' +
-        str(tileset_w * tileset_h) + ' * ' +
-        str(tile_width * tile_height) + ' * 32] = {\n')
+### helper functions ###
+def scan_8pixel_line(x0, y):
+    # 8bpp
+    if args.bpp == 8:
+        for xpix in range(8):
+            pix = img.getpixel( (x0 + xpix, y) )
+
+            if pix not in color_map:
+                col = pix[0] << 16 | pix[1] << 8 | pix[2]
+                col = hex(col)[2:].zfill(6)
+                exit('Error: color not present in the palette: ' +
+                     '#' + col)
+
+            f.write('0x' + hex(color_map[pix])[2:].zfill(2) + ',')
+
+    # 4 bpp
+    elif args.bpp == 4:
+        for xpix in (1, 0, 3, 2, 5, 4, 7, 6):
+            pix = img.getpixel( (x0 + xpix, y) )
+
+            if pix not in color_map:
+                col = pix[0] << 16 | pix[1] << 8 | pix[2]
+                col = hex(col)[2:].zfill(6)
+                exit('Error: color not present in the palette: ' +
+                     '#' + col)
+
+            if xpix & 1 == 1:
+                f.write('0x')
+            f.write(hex(color_map[pix])[2:])
+            if xpix & 1 == 0:
+                f.write(',')
+### ---------------- ###
 
 for yt in range(tileset_h):
     for xt in range(tileset_w):
-        for ysubtile in range(tile_height):
-            for xsubtile in range(tile_width):
+        for ysubtile in range(args.tile_height):
+            for xsubtile in range(args.tile_width):
                 for ypix in range(8):
-                    for xpix in (1, 0, 3, 2, 5, 4, 7, 6):
-                        pix = img.getpixel((
-                            (xt * tile_width                  + xsubtile) * 8 + xpix,
-                            (yt * tile_height + metadata_rows + ysubtile) * 8 + ypix
-                        ))
+                    scan_8pixel_line(
+                        (xt * args.tile_width  + xsubtile) * 8,
+                        (yt * args.tile_height + ysubtile) * 8 + ypix
+                    )
 
-                        if pix not in color_map:
-                            col = pix[0] << 16 | pix[1] << 8 | pix[2]
-                            col = hex(col)[2:].zfill(6)
-                            exit('Error: color not present in any ' +
-                                 'palette (#' + col + ')')
-
-                        if xpix & 1 == 1:
-                            f.write('0x')
-
-                        f.write(hex(color_map[pix])[2:])
-
-                        if xpix & 1 == 0:
-                            f.write(', ')
                     f.write('\n')
                 f.write('\n')
+
 f.write('};\n')
