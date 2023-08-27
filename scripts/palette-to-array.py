@@ -15,14 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# ==================================================================== #
-
-# Convert an image into a GBA palette array.
-# The output is a C array of type 'const u16' and the size of the image
-# as length.
-#
-# Run 'palette-to-array.py -h' for help.
-
 import sys, argparse
 from sys import exit
 from PIL import Image
@@ -32,10 +24,11 @@ parser = argparse.ArgumentParser(
     description='Generate a GBA palette from an image'
 )
 
-parser.add_argument('palette_filename',
-                    type=argparse.FileType('rb'),
-                    help='specify the filename of the palette image')
-parser.add_argument('array_name',
+parser.add_argument('-i', '--input',
+                    type=argparse.FileType('rb'), required=True,
+                    help='specify the filename of the image file')
+parser.add_argument('-n', '--name',
+                    required=True,
                     help='specify the name of the output array')
 
 parser.add_argument('-o', '--output',
@@ -48,8 +41,8 @@ parser.add_argument('-s', '--static',
 
 args = parser.parse_args()
 
-# Open and validate image
-img = Image.open(args.palette_filename).convert('RGB')
+# Open image
+img = Image.open(args.input).convert('RGB')
 
 palette_size = img.width * img.height
 
@@ -70,33 +63,20 @@ for i in range(palette_size):
 # Write output
 f = args.output
 
-if args.static:
-    f.write('static ')
-f.write('const u16 ' + args.array_name + '[')
+f.write(
+    '{static} const u16 {name}[{a} * 16 + {b}] = {{\n'.format(
+        static=('static' if args.static else ''),
+        name=args.name,
+        a=(palette_size // 16),
+        b=(palette_size %  16)
+    )
+)
 
-# Write the array size as (A * 16 + B)
-if palette_size // 16 != 0:
-    f.write(str(palette_size // 16) + ' * 16')
-    if palette_size % 16 != 0:
-        f.write(' + ')
-if palette_size % 16 != 0:
-    f.write(str(palette_size % 16))
-
-f.write('] = {')
 for i in range(palette_size):
-    # Add a whiteline every 16 colors
-    if i % 16 == 0 and i != 0:
+    f.write(colors[i] + ',')
+    if i % 8 == 7:
+        f.write('\n')
+    if i % 16 == 15 or i == palette_size - 1:
         f.write('\n')
 
-    # Have a maximum of 8 colors per line
-    if i % 8 == 0:
-        f.write('\n    ')
-
-    f.write(colors[i])
-
-    # Add the comma after a color, if necessary
-    if i != palette_size - 1:
-        f.write(',')
-        if i % 8 != 7:
-            f.write(' ')
-f.write('\n};\n')
+f.write('};\n')
