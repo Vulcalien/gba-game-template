@@ -20,17 +20,18 @@
 {
     "tilesets": [
         {
+            "name": "my_tileset",
+
             "input": "my/input/tileset.png",
             "output": "my/output/tileset.c",
-
-            "name": "my_tileset",
-            "static": true,
 
             "tile_width": 2,
             "tile_height": 4,
 
             "palette": "my/input/palette.png",
-            "bpp": 4
+            "bpp": 4,
+
+            "static": true
         },
 
         ...
@@ -38,10 +39,11 @@
 
     "palettes": [
         {
+            "name": "my_palette",
+
             "input": "my/palette/file.png",
             "output": "my/output/palette.c",
 
-            "name": "my_palette",
             "static": false
         },
 
@@ -50,24 +52,26 @@
 
     "images": [
         {
+            "name": "image_8bpp",
+
             "input": "my/input/8bpp_image.png",
             "output": "my/output/8bpp_image.c",
 
-            "name": "image_8bpp",
-            "static": false,
-
+            "palette": "my/input/palette.png",
             "bpp": 8,
-            "palette": "my/input/palette.png"
+
+            "static": false
         },
 
         {
+            "name": "image_16bpp",
+
             "input": "my/input/16bpp_image.png",
             "output": "my/output/16bpp_image.c",
 
-            "name": "image_16bpp",
-            "static": false,
+            "bpp": 16,
 
-            "bpp": 16
+            "static": false
         },
 
         ...
