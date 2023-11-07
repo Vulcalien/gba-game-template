@@ -41,7 +41,7 @@
         {
             "name": "my_palette",
 
-            "input": "my/palette/file.png",
+            "input": "my/input/palette.png",
             "output": "my/output/palette.c",
 
             "static": false
@@ -72,6 +72,19 @@
             "bpp": 16,
 
             "static": false
+        },
+
+        ...
+    ],
+
+    "files": [
+        {
+            "name": "my_file",
+
+            "input": "my/input/file.bin",
+            "output": "my/output/file.c",
+
+            "static": true
         },
 
         ...
@@ -159,6 +172,18 @@ def convert_image(element):
     print(cmd)
     os.system(cmd)
 
+def convert_file(element):
+    (input_file, output_file, name, static) = basic_info(element)
+
+    cmd = "%s/res/file-to-array.py -i %s -o %s -n %s %s"
+    cmd %= (
+        parent_path, input_file, output_file, name,
+        ('-s' if static else '')
+    )
+
+    print(cmd)
+    os.system(cmd)
+
 # Read resource list files
 for f in args.res_list_files:
     try:
@@ -178,3 +203,7 @@ for f in args.res_list_files:
     if 'images' in content:
         for element in content['images']:
             convert_image(element)
+
+    if 'files' in content:
+        for element in content['files']:
+            convert_file(element)
