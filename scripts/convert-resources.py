@@ -114,7 +114,7 @@ def convert_tileset(element):
     palette = str(element['palette'])
     bpp     = int(element['bpp'])
 
-    cmd = "%s/tileset-to-array.py -i %s -o %s -n %s %s " +\
+    cmd = "%s/res/tileset-to-array.py -i %s -o %s -n %s %s " +\
           "--tile-width %d --tile-height %d " +\
           "--palette %s --bpp %d"
     cmd %= (
@@ -129,7 +129,7 @@ def convert_tileset(element):
 def convert_palette(element):
     (input_file, output_file, name, static) = basic_info(element)
 
-    cmd = "%s/palette-to-array.py -i %s -o %s -n %s %s"
+    cmd = "%s/res/palette-to-array.py -i %s -o %s -n %s %s"
     cmd %= (
         parent_path, input_file, output_file, name,
         ('-s' if static else '')
@@ -148,7 +148,7 @@ def convert_image(element):
     else:
         palette = None
 
-    cmd = "%s/image-to-array.py -i %s -o %s -n %s %s" +\
+    cmd = "%s/res/image-to-array.py -i %s -o %s -n %s %s" +\
           "--bpp %d %s"
     cmd %= (
         parent_path, input_file, output_file, name,
