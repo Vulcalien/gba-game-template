@@ -20,16 +20,14 @@
 
 extern void sound_init(void);
 
-enum sound_Channel {
-    sound_channel_A,
-    sound_channel_B
-};
+#define sound_channel_A (0)
+#define sound_channel_B (1)
 
 #define SOUND_PLAY(sound, channel, loop)\
     sound_play((sound), sizeof(sound), (channel), (loop))
 extern void sound_play(const u8 *sound, u32 length,
-                       enum sound_Channel channel, bool loop);
-extern void sound_stop(enum sound_Channel channel);
+                       bool channel, bool loop);
+extern void sound_stop(bool channel);
 
 extern void sound_vblank(void);
 

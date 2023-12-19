@@ -18,44 +18,91 @@
 #define SOUND_CONTROL_H *((vu16 *) 0x04000082)
 #define SOUND_CONTROL_X *((vu16 *) 0x04000084)
 
-#define FIFO_A (0x040000a0)
-#define FIFO_B (0x040000a4)
+#define FIFO_A ((vu32 *) 0x040000a0)
+#define FIFO_B ((vu32 *) 0x040000a4)
 
 // DMA
-#define DMA1_SOURCE  *((vu32 *) 0x040000bc)
-#define DMA1_DEST    *((vu32 *) 0x040000c0)
-#define DMA1_CONTROL *((vu16 *) 0x040000c6)
+#define DMA1_SOURCE  ((vu32 *) 0x040000bc)
+#define DMA1_DEST    ((vu32 *) 0x040000c0)
+#define DMA1_CONTROL ((vu16 *) 0x040000c6)
 
-#define DMA2_SOURCE  *((vu32 *) 0x040000c8)
-#define DMA2_DEST    *((vu32 *) 0x040000cc)
-#define DMA2_CONTROL *((vu16 *) 0x040000d2)
+#define DMA2_SOURCE  ((vu32 *) 0x040000c8)
+#define DMA2_DEST    ((vu32 *) 0x040000cc)
+#define DMA2_CONTROL ((vu16 *) 0x040000d2)
 
 // Timers
-#define TIMER0_RELOAD  *((vu16 *) 0x04000100)
-#define TIMER0_CONTROL *((vu16 *) 0x04000102)
+#define TIMER0_RELOAD  ((vu16 *) 0x04000100)
+#define TIMER0_CONTROL ((vu16 *) 0x04000102)
 
-#define TIMER1_RELOAD  *((vu16 *) 0x04000104)
-#define TIMER1_CONTROL *((vu16 *) 0x04000106)
+#define TIMER1_RELOAD  ((vu16 *) 0x04000104)
+#define TIMER1_CONTROL ((vu16 *) 0x04000106)
 
-static struct {
+void sound_init(void) {
+    SOUND_CONTROL_X = 1 << 7; // Enable sound
+
+    SOUND_CONTROL_H = 1 << 2  | // Channel A Volume (1 = 100%)
+                      1 << 3  | // Channel B Volume (1 = 100%)
+                      1 << 8  | // Enable Channel A RIGHT
+                      1 << 9  | // Enable Channel A LEFT
+                      0 << 10 | // Channel A Timer (0 = Timer 0)
+                      1 << 12 | // Enable Channel B RIGHT
+                      1 << 13 | // Enable Channel B LEFT
+                      1 << 14;  // Channel B Timer (1 = Timer 1)
+}
+
+// ===== DIRECT SOUND =====
+
+struct DirectChannel {
+    vu32 *fifo;
+
+    struct {
+        vu32 *source;
+        vu32 *dest;
+        vu16 *control;
+    } dma;
+
+    struct {
+        vu16 *reload;
+        vu16 *control;
+    } timer;
+};
+
+static struct SoundData {
     const u8 *sound;
     u32 vblanks;
     u32 length;
     bool loop;
-} a_info, b_info;
+} sound_data[2];
 
-void sound_init(void) {
-    SOUND_CONTROL_X = 1 << 7; // Enable FIFO Channels
+static const struct DirectChannel channels[2] = {
+    // Direct Channel A
+    {
+        .fifo = FIFO_A,
+        .dma = {
+            .source  = DMA1_SOURCE,
+            .dest    = DMA1_DEST,
+            .control = DMA1_CONTROL
+        },
+        .timer = {
+            .reload  = TIMER0_RELOAD,
+            .control = TIMER0_CONTROL
+        }
+    },
 
-    SOUND_CONTROL_H = 1 << 2  | // Channel A Volume (1 is 100%)
-                      1 << 3  | // Channel B Volume (1 is 100%)
-                      1 << 8  | // Enable Channel A RIGHT
-                      1 << 9  | // Enable Channel A LEFT
-                      0 << 10 | // Channel A Timer (0 is Timer 0)
-                      1 << 12 | // Enable Channel B RIGHT
-                      1 << 13 | // Enable Channel B LEFT
-                      1 << 14;  // Channel B Timer (1 is Timer 1)
-}
+    // Direct Channel B
+    {
+        .fifo = FIFO_B,
+        .dma = {
+            .source  = DMA2_SOURCE,
+            .dest    = DMA2_DEST,
+            .control = DMA2_CONTROL
+        },
+        .timer = {
+            .reload  = TIMER1_RELOAD,
+            .control = TIMER1_CONTROL
+        }
+    }
+};
 
 #define SAMPLE_RATE (16 * 1024)
 
@@ -63,14 +110,12 @@ void sound_init(void) {
 #define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
 
 void sound_play(const u8 *sound, u32 length,
-                enum sound_Channel channel, bool loop) {
-    const u16 dma_value = 2 << 5  | // Dest Address Control (2 is Fixed)
-                          1 << 9  | // DMA repeat
-                          1 << 10 | // Transfer type (1 is 32bit)
-                          3 << 12 | // Start Timing (3 is Sound FIFO)
-                          1 << 15;  // DMA Enable
-
-    const u16 feed_timer_value = 1 << 7; // Timer Start
+                bool channel, bool loop) {
+    const u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
+                            1 << 9  | // DMA repeat
+                            1 << 10 | // Transfer type (1 = 32bit)
+                            3 << 12 | // Start timing (3 = Sound FIFO)
+                            1 << 15;  // DMA enable
 
     // vblanks = length * 59.7275 / SAMPLE_RATE
     //         = length * 59.7275 * 11 / (SAMPLE_RATE * 11)
@@ -80,72 +125,53 @@ void sound_play(const u8 *sound, u32 length,
         return;
 
     sound_stop(channel);
-    if(channel == sound_channel_A) {
-        DMA1_SOURCE = (u32) sound;
-        DMA1_DEST = FIFO_A;
-        DMA1_CONTROL = dma_value;
 
-        TIMER0_RELOAD = 65536 - CYCLES_PER_SAMPLE;
-        TIMER0_CONTROL = feed_timer_value;
+    const struct DirectChannel *direct_channel = &channels[channel];
+    struct SoundData *data = &sound_data[channel];
 
-        a_info.sound = sound;
-        a_info.vblanks = vblanks;
-        a_info.length = length;
-        a_info.loop = loop;
-    } else {
-        DMA2_SOURCE = (u32) sound;
-        DMA2_DEST = FIFO_B;
-        DMA2_CONTROL = dma_value;
+    *(direct_channel->dma.source)  = (u32) sound;
+    *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
+    *(direct_channel->dma.control) = dma_control;
 
-        TIMER1_RELOAD = 65536 - CYCLES_PER_SAMPLE;
-        TIMER1_CONTROL = feed_timer_value;
+    *(direct_channel->timer.reload) = 65536 - CYCLES_PER_SAMPLE;
+    *(direct_channel->timer.control) = 1 << 7; // Timer start
 
-        b_info.sound = sound;
-        b_info.vblanks = vblanks;
-        b_info.length = length;
-        b_info.loop = loop;
+    *data = (struct SoundData) {
+        .sound   = sound,
+        .vblanks = vblanks,
+        .length  = length,
+        .loop    = loop
+    };
+}
+
+void sound_stop(bool channel) {
+    const struct DirectChannel *direct_channel = &channels[channel];
+    struct SoundData *data = &sound_data[channel];
+
+    *(direct_channel->timer.control) = 0;
+    *(direct_channel->dma.control)   = 0;
+
+    data->vblanks = 0;
+}
+
+static inline void channel_vblank(bool channel) {
+    struct SoundData *data = &sound_data[channel];
+
+    if(data->vblanks > 0) {
+        data->vblanks--;
+        if(data->vblanks == 0) {
+            sound_stop(channel);
+            if(data->loop)
+                sound_play(data->sound, data->length, channel, true);
+        }
     }
 }
 
-void sound_stop(enum sound_Channel channel) {
-    if(channel == sound_channel_A) {
-        TIMER0_CONTROL = 0;
-        DMA1_CONTROL   = 0;
-
-        a_info.vblanks = 0;
-    } else {
-        TIMER1_CONTROL = 0;
-        DMA2_CONTROL   = 0;
-
-        b_info.vblanks = 0;
-    }
-}
+// ===== ===== =====
 
 IWRAM_SECTION
 void sound_vblank(void) {
-    if(a_info.vblanks > 0) {
-        a_info.vblanks--;
-        if(a_info.vblanks == 0) {
-            sound_stop(sound_channel_A);
-            if(a_info.loop) {
-                sound_play(
-                    a_info.sound, a_info.length,
-                    sound_channel_A, true
-                );
-            }
-        }
-    }
-
-    if(b_info.vblanks > 0) {
-        b_info.vblanks--;
-        if(b_info.vblanks == 0) {
-            sound_stop(sound_channel_B);
-            if(b_info.loop) {
-                sound_play(
-                    b_info.sound, b_info.length,
-                    sound_channel_B, true
-                );
-            }
-        }
-    }
+    // direct channels
+    channel_vblank(sound_channel_A);
+    channel_vblank(sound_channel_B);
 }
