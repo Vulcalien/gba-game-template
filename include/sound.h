@@ -18,24 +18,25 @@
 
 #include "main.h"
 
-#define DIRECT_SOUND_ENABLE
-
 extern void sound_init(void);
 extern void sound_vblank(void);
 
-#ifdef DIRECT_SOUND_ENABLE
-    #define direct_sound_channel_A (0)
-    #define direct_sound_channel_B (1)
+// === Direct Sound ===
 
-    // Do not use these two functions outside of the sound driver
-    extern void direct_sound_init(void);
-    extern void direct_sound_vblank(void);
+#define sound_channel_A (0)
+#define sound_channel_B (1)
 
-    #define DIRECT_SOUND_PLAY(sound, channel, loop)\
-        direct_sound_play((sound), sizeof(sound), (channel), (loop))
-    extern void direct_sound_play(const u8 *sound, u32 length,
-                                  bool channel, bool loop);
-    extern void direct_sound_stop(bool channel);
-#endif // DIRECTSOUND_ENABLE
+#define SOUND_PLAY(sound, channel, loop)\
+    sound_play((sound), sizeof(sound), (channel), (loop))
+
+extern void sound_play(const u8 *sound, u32 length,
+                       bool channel, bool loop);
+extern void sound_stop(bool channel);
+
+// ===== ===== =====
+
+// Do not use these functions outside of the sound driver
+extern void sound_direct_init(void);
+extern void sound_direct_vblank(void);
 
 #endif // VULC_TEMPLATE_SOUND

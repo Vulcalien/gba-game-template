@@ -20,13 +20,9 @@
 void sound_init(void) {
     MASTER_SOUND_CONTROL = 1 << 7; // Enable sound
 
-    #ifdef DIRECT_SOUND_ENABLE
-        direct_sound_init();
-    #endif
+    sound_direct_init();
 }
 
 void sound_vblank(void) {
-    #ifdef DIRECT_SOUND_ENABLE
-        direct_sound_vblank();
-    #endif
+    sound_direct_vblank();
 }

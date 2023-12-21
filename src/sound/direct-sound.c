@@ -15,8 +15,6 @@
  */
 #include "sound.h"
 
-#ifdef DIRECT_SOUND_ENABLE
-
 #define DIRECT_SOUND_CONTROL *((vu16 *) 0x04000082)
 
 #define FIFO_A ((vu32 *) 0x040000a0)
@@ -74,7 +72,7 @@ static struct SoundData {
     bool loop;
 } sound_data[2];
 
-void direct_sound_init(void) {
+void sound_direct_init(void) {
     DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
                            1 << 3  | // Channel B Volume (1 = 100%)
                            1 << 8  | // Enable Channel A RIGHT
@@ -91,20 +89,17 @@ static inline void channel_vblank(bool channel) {
     if(data->vblanks > 0) {
         data->vblanks--;
         if(data->vblanks == 0) {
-            direct_sound_stop(channel);
-            if(data->loop) {
-                direct_sound_play(
-                    data->sound, data->length, channel, true
-                );
-            }
+            sound_stop(channel);
+            if(data->loop)
+                sound_play(data->sound, data->length, channel, true);
         }
     }
 }
 
 IWRAM_SECTION
-void direct_sound_vblank(void) {
-    channel_vblank(direct_sound_channel_A);
-    channel_vblank(direct_sound_channel_B);
+void sound_direct_vblank(void) {
+    channel_vblank(sound_channel_A);
+    channel_vblank(sound_channel_B);
 }
 
 #define SAMPLE_RATE (16 * 1024)
@@ -112,8 +107,8 @@ void direct_sound_vblank(void) {
 #define CLOCK_FREQUENCY (16 * 1024 * 1024)
 #define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
 
-void direct_sound_play(const u8 *sound, u32 length,
-                       bool channel, bool loop) {
+void sound_play(const u8 *sound, u32 length,
+                bool channel, bool loop) {
     const u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
                             1 << 9  | // DMA repeat
                             1 << 10 | // Transfer type (1 = 32bit)
@@ -127,7 +122,7 @@ void direct_sound_play(const u8 *sound, u32 length,
     if(vblanks == 0)
         return;
 
-    direct_sound_stop(channel);
+    sound_stop(channel);
 
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
@@ -147,7 +142,7 @@ void direct_sound_play(const u8 *sound, u32 length,
     };
 }
 
-void direct_sound_stop(bool channel) {
+void sound_stop(bool channel) {
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
 
@@ -156,5 +151,3 @@ void direct_sound_stop(bool channel) {
 
     data->vblanks = 0;
 }
-
-#endif // DIRECT_SOUND_ENABLE
