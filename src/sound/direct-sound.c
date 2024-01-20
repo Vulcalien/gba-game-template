@@ -79,62 +79,18 @@ static struct SoundData {
 #define CLOCK_FREQUENCY (16 * 1024 * 1024)
 #define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
 
+#define U16_MAX (65535)
+
 void sound_direct_init(void) {
     DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
                            1 << 3  | // Channel B Volume (1 = 100%)
                            0 << 10 | // Channel A Timer (0 = Timer 0)
                            0 << 14;  // Channel B Timer (0 = Timer 0)
 
-    TIMER0_RELOAD = 65536 - CYCLES_PER_SAMPLE;
+    TIMER0_RELOAD = (U16_MAX + 1) - CYCLES_PER_SAMPLE;
     TIMER0_CONTROL = 1 << 7; // Timer start
-}
 
-static inline void plan_next_irq(void) {
-    // how many samples should be played before stopping
-    u32 next_stop = 65536;
-
-    for(u32 channel = 0; channel < 2; channel++) {
-        struct SoundData *data = &sound_data[channel];
-        if(!data->playing)
-            continue;
-
-        // stop or loop
-        if(data->remaining == 0) {
-            if(data->loop) {
-                sound_play(data->sound, data->length, channel, true);
-
-                // 'sound_play' calls this function
-                return;
-            } else {
-                sound_stop(channel);
-            }
-        } else {
-            if(data->remaining < next_stop)
-                next_stop = data->remaining;
-        }
-    }
-
-    // after having found 'next_stop' (the minimum between 65536 and the
-    // two 'remaining' values) decrease the 'remaining' values
-    for(u32 channel = 0; channel < 2; channel++) {
-        struct SoundData *data = &sound_data[channel];
-
-        // Checking if the channel is playing is unnecessary: if the
-        // channel is not playing, this will have no effect
-        data->remaining -= next_stop;
-    }
-
-    // restart Timer 1
-    TIMER1_RELOAD  = 65536 - next_stop;
-    TIMER1_CONTROL = 0;
-    TIMER1_CONTROL = 1 << 2 | // Enable Count-up Timing
-                     1 << 6 | // IRQ on Timer overflow
-                     1 << 7;  // Timer start
-}
-
-IWRAM_SECTION
-void sound_timer1_irq(void) {
-    plan_next_irq();
+    TIMER1_RELOAD = 0;
 }
 
 static inline void set_channel_outputs(bool channel, bool enable) {
@@ -150,11 +106,8 @@ static inline void set_channel_outputs(bool channel, bool enable) {
         DIRECT_SOUND_CONTROL &= ~(val << bits);
 }
 
-void sound_play(const u8 *sound, u32 length,
-                bool channel, bool loop) {
-    if(length == 0)
-        return;
-
+static inline void channel_start(const u8 *sound, u32 length,
+                                 bool channel, bool loop) {
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
 
@@ -188,13 +141,72 @@ void sound_play(const u8 *sound, u32 length,
         .playing   = true,
         .remaining = length
     };
+}
 
-    // add the unplayed samples back to the other channel's
-    // remaining sample count
-    struct SoundData *other_data = &sound_data[channel ^ 1];
-    other_data->remaining += 65536 - TIMER1_RELOAD;
+static inline void schedule_next_irq(void) {
+    // how many samples should be played before stopping
+    u32 next_stop = U16_MAX;
 
-    plan_next_irq();
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+        if(!data->playing)
+            continue;
+
+        // stop or loop
+        if(data->remaining == 0) {
+            if(data->loop)
+                channel_start(data->sound, data->length, channel, true);
+            else
+                sound_stop(channel);
+        }
+
+        if(data->remaining > 0 && data->remaining < next_stop)
+            next_stop = data->remaining;
+    }
+
+    // after having found 'next_stop' (the minimum between U16_MAX and
+    // the two 'remaining' values) decrease the 'remaining' values
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+
+        // Checking if the channel is playing is unnecessary: if the
+        // channel is not playing, this will have no effect
+        data->remaining -= next_stop;
+    }
+
+    // restart Timer 1
+    TIMER1_RELOAD  = (U16_MAX + 1) - next_stop;
+    TIMER1_CONTROL = 0;
+    TIMER1_CONTROL = 1 << 2 | // Enable Count-up Timing
+                     1 << 6 | // IRQ on Timer overflow
+                     1 << 7;  // Timer start
+}
+
+IWRAM_SECTION
+void sound_timer1_irq(void) {
+    schedule_next_irq();
+}
+
+void sound_play(const u8 *sound, u32 length,
+                bool channel, bool loop) {
+    if(length == 0)
+        return;
+
+    channel_start(sound, length, channel, loop);
+
+    // add the unplayed samples back to the remaining sample count of
+    // the other channel
+    {
+        u32 timer_counter = TIMER1_RELOAD;
+        if(timer_counter == 0)
+            timer_counter = U16_MAX + 1;
+
+        struct SoundData *other_data = &sound_data[channel ^ 1];
+        other_data->remaining += (U16_MAX + 1) - timer_counter;
+    }
+
+    // reschedule the next IRQ
+    schedule_next_irq();
 }
 
 void sound_stop(bool channel) {
