@@ -89,8 +89,67 @@ void sound_direct_init(void) {
 
     TIMER0_RELOAD = (U16_MAX + 1) - CYCLES_PER_SAMPLE;
     TIMER0_CONTROL = 1 << 7; // Timer start
+}
 
-    TIMER1_RELOAD = 0;
+static inline void channel_start(const u8 *sound, u32 length,
+                                 bool channel, bool loop) {
+    const struct Channel *direct_channel = &channels[channel];
+
+    // reset channel FIFO
+    if(channel == sound_channel_A)
+        DIRECT_SOUND_CONTROL |= (1 << 11);
+    else
+        DIRECT_SOUND_CONTROL |= (1 << 15);
+
+    // reset DMA
+    u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
+                      1 << 9  | // DMA repeat
+                      1 << 10 | // Transfer type (1 = 32bit)
+                      3 << 12 | // Start timing (3 = Sound FIFO)
+                      1 << 15;  // DMA enable
+
+    *(direct_channel->dma.source)  = (u32) sound;
+    *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
+    *(direct_channel->dma.control) = 0;
+    *(direct_channel->dma.control) = dma_control;
+
+    // update the channel's sound_data
+    sound_data[channel] = (struct SoundData) {
+        .sound  = sound,
+        .length = length,
+        .loop   = loop,
+
+        .playing   = true,
+        .remaining = length
+    };
+}
+
+// schedule the next Timer 1 IRQ by setting the timer's reload value
+static inline void schedule_next_irq(void) {
+    // determine how many samples should be played before stopping
+    u32 next_stop = U16_MAX;
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+
+        if(data->playing && data->remaining < next_stop)
+            next_stop = data->remaining;
+    }
+
+    // decrease the count of remaining samples
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+
+        // Checking if the channel is playing is unnecessary: if the
+        // channel is not playing, this will have no effect.
+        data->remaining -= next_stop;
+    }
+
+    // restart Timer 1
+    TIMER1_RELOAD  = (U16_MAX + 1) - next_stop;
+    TIMER1_CONTROL = 0;
+    TIMER1_CONTROL = 1 << 2 | // Enable Count-up Timing
+                     1 << 6 | // IRQ on Timer overflow
+                     1 << 7;  // Timer start
 }
 
 static inline void set_channel_outputs(bool channel, bool enable) {
@@ -106,96 +165,16 @@ static inline void set_channel_outputs(bool channel, bool enable) {
         DIRECT_SOUND_CONTROL &= ~(val << bits);
 }
 
-static inline void channel_start(const u8 *sound, u32 length,
-                                 bool channel, bool loop) {
-    const struct Channel *direct_channel = &channels[channel];
-    struct SoundData *data = &sound_data[channel];
-
-    // reset channel FIFO
-    if(channel == sound_channel_A)
-        DIRECT_SOUND_CONTROL |= (1 << 11);
-    else
-        DIRECT_SOUND_CONTROL |= (1 << 15);
-
-    // reset DMA
-    {
-        u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
-                          1 << 9  | // DMA repeat
-                          1 << 10 | // Transfer type (1 = 32bit)
-                          3 << 12 | // Start timing (3 = Sound FIFO)
-                          1 << 15;  // DMA enable
-
-        *(direct_channel->dma.source)  = (u32) sound;
-        *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
-        *(direct_channel->dma.control) = 0;
-        *(direct_channel->dma.control) = dma_control;
-    }
-
-    set_channel_outputs(channel, true);
-
-    *data = (struct SoundData) {
-        .sound  = sound,
-        .length = length,
-        .loop   = loop,
-
-        .playing   = true,
-        .remaining = length
-    };
-}
-
-static inline void schedule_next_irq(void) {
-    // how many samples should be played before stopping
-    u32 next_stop = U16_MAX;
-
-    for(u32 channel = 0; channel < 2; channel++) {
-        struct SoundData *data = &sound_data[channel];
-        if(!data->playing)
-            continue;
-
-        // stop or loop
-        if(data->remaining == 0) {
-            if(data->loop)
-                channel_start(data->sound, data->length, channel, true);
-            else
-                sound_stop(channel);
-        }
-
-        if(data->remaining > 0 && data->remaining < next_stop)
-            next_stop = data->remaining;
-    }
-
-    // after having found 'next_stop' (the minimum between U16_MAX and
-    // the two 'remaining' values) decrease the 'remaining' values
-    for(u32 channel = 0; channel < 2; channel++) {
-        struct SoundData *data = &sound_data[channel];
-
-        // Checking if the channel is playing is unnecessary: if the
-        // channel is not playing, this will have no effect
-        data->remaining -= next_stop;
-    }
-
-    // restart Timer 1
-    TIMER1_RELOAD  = (U16_MAX + 1) - next_stop;
-    TIMER1_CONTROL = 0;
-    TIMER1_CONTROL = 1 << 2 | // Enable Count-up Timing
-                     1 << 6 | // IRQ on Timer overflow
-                     1 << 7;  // Timer start
-}
-
-IWRAM_SECTION
-void sound_timer1_irq(void) {
-    schedule_next_irq();
-}
-
 void sound_play(const u8 *sound, u32 length,
                 bool channel, bool loop) {
     if(length == 0)
         return;
 
     channel_start(sound, length, channel, loop);
+    set_channel_outputs(channel, true);
 
-    // add the unplayed samples back to the remaining sample count of
-    // the other channel
+    // add the samples that were not played back into the count of
+    // remaining samples of the other channel
     {
         u32 timer_counter = TIMER1_RELOAD;
         if(timer_counter == 0)
@@ -217,4 +196,22 @@ void sound_stop(bool channel) {
     set_channel_outputs(channel, false);
 
     data->playing = false;
+}
+
+IWRAM_SECTION
+void sound_timer1_irq(void) {
+    // stop or loop the channels
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+
+        if(data->playing && data->remaining == 0) {
+            if(data->loop)
+                channel_start(data->sound, data->length, channel, true);
+            else
+                sound_stop(channel);
+        }
+    }
+
+    // reschedule the next IRQ
+    schedule_next_irq();
 }
