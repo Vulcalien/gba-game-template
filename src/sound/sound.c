@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,4 @@ void sound_init(void) {
     MASTER_SOUND_CONTROL = 1 << 7; // Enable sound
 
     sound_direct_init();
-}
-
-void sound_vblank(void) {
-    sound_direct_vblank();
 }

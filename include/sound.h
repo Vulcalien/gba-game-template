@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 #include "main.h"
 
 extern void sound_init(void);
-extern void sound_vblank(void);
 
 // === Direct Sound ===
 
@@ -33,10 +32,9 @@ extern void sound_play(const u8 *sound, u32 length,
                        bool channel, bool loop);
 extern void sound_stop(bool channel);
 
-// ===== ===== =====
-
-// Do not use these functions outside of the sound driver
 extern void sound_direct_init(void);
-extern void sound_direct_vblank(void);
+extern void sound_timer1_irq(void);
+
+// ===== ===== =====
 
 #endif // VULC_TEMPLATE_SOUND

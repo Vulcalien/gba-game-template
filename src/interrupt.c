@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,15 +52,20 @@ static void interrupt_handler(void) {
         IF_BIOS |= VBLANK;
         IF = VBLANK;
 
-        sound_vblank();
         performance_vblank();
+    }
+
+    if(IF & TIMER1) {
+        IF = TIMER1;
+
+        sound_timer1_irq();
     }
 }
 
 void interrupt_enable(void) {
     INTERRUPT_HANDLER = (u32) &interrupt_handler;
 
-    IE = VBLANK;
+    IE = VBLANK | TIMER1;
 
     IME = 1;
 }

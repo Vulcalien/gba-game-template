@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 #define TIMER0_RELOAD  *((vu16 *) 0x04000100)
 #define TIMER0_CONTROL *((vu16 *) 0x04000102)
 
-// TODO unused
 #define TIMER1_RELOAD  *((vu16 *) 0x04000104)
 #define TIMER1_CONTROL *((vu16 *) 0x04000106)
 
@@ -45,25 +44,34 @@ static const struct Channel {
         vu32 *dest;
         vu16 *control;
     } dma;
+
+    struct {
+        bool left;
+        bool right;
+    } direction;
 } channels[2] = {
     // Channel A
     {
         .fifo = FIFO_A,
         .dma = { DMA1_SOURCE, DMA1_DEST, DMA1_CONTROL },
+        .direction = { true, true }
     },
 
     // Channel B
     {
         .fifo = FIFO_B,
         .dma = { DMA2_SOURCE, DMA2_DEST, DMA2_CONTROL },
+        .direction = { true, true }
     }
 };
 
 static struct SoundData {
     const u8 *sound;
-    u32 vblanks;
     u32 length;
     bool loop;
+
+    bool playing;
+    u32 remaining;
 } sound_data[2];
 
 #define SAMPLE_RATE (16 * 1024)
@@ -74,66 +82,111 @@ static struct SoundData {
 void sound_direct_init(void) {
     DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
                            1 << 3  | // Channel B Volume (1 = 100%)
-                           1 << 8  | // Enable Channel A RIGHT
-                           1 << 9  | // Enable Channel A LEFT
                            0 << 10 | // Channel A Timer (0 = Timer 0)
-                           1 << 12 | // Enable Channel B RIGHT
-                           1 << 13 | // Enable Channel B LEFT
                            0 << 14;  // Channel B Timer (0 = Timer 0)
 
     TIMER0_RELOAD = 65536 - CYCLES_PER_SAMPLE;
     TIMER0_CONTROL = 1 << 7; // Timer start
 }
 
-static inline void channel_vblank(bool channel) {
-    struct SoundData *data = &sound_data[channel];
+static inline void plan_next_irq(void) {
+    // how many samples should be played before stopping
+    u32 next_stop = 65536;
 
-    if(data->vblanks > 0) {
-        data->vblanks--;
-        if(data->vblanks == 0) {
-            sound_stop(channel);
-            if(data->loop)
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+        if(!data->playing)
+            continue;
+
+        // stop or loop
+        if(data->remaining == 0) {
+            if(data->loop) {
                 sound_play(data->sound, data->length, channel, true);
+
+                // 'sound_play' calls this function
+                return;
+            } else {
+                sound_stop(channel);
+            }
+        } else {
+            if(data->remaining < next_stop)
+                next_stop = data->remaining;
         }
     }
+
+    // after having found 'next_stop' (the minimum between 65536 and the
+    // two 'remaining' values) decrease the 'remaining' values
+    for(u32 channel = 0; channel < 2; channel++) {
+        struct SoundData *data = &sound_data[channel];
+
+        // Checking if the channel is playing is unnecessary: if the
+        // channel is not playing, this will have no effect
+        data->remaining -= next_stop;
+    }
+
+    // restart Timer 1
+    TIMER1_RELOAD  = 65536 - next_stop;
+    TIMER1_CONTROL = 0;
+    TIMER1_CONTROL = 1 << 2 | // Enable Count-up Timing
+                     1 << 6 | // IRQ on Timer overflow
+                     1 << 7;  // Timer start
 }
 
 IWRAM_SECTION
-void sound_direct_vblank(void) {
-    channel_vblank(sound_channel_A);
-    channel_vblank(sound_channel_B);
+void sound_timer1_irq(void) {
+    plan_next_irq();
+}
+
+static inline void set_channel_directions(bool channel, bool enable) {
+    const struct Channel *direct_channel = &channels[channel];
+
+    u32 bits = (channel == sound_channel_A ? 8 : 12);
+    u32 val = direct_channel->direction.left << 1 |
+              direct_channel->direction.right;
+
+    if(enable)
+        DIRECT_SOUND_CONTROL |= (val << bits);
+    else
+        DIRECT_SOUND_CONTROL &= ~(val << bits);
 }
 
 void sound_play(const u8 *sound, u32 length,
                 bool channel, bool loop) {
-    const u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
-                            1 << 9  | // DMA repeat
-                            1 << 10 | // Transfer type (1 = 32bit)
-                            3 << 12 | // Start timing (3 = Sound FIFO)
-                            1 << 15;  // DMA enable
-
-    // vblanks = length * 59.7275 / SAMPLE_RATE
-    //         = length * 59.7275 * 11 / (SAMPLE_RATE * 11)
-    //        ~= length * 657 / (SAMPLE_RATE * 11)
-    u32 vblanks = length * 657 / (SAMPLE_RATE * 11);
-    if(vblanks == 0)
+    if(length == 0)
         return;
-
-    sound_stop(channel);
 
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
 
+    u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
+                      1 << 9  | // DMA repeat
+                      1 << 10 | // Transfer type (1 = 32bit)
+                      3 << 12 | // Start timing (3 = Sound FIFO)
+                      1 << 15;  // DMA enable
+
+    // reset DMA
     *(direct_channel->dma.source)  = (u32) sound;
     *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
+    *(direct_channel->dma.control) = 0;
     *(direct_channel->dma.control) = dma_control;
 
+    set_channel_directions(channel, true);
+
     *data = (struct SoundData) {
-        .sound   = sound,
-        .vblanks = vblanks,
-        .length  = length,
-        .loop    = loop
+        .sound  = sound,
+        .length = length,
+        .loop   = loop,
+
+        .playing   = true,
+        .remaining = length
     };
+
+    // add the unplayed samples back to the other channel's
+    // remaining sample count
+    struct SoundData *other_data = &sound_data[channel ^ 1];
+    other_data->remaining += 65536 - TIMER1_RELOAD;
+
+    plan_next_irq();
 }
 
 void sound_stop(bool channel) {
@@ -141,6 +194,7 @@ void sound_stop(bool channel) {
     struct SoundData *data = &sound_data[channel];
 
     *(direct_channel->dma.control) = 0;
+    set_channel_directions(channel, false);
 
-    data->vblanks = 0;
+    data->playing = false;
 }
