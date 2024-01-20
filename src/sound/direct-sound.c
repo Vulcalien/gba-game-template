@@ -30,11 +30,12 @@
 #define DMA2_CONTROL ((vu16 *) 0x040000d2)
 
 // Timers
-#define TIMER0_RELOAD  ((vu16 *) 0x04000100)
-#define TIMER0_CONTROL ((vu16 *) 0x04000102)
+#define TIMER0_RELOAD  *((vu16 *) 0x04000100)
+#define TIMER0_CONTROL *((vu16 *) 0x04000102)
 
-#define TIMER1_RELOAD  ((vu16 *) 0x04000104)
-#define TIMER1_CONTROL ((vu16 *) 0x04000106)
+// TODO unused
+#define TIMER1_RELOAD  *((vu16 *) 0x04000104)
+#define TIMER1_CONTROL *((vu16 *) 0x04000106)
 
 static const struct Channel {
     vu32 *fifo;
@@ -44,24 +45,17 @@ static const struct Channel {
         vu32 *dest;
         vu16 *control;
     } dma;
-
-    struct {
-        vu16 *reload;
-        vu16 *control;
-    } timer;
 } channels[2] = {
     // Channel A
     {
         .fifo = FIFO_A,
         .dma = { DMA1_SOURCE, DMA1_DEST, DMA1_CONTROL },
-        .timer = { TIMER0_RELOAD, TIMER0_CONTROL }
     },
 
     // Channel B
     {
         .fifo = FIFO_B,
         .dma = { DMA2_SOURCE, DMA2_DEST, DMA2_CONTROL },
-        .timer = { TIMER1_RELOAD, TIMER1_CONTROL }
     }
 };
 
@@ -72,6 +66,11 @@ static struct SoundData {
     bool loop;
 } sound_data[2];
 
+#define SAMPLE_RATE (16 * 1024)
+
+#define CLOCK_FREQUENCY (16 * 1024 * 1024)
+#define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
+
 void sound_direct_init(void) {
     DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
                            1 << 3  | // Channel B Volume (1 = 100%)
@@ -80,7 +79,10 @@ void sound_direct_init(void) {
                            0 << 10 | // Channel A Timer (0 = Timer 0)
                            1 << 12 | // Enable Channel B RIGHT
                            1 << 13 | // Enable Channel B LEFT
-                           1 << 14;  // Channel B Timer (1 = Timer 1)
+                           0 << 14;  // Channel B Timer (0 = Timer 0)
+
+    TIMER0_RELOAD = 65536 - CYCLES_PER_SAMPLE;
+    TIMER0_CONTROL = 1 << 7; // Timer start
 }
 
 static inline void channel_vblank(bool channel) {
@@ -101,11 +103,6 @@ void sound_direct_vblank(void) {
     channel_vblank(sound_channel_A);
     channel_vblank(sound_channel_B);
 }
-
-#define SAMPLE_RATE (16 * 1024)
-
-#define CLOCK_FREQUENCY (16 * 1024 * 1024)
-#define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
 
 void sound_play(const u8 *sound, u32 length,
                 bool channel, bool loop) {
@@ -131,9 +128,6 @@ void sound_play(const u8 *sound, u32 length,
     *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
     *(direct_channel->dma.control) = dma_control;
 
-    *(direct_channel->timer.reload) = 65536 - CYCLES_PER_SAMPLE;
-    *(direct_channel->timer.control) = 1 << 7; // Timer start
-
     *data = (struct SoundData) {
         .sound   = sound,
         .vblanks = vblanks,
@@ -146,8 +140,7 @@ void sound_stop(bool channel) {
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
 
-    *(direct_channel->timer.control) = 0;
-    *(direct_channel->dma.control)   = 0;
+    *(direct_channel->dma.control) = 0;
 
     data->vblanks = 0;
 }
