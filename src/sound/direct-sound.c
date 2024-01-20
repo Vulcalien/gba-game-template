@@ -48,20 +48,20 @@ static const struct Channel {
     struct {
         bool left;
         bool right;
-    } direction;
+    } outputs;
 } channels[2] = {
     // Channel A
     {
         .fifo = FIFO_A,
         .dma = { DMA1_SOURCE, DMA1_DEST, DMA1_CONTROL },
-        .direction = { true, true }
+        .outputs = { true, true }
     },
 
     // Channel B
     {
         .fifo = FIFO_B,
         .dma = { DMA2_SOURCE, DMA2_DEST, DMA2_CONTROL },
-        .direction = { true, true }
+        .outputs = { true, true }
     }
 };
 
@@ -137,12 +137,12 @@ void sound_timer1_irq(void) {
     plan_next_irq();
 }
 
-static inline void set_channel_directions(bool channel, bool enable) {
+static inline void set_channel_outputs(bool channel, bool enable) {
     const struct Channel *direct_channel = &channels[channel];
 
     u32 bits = (channel == sound_channel_A ? 8 : 12);
-    u32 val = direct_channel->direction.left << 1 |
-              direct_channel->direction.right;
+    u32 val = direct_channel->outputs.left << 1 |
+              direct_channel->outputs.right;
 
     if(enable)
         DIRECT_SOUND_CONTROL |= (val << bits);
@@ -164,19 +164,21 @@ void sound_play(const u8 *sound, u32 length,
     else
         DIRECT_SOUND_CONTROL |= (1 << 15);
 
-    u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
-                      1 << 9  | // DMA repeat
-                      1 << 10 | // Transfer type (1 = 32bit)
-                      3 << 12 | // Start timing (3 = Sound FIFO)
-                      1 << 15;  // DMA enable
-
     // reset DMA
-    *(direct_channel->dma.source)  = (u32) sound;
-    *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
-    *(direct_channel->dma.control) = 0;
-    *(direct_channel->dma.control) = dma_control;
+    {
+        u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
+                          1 << 9  | // DMA repeat
+                          1 << 10 | // Transfer type (1 = 32bit)
+                          3 << 12 | // Start timing (3 = Sound FIFO)
+                          1 << 15;  // DMA enable
 
-    set_channel_directions(channel, true);
+        *(direct_channel->dma.source)  = (u32) sound;
+        *(direct_channel->dma.dest)    = (u32) direct_channel->fifo;
+        *(direct_channel->dma.control) = 0;
+        *(direct_channel->dma.control) = dma_control;
+    }
+
+    set_channel_outputs(channel, true);
 
     *data = (struct SoundData) {
         .sound  = sound,
@@ -200,7 +202,7 @@ void sound_stop(bool channel) {
     struct SoundData *data = &sound_data[channel];
 
     *(direct_channel->dma.control) = 0;
-    set_channel_directions(channel, false);
+    set_channel_outputs(channel, false);
 
     data->playing = false;
 }
