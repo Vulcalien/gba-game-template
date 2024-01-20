@@ -25,6 +25,8 @@
 #define NOINLINE __attribute__((noinline))
 #define NOCLONE  __attribute__((noclone))
 
+#define ALWAYS_INLINE __attribute__((always_inline))
+
 #define SBSS_SECTION         __attribute__((section(".sbss")))
 #define EWRAM_SECTION        __attribute__((section(".ewram")))
 #define EWRAM_RODATA_SECTION __attribute__((section(".ewram.rodata")))
