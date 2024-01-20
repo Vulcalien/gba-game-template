@@ -158,6 +158,12 @@ void sound_play(const u8 *sound, u32 length,
     const struct Channel *direct_channel = &channels[channel];
     struct SoundData *data = &sound_data[channel];
 
+    // reset channel FIFO
+    if(channel == sound_channel_A)
+        DIRECT_SOUND_CONTROL |= (1 << 11);
+    else
+        DIRECT_SOUND_CONTROL |= (1 << 15);
+
     u16 dma_control = 2 << 5  | // Dest address control (2 = Fixed)
                       1 << 9  | // DMA repeat
                       1 << 10 | // Transfer type (1 = 32bit)
