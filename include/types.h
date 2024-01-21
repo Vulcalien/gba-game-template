@@ -33,4 +33,17 @@ typedef volatile int8_t   vi8;
 typedef volatile int16_t  vi16;
 typedef volatile int32_t  vi32;
 
+// Limits
+#define  U8_MAX (255)
+#define U16_MAX (65535)
+#define U32_MAX (4294967295)
+
+#define  I8_MIN (-128)
+#define I16_MIN (-32768)
+#define I32_MIN (-2147483648)
+
+#define  I8_MAX (127)
+#define I16_MAX (32767)
+#define I32_MAX (2147483647)
+
 #endif // VULC_TEMPLATE_TYPES

@@ -79,8 +79,6 @@ static struct SoundData {
 #define CLOCK_FREQUENCY (16 * 1024 * 1024)
 #define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SAMPLE_RATE)
 
-#define U16_MAX (65535)
-
 void sound_direct_init(void) {
     DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
                            1 << 3  | // Channel B Volume (1 = 100%)
