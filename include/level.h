@@ -45,12 +45,14 @@ struct Level {
 extern void level_tick(struct Level *level);
 extern void level_draw(struct Level *level);
 
+ALWAYS_INLINE
 inline u8 level_get_tile(struct Level *level, i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];
     return TILE_INVALID;
 }
 
+ALWAYS_INLINE
 inline void level_set_tile(struct Level *level, i32 x, i32 y, u8 id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;

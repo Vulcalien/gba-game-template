@@ -68,6 +68,7 @@ struct screen_Sprite {
     u32 color_mode : 1; // 0 = 16/16 palettes, 1 = 256/1 palette
 };
 
+ALWAYS_INLINE
 inline void screen_set_sprite(struct screen_Sprite *sprite, u32 id) {
     if(id >= 128)
         return;

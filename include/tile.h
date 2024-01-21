@@ -29,6 +29,7 @@ struct Tile {
 
 extern const struct Tile *tile_list[TILE_TYPES];
 
+ALWAYS_INLINE
 inline const struct Tile *tile_type(u8 id) {
     if(id < TILE_TYPES)
         return tile_list[id];

@@ -62,6 +62,7 @@ struct Entity {
 
 extern const struct Entity *entity_list[ENTITY_TYPES];
 
+ALWAYS_INLINE
 inline const struct Entity *entity_type(struct entity_Data *data) {
     if(data->type < ENTITY_TYPES)
         return entity_list[data->type];
@@ -72,6 +73,7 @@ inline const struct Entity *entity_type(struct entity_Data *data) {
 extern bool entity_move(struct Level *level, struct entity_Data *data,
                         i32 xm, i32 ym);
 
+ALWAYS_INLINE
 inline bool entity_intersects(struct entity_Data *data,
                               i32 x0, i32 y0, i32 x1, i32 y1) {
     const struct Entity *entity = entity_type(data);
@@ -82,6 +84,7 @@ inline bool entity_intersects(struct entity_Data *data,
            (data->y - entity->yr     <= y1);
 }
 
+ALWAYS_INLINE
 inline bool entity_touches(struct entity_Data *data1,
                            struct entity_Data *data2) {
     const struct Entity *e2 = entity_type(data1);
