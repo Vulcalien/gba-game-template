@@ -91,8 +91,8 @@ void sound_direct_init(void) {
     TIMER0_CONTROL = 1 << 7; // Timer start
 }
 
-static inline void channel_start(const u8 *sound, u32 length,
-                                 bool channel, bool loop) {
+static inline void start_sound(const u8 *sound, u32 length,
+                               bool channel, bool loop) {
     const struct Channel *direct_channel = &channels[channel];
 
     // reset channel FIFO
@@ -170,11 +170,11 @@ void sound_play(const u8 *sound, u32 length,
     if(length == 0)
         return;
 
-    channel_start(sound, length, channel, loop);
+    start_sound(sound, length, channel, loop);
     set_channel_outputs(channel, true);
 
-    // add the samples that were not played back into the count of
-    // remaining samples of the other channel
+    // add the samples that were not played back into the other
+    // channel's count of remaining samples
     {
         u32 timer_counter = TIMER1_RELOAD;
         if(timer_counter == 0)
@@ -206,7 +206,7 @@ void sound_timer1_irq(void) {
 
         if(data->playing && data->remaining == 0) {
             if(data->loop)
-                channel_start(data->sound, data->length, channel, true);
+                start_sound(data->sound, data->length, channel, true);
             else
                 sound_stop(channel);
         }
