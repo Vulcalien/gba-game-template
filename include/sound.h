@@ -22,6 +22,8 @@ extern void sound_init(void);
 
 // === Direct Sound ===
 
+#define SOUND_SAMPLE_RATE (16 * 1024)
+
 #define sound_channel_A (0)
 #define sound_channel_B (1)
 
