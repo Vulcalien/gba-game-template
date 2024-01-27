@@ -99,7 +99,7 @@ macro can be used to avoid passing the 'length' argument to
 
 ### Scenes
 A scene is an object composed of a 'tick', 'draw' and (optionally)
-'init' function. The various parts of the game (menus, transitions,
+'init' functions. The various parts of the game (menus, transitions,
 cutscenes, the level screen...) can be split into different scenes.
 
 Include `scene.h` to use the scene system. The `scene_set` function sets
