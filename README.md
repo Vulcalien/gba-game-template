@@ -50,10 +50,10 @@ set these values in the ROM header:
   - Game Code
   - Maker Code (optional)
   - Software Version (optional)
-  - Complement Check
+  - Header Checksum
   - Cart Backup ID (if the game uses save memory)
 
-The 'complement check' (also called header checksum) is used by the BIOS
+The 'header checksum' (also called complement check) is used by the BIOS
 to determine if a ROM is valid. The value is calculated based on the ROM
 header, so it changes when the ROM header is modified. You can use the
 `header-checksum.py` to calculate it. To do so, compile the game once
@@ -112,9 +112,8 @@ be used to simplify certain operations.
 `color-convert.py` converts 24-bit color codes into 15-bit color codes,
 as used by the GBA. Both input and output are in hexadecimal numerals.
 
-`header-checksum.py` calculates the 'complement check' (header checksum)
-of the given '.gba' binary file. The resulting number can then be
-written in the ROM header.
+`header-checksum.py` calculates the header checksum of the given '.gba'
+binary file. The resulting number can then be written in the ROM header.
 
 `convert-resources.py` converts all resources listed in a JSON file into
 a GBA-readable format. It supports images, tilesets, images and binary

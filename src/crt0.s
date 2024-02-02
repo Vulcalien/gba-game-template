@@ -62,7 +62,7 @@ _start:
     @ Software Version
         .byte   0x00
 
-    @ Complement Check
+    @ Header Checksum
         .byte   0xf5
 
     @ Reserved (2 Bytes)
