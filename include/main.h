@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,33 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_CORE
-#define VULC_TEMPLATE_CORE
+#ifndef VULC_TEMPLATE_MAIN
+#define VULC_TEMPLATE_MAIN
 
-#include "types.h"
-#include "util.h"
+#include "base.h"
 #include "bios.h"
 
-#define THUMB __attribute__((target("thumb")))
-
-#define NOINLINE __attribute__((noinline))
-#define NOCLONE  __attribute__((noclone))
-
-#define ALWAYS_INLINE __attribute__((always_inline))
-
-#define SBSS_SECTION         __attribute__((section(".sbss")))
-#define EWRAM_SECTION        __attribute__((section(".ewram")))
-#define EWRAM_RODATA_SECTION __attribute__((section(".ewram.rodata")))
-#define IWRAM_SECTION        __attribute__((section(".iwram")))
-#define IWRAM_RODATA_SECTION __attribute__((section(".iwram.rodata")))
-
-#define static_assert _Static_assert
-
-#ifndef NULL
-    #define NULL ((void *) 0)
-#endif
-
-// Constants
-#define CLOCK_FREQUENCY (16 * 1024 * 1024)
-
-#endif // VULC_TEMPLATE_CORE
+#endif // VULC_TEMPLATE_MAIN
