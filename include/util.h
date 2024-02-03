@@ -23,7 +23,9 @@ extern void memcpy16(vu16 *dest, const vu16 *src, u32 n);
 extern u16 rand(void);
 extern void srand(u32 val, bool reset);
 
-inline void itoa(u32 number, u8 radix, char *array, u8 digits, bool zero_fill) {
+ALWAYS_INLINE
+inline void itoa(u32 number, u8 radix, char *array,
+                 u8 digits, bool zero_fill) {
     u32 pos = 0;
     for(u32 i = 0; i < digits; i++) {
         u32 digit = number;
