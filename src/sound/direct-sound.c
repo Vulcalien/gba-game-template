@@ -74,7 +74,6 @@ static struct SoundData {
     u32 remaining;
 } sound_data[2];
 
-#define CLOCK_FREQUENCY (16 * 1024 * 1024)
 #define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SOUND_SAMPLE_RATE)
 
 void sound_direct_init(void) {

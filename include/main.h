@@ -39,4 +39,7 @@
     #define NULL ((void *) 0)
 #endif
 
+// Constants
+#define CLOCK_FREQUENCY (16 * 1024 * 1024)
+
 #endif // VULC_TEMPLATE_CORE
