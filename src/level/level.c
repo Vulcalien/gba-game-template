@@ -13,9 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "level.h"
+#include "level/level.h"
 
-#include "entity.h"
+#include "level/entity.h"
 
 static inline void tick_tiles(struct Level *level) {
     // ...
