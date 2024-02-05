@@ -19,19 +19,23 @@
 #include "main.h"
 
 struct Scene {
-    void (*init)(u32 flags);
+    void (*init)(void *data);
     void (*tick)(void);
     void (*draw)(void);
 };
 
 extern const struct Scene *scene;
 
+#define SCENE_SET(new_scene)\
+    scene_set((new_scene), false, NULL)
+
 ALWAYS_INLINE
-inline void scene_set(const struct Scene *new_scene, u32 flags) {
+inline void scene_set(const struct Scene *new_scene,
+                      bool call_init, void *data) {
     scene = new_scene;
 
-    if(flags && scene->init)
-        scene->init(flags);
+    if(call_init && scene->init)
+        scene->init(data);
 }
 
 // Scenes

@@ -15,7 +15,7 @@
  */
 #include "scene.h"
 
-static void start_init(u32 flags) {
+static void start_init(void *data) {
     // TODO ...
 }
 

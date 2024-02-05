@@ -37,7 +37,7 @@ static inline void draw(void) {
 
 int AgbMain(void) {
     screen_init();
-    scene_set(&scene_start, 0);
+    SCENE_SET(&scene_start);
 
     interrupt_enable();
     sound_init();
