@@ -46,7 +46,7 @@
 #define KEYPAD  (1 << 12)
 #define GAMEPAK (1 << 13)
 
-IWRAM_SECTION
+IWRAM_SECTION ARM
 static void interrupt_handler(void) {
     if(IF & VBLANK) {
         IF_BIOS |= VBLANK;
