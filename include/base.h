@@ -34,6 +34,7 @@
 #define IWRAM_RODATA_SECTION __attribute__((section(".iwram.rodata")))
 
 // Function attributes
+#define ARM   __attribute__((target("arm")))
 #define THUMB __attribute__((target("thumb")))
 
 #define NOINLINE __attribute__((noinline))
