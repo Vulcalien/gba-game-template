@@ -2,5 +2,8 @@
 /obj
 /bin
 
+# Release files
+/release
+
 # vim
 *.swp

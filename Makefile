@@ -80,7 +80,7 @@ OUT_ELF := $(BIN_DIR)/$(OUT_FILENAME).elf
 OUT     := $(BIN_DIR)/$(OUT_FILENAME).gba
 
 # === TARGETS ===
-.PHONY: all run build clean
+.PHONY: all run build clean release
 
 all: build
 
@@ -110,5 +110,8 @@ $(OBJ_DIR)/c/%.o: $(SRC_DIR)/%.c | $(OBJ_DIRECTORIES)
 
 $(BIN_DIR) $(OBJ_DIRECTORIES):
 	$(MKDIR) $(MKDIRFLAGS) "$@"
+
+release:
+	scripts/release.sh "$(OUT)"
 
 -include $(OBJ:.o=.d)
