@@ -17,8 +17,8 @@
 
 #include "main.h"
 
-#include "tile.h"
-#include "entity.h"
+#include "level/tile.h"
+#include "level/entity.h"
 
 // Level size (in tiles)
 #define LEVEL_W (30)
