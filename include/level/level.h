@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_LEVEL
-#define VULC_TEMPLATE_LEVEL
+#pragma once
 
 #include "main.h"
 
@@ -57,5 +56,3 @@ inline void level_set_tile(struct Level *level, i32 x, i32 y, u8 id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;
 }
-
-#endif // VULC_TEMPLATE_LEVEL

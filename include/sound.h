@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_SOUND
-#define VULC_TEMPLATE_SOUND
+#pragma once
 
 #include "main.h"
 
@@ -38,5 +37,3 @@ extern void sound_direct_init(void);
 extern void sound_timer1_irq(void);
 
 // ===== ===== =====
-
-#endif // VULC_TEMPLATE_SOUND

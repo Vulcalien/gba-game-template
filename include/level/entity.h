@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_ENTITY
-#define VULC_TEMPLATE_ENTITY
+#pragma once
 
 #include "main.h"
 
@@ -99,5 +98,3 @@ inline bool entity_touches(struct entity_Data *data1,
 // Entities
 //extern const struct Entity
     // ...
-
-#endif // VULC_TEMPLATE_ENTITY

@@ -13,11 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_BIOS
-#define VULC_TEMPLATE_BIOS
+#pragma once
 
 #include "main.h"
 
 extern void vsync(void);
-
-#endif // VULC_TEMPLATE_BIOS

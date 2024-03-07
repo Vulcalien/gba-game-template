@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_TILE
-#define VULC_TEMPLATE_TILE
+#pragma once
 
 #include "main.h"
 
@@ -39,5 +38,3 @@ inline const struct Tile *tile_type(u8 id) {
 // Tiles
 //extern const struct Tile
     // ...
-
-#endif // VULC_TEMPLATE_TILE

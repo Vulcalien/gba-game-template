@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_TYPES
-#define VULC_TEMPLATE_TYPES
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -45,5 +44,3 @@ typedef volatile int32_t  vi32;
 #define  I8_MAX (127)
 #define I16_MAX (32767)
 #define I32_MAX (2147483647)
-
-#endif // VULC_TEMPLATE_TYPES

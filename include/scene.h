@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_SCENE
-#define VULC_TEMPLATE_SCENE
+#pragma once
 
 #include "main.h"
 
@@ -41,5 +40,3 @@ inline void scene_set(const struct Scene *new_scene,
 // Scenes
 extern const struct Scene
     scene_start;
-
-#endif // VULC_TEMPLATE_SCENE

@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_BASE
-#define VULC_TEMPLATE_BASE
+#pragma once
 
 // Basic types and definitions used throughout the program.
 
@@ -44,5 +43,3 @@
 
 // Constants
 #define CLOCK_FREQUENCY (16 * 1024 * 1024)
-
-#endif // VULC_TEMPLATE_BASE

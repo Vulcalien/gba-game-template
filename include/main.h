@@ -13,10 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_MAIN
-#define VULC_TEMPLATE_MAIN
+#pragma once
 
 #include "base.h"
 #include "bios.h"
-
-#endif // VULC_TEMPLATE_MAIN

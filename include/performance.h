@@ -13,13 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_PERFORMANCE
-#define VULC_TEMPLATE_PERFORMANCE
+#pragma once
 
 #include "main.h"
 
 extern void performance_tick(void);
 extern void performance_draw(void);
 extern void performance_vblank(void);
-
-#endif // VULC_TEMPLATE_PERFORMANCE

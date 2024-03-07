@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_INPUT
-#define VULC_TEMPLATE_INPUT
+#pragma once
 
 #include "main.h"
 
@@ -46,5 +45,3 @@ extern u16 input_keys_is_down;
 extern u16 input_keys_was_down;
 
 extern void input_tick(void);
-
-#endif // VULC_TEMPLATE_INPUT

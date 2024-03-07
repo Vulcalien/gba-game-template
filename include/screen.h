@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef VULC_TEMPLATE_SCREEN
-#define VULC_TEMPLATE_SCREEN
+#pragma once
 
 #include "main.h"
 
@@ -102,5 +101,3 @@ inline void screen_set_sprite(struct screen_Sprite *sprite, u32 id) {
                  sprite->priority << 10 |
                  sprite->palette  << 12;
 }
-
-#endif // VULC_TEMPLATE_SCREEN
