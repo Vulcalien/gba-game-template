@@ -15,6 +15,8 @@
  */
 #include "sound.h"
 
+#include "interrupt.h"
+
 #define DIRECT_SOUND_CONTROL *((vu16 *) 0x04000082)
 
 #define FIFO_A ((vu32 *) 0x040000a0)
@@ -73,18 +75,6 @@ static struct SoundData {
     bool playing;
     u32 remaining;
 } sound_data[2];
-
-#define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SOUND_SAMPLE_RATE)
-
-void sound_direct_init(void) {
-    DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
-                           1 << 3  | // Channel B Volume (1 = 100%)
-                           0 << 10 | // Channel A Timer (0 = Timer 0)
-                           0 << 14;  // Channel B Timer (0 = Timer 0)
-
-    TIMER0_RELOAD = (U16_MAX + 1) - CYCLES_PER_SAMPLE;
-    TIMER0_CONTROL = 1 << 7; // Timer start
-}
 
 static inline void start_sound(const u8 *sound, u32 length,
                                bool channel, bool loop) {
@@ -194,7 +184,7 @@ void sound_stop(bool channel) {
 }
 
 IWRAM_SECTION
-void sound_timer1_irq(void) {
+static void timer1_isr(void) {
     // stop or loop the channels
     for(u32 channel = 0; channel < 2; channel++) {
         struct SoundData *data = &sound_data[channel];
@@ -209,4 +199,21 @@ void sound_timer1_irq(void) {
 
     // reschedule the next IRQ
     schedule_next_irq();
+}
+
+#define CYCLES_PER_SAMPLE (CLOCK_FREQUENCY / SOUND_SAMPLE_RATE)
+
+void sound_direct_init(void) {
+    DIRECT_SOUND_CONTROL = 1 << 2  | // Channel A Volume (1 = 100%)
+                           1 << 3  | // Channel B Volume (1 = 100%)
+                           0 << 10 | // Channel A Timer (0 = Timer 0)
+                           0 << 14;  // Channel B Timer (0 = Timer 0)
+
+    // enable Timer 1 IRQ
+    interrupt_enable(IRQ_TIMER1);
+    interrupt_set_isr(IRQ_TIMER1, timer1_isr);
+
+    // start Timer 0
+    TIMER0_RELOAD = (U16_MAX + 1) - CYCLES_PER_SAMPLE;
+    TIMER0_CONTROL = 1 << 7; // Timer start
 }

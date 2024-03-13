@@ -15,57 +15,52 @@
  */
 #include "interrupt.h"
 
-#include "sound.h"
-#include "performance.h"
-
-#define IME *((vu32 *) 0x04000208)
-#define IE  *((vu16 *) 0x04000200)
-#define IF  *((vu16 *) 0x04000202)
-
+#define IME     *((vu32 *) 0x04000208)
+#define IE      *((vu16 *) 0x04000200)
+#define IF      *((vu16 *) 0x04000202)
 #define IF_BIOS *((vu16 *) 0x03007ff8)
 
 #define INTERRUPT_HANDLER *((vu32 *) 0x03007ffc)
 
-// Interrupt flags
-#define VBLANK (1 << 0)
-#define HBLANK (1 << 1)
-#define VCOUNT (1 << 2)
+#define INTERRUPT_COUNT (14)
 
-#define TIMER0 (1 << 3)
-#define TIMER1 (1 << 4)
-#define TIMER2 (1 << 5)
-#define TIMER3 (1 << 6)
-
-#define SERIAL (1 << 7)
-
-#define DMA0 (1 << 8)
-#define DMA1 (1 << 9)
-#define DMA2 (1 << 10)
-#define DMA3 (1 << 11)
-
-#define KEYPAD  (1 << 12)
-#define GAMEPAK (1 << 13)
+static void (*isr_table[INTERRUPT_COUNT])(void);
 
 IWRAM_SECTION ARM
 static void interrupt_handler(void) {
-    if(IF & VBLANK) {
-        IF_BIOS |= VBLANK;
-        IF = VBLANK;
+    for(u32 i = 0; i < INTERRUPT_COUNT; i++) {
+        u32 irq = 1 << i;
+        if(!(IF & irq))
+            continue;
 
-        performance_vblank();
-    }
+        // acknowledge the IRQ
+        IF_BIOS |= irq;
+        IF = irq;
 
-    if(IF & TIMER1) {
-        IF = TIMER1;
-
-        sound_timer1_irq();
+        // call the ISR
+        void (*isr)(void) = isr_table[i];
+        if(isr)
+            isr();
     }
 }
 
-void interrupt_enable(void) {
+void interrupt_init(void) {
     INTERRUPT_HANDLER = (u32) &interrupt_handler;
 
-    IE = VBLANK | TIMER1;
-
     IME = 1;
+}
+
+void interrupt_enable(u8 irq) {
+    IE |= (1 << irq);
+}
+
+void interrupt_disable(u8 irq) {
+    IE &= ~(1 << irq);
+}
+
+void interrupt_set_isr(u8 irq, void (*isr)(void)) {
+    if(irq >= INTERRUPT_COUNT)
+        return;
+
+    isr_table[irq] = isr;
 }

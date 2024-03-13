@@ -34,6 +34,5 @@ extern void sound_play(const u8 *sound, u32 length,
 extern void sound_stop(bool channel);
 
 extern void sound_direct_init(void);
-extern void sound_timer1_irq(void);
 
 // ===== ===== =====

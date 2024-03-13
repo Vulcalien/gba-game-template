@@ -35,12 +35,20 @@ static inline void draw(void) {
     performance_draw();
 }
 
+IWRAM_SECTION
+static void vblank(void) {
+    performance_vblank();
+}
+
 int AgbMain(void) {
     screen_init();
     SCENE_SET(&scene_start);
 
-    interrupt_enable();
+    interrupt_init();
     sound_init();
+
+    interrupt_enable(IRQ_VBLANK);
+    interrupt_set_isr(IRQ_VBLANK, vblank);
 
     while(true) {
         tick();
