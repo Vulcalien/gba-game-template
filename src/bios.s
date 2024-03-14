@@ -1,4 +1,4 @@
-@ Copyright 2023 Vulcalien
+@ Copyright 2023-2024 Vulcalien
 @
 @ This program is free software: you can redistribute it and/or modify
 @ it under the terms of the GNU General Public License as published by
@@ -13,11 +13,14 @@
 @ You should have received a copy of the GNU General Public License
 @ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-.section .iwram, "ax"
-
+@ --- vsync --- @
 .global vsync
+.text
+.thumb
+.thumb_func
+
 vsync:
-    swi     (0x05 << 16)
+    swi     0x05
     bx      lr
 
 .end
