@@ -81,7 +81,7 @@ static inline void start_sound(const u8 *sound, u32 length,
     const struct Channel *direct_channel = &channels[channel];
 
     // reset channel FIFO
-    if(channel == sound_channel_A)
+    if(channel == SOUND_CHANNEL_A)
         DIRECT_SOUND_CONTROL |= (1 << 11);
     else
         DIRECT_SOUND_CONTROL |= (1 << 15);
@@ -140,7 +140,7 @@ static inline void schedule_next_irq(void) {
 static inline void set_channel_outputs(bool channel, bool enable) {
     const struct Channel *direct_channel = &channels[channel];
 
-    u32 bits = (channel == sound_channel_A ? 8 : 12);
+    u32 bits = (channel == SOUND_CHANNEL_A ? 8 : 12);
     u32 val = direct_channel->outputs.left << 1 |
               direct_channel->outputs.right;
 

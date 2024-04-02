@@ -23,8 +23,8 @@ extern void sound_init(void);
 
 #define SOUND_SAMPLE_RATE (16 * 1024)
 
-#define sound_channel_A (0)
-#define sound_channel_B (1)
+#define SOUND_CHANNEL_A (0)
+#define SOUND_CHANNEL_B (1)
 
 #define SOUND_PLAY(sound, channel, loop)\
     sound_play((sound), sizeof(sound), (channel), (loop))
