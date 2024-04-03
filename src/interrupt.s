@@ -51,15 +51,16 @@ isr_table:
 @ function again.
 
 interrupt_handler:
-    @ load IF and IF_BIOS
+    @ load IF
     ldr     r0, =IF                     @ r0 = pointer to IF
     ldrh    r1, [r0]                    @ r1 = IF value
 
     @ find the IRQ bit
     mov     r2, #0                      @ r2 = loop counter (0)
 1: @ loop
+    @ if loop counter >= INTERRUPT_COUNT, return
     cmp     r2, #(INTERRUPT_COUNT)
-    bxgt    lr                          @ return
+    bxge    lr
 
     @ calculate (1 << loop counter)
     mov     r3, #1
