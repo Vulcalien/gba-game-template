@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,6 @@ inline const struct tile_Type *tile_get_type(u8 id) {
     return NULL;
 }
 
-// Tiles
+// Tile types
 //extern const struct tile_Type
     // ...

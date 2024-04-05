@@ -101,6 +101,6 @@ inline bool entity_touches(struct entity_Data *data1,
     );
 }
 
-// Entities
+// Entity types
 //extern const struct entity_Type
     // ...
