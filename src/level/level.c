@@ -30,7 +30,7 @@ static inline void insert_solid_entity(struct Level *level,
 
     const u32 tile = xt + yt * LEVEL_W;
     for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
-        if(level->solid_entities[tile][i] >= ENTITY_TYPES) {
+        if(level->solid_entities[tile][i] >= LEVEL_ENTITY_LIMIT) {
             level->solid_entities[tile][i] = entity_id;
             data->solid_id = i;
 
