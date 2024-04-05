@@ -42,7 +42,7 @@ static inline bool blocked_by_tiles(struct Level *level,
             if(x >= xto0 && x <= xto1 && y >= yto0 && y <= yto1)
                 continue;
 
-            const struct Tile *tile = tile_type(
+            const struct tile_Type *tile = tile_get_type(
                 level_get_tile(level, x, y)
             );
 

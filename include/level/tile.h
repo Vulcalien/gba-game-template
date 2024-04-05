@@ -22,19 +22,19 @@
 #define TILE_INVALID (-1)
 
 struct Level;
-struct Tile {
+struct tile_Type {
     bool is_solid;
 };
 
-extern const struct Tile *tile_list[TILE_TYPES];
+extern const struct tile_Type *tile_type_list[TILE_TYPES];
 
 ALWAYS_INLINE
-inline const struct Tile *tile_type(u8 id) {
+inline const struct tile_Type *tile_get_type(u8 id) {
     if(id < TILE_TYPES)
-        return tile_list[id];
+        return tile_type_list[id];
     return NULL;
 }
 
 // Tiles
-//extern const struct Tile
+//extern const struct tile_Type
     // ...

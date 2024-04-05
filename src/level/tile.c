@@ -15,6 +15,6 @@
  */
 #include "level/tile.h"
 
-const struct Tile *tile_list[TILE_TYPES] = {
+const struct tile_Type *tile_type_list[TILE_TYPES] = {
     // ...
 };
