@@ -60,15 +60,15 @@ static inline void tick_entities(struct Level *level) {
         i32 xt0 = data->x >> LEVEL_TILE_SIZE;
         i32 yt0 = data->y >> LEVEL_TILE_SIZE;
 
-        const struct Entity *entity = entity_type(data);
-        entity->tick(level, data);
+        const struct entity_Type *entity_type = entity_get_type(data);
+        entity_type->tick(level, data);
 
         if(data->should_remove) {
-            if(entity->is_solid)
+            if(entity_type->is_solid)
                 remove_solid_entity(level, data, i, xt0, yt0);
 
             data->type = ENTITY_INVALID;
-        } else if(entity->is_solid) {
+        } else if(entity_type->is_solid) {
             i32 xt1 = data->x >> LEVEL_TILE_SIZE;
             i32 yt1 = data->y >> LEVEL_TILE_SIZE;
 

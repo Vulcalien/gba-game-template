@@ -45,7 +45,7 @@ struct entity_Data {
 };
 
 struct Level;
-struct Entity {
+struct entity_Type {
     // entity radius (width and height)
     u8 xr;
     u8 yr;
@@ -59,7 +59,7 @@ struct Entity {
                 u32 used_sprites);
 };
 
-extern const struct Entity *entity_list[ENTITY_TYPES];
+extern const struct entity_Type *entity_type_list[ENTITY_TYPES];
 
 ALWAYS_INLINE
 inline bool entity_is_valid(struct entity_Data *data) {
@@ -67,9 +67,10 @@ inline bool entity_is_valid(struct entity_Data *data) {
 }
 
 ALWAYS_INLINE
-inline const struct Entity *entity_type(struct entity_Data *data) {
+inline
+const struct entity_Type *entity_get_type(struct entity_Data *data) {
     if(entity_is_valid(data))
-        return entity_list[data->type];
+        return entity_type_list[data->type];
     return NULL;
 }
 
@@ -80,26 +81,26 @@ extern bool entity_move(struct Level *level, struct entity_Data *data,
 ALWAYS_INLINE
 inline bool entity_intersects(struct entity_Data *data,
                               i32 x0, i32 y0, i32 x1, i32 y1) {
-    const struct Entity *entity = entity_type(data);
+    const struct entity_Type *entity_type = entity_get_type(data);
 
-    return (data->x + entity->xr - 1 >= x0) &&
-           (data->y + entity->yr - 1 >= y0) &&
-           (data->x - entity->xr     <= x1) &&
-           (data->y - entity->yr     <= y1);
+    return (data->x + entity_type->xr - 1 >= x0) &&
+           (data->y + entity_type->yr - 1 >= y0) &&
+           (data->x - entity_type->xr     <= x1) &&
+           (data->y - entity_type->yr     <= y1);
 }
 
 ALWAYS_INLINE
 inline bool entity_touches(struct entity_Data *data1,
                            struct entity_Data *data2) {
-    const struct Entity *e2 = entity_type(data1);
+    const struct entity_Type *e2_type = entity_get_type(data1);
 
     return entity_intersects(
         data1,
-        data2->x - e2->xr,     data2->y - e2->yr,
-        data2->x + e2->xr - 1, data2->y + e2->yr - 1
+        data2->x - e2_type->xr,     data2->y - e2_type->yr,
+        data2->x + e2_type->xr - 1, data2->y + e2_type->yr - 1
     );
 }
 
 // Entities
-//extern const struct Entity
+//extern const struct entity_Type
     // ...
