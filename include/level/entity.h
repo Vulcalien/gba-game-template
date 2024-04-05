@@ -62,8 +62,13 @@ struct Entity {
 extern const struct Entity *entity_list[ENTITY_TYPES];
 
 ALWAYS_INLINE
+inline bool entity_is_valid(struct entity_Data *data) {
+    return (data->type >= 0 && data->type < ENTITY_TYPES);
+}
+
+ALWAYS_INLINE
 inline const struct Entity *entity_type(struct entity_Data *data) {
-    if(data->type < ENTITY_TYPES)
+    if(entity_is_valid(data))
         return entity_list[data->type];
     return NULL;
 }

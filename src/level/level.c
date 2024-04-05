@@ -54,7 +54,7 @@ static inline void remove_solid_entity(struct Level *level,
 static inline void tick_entities(struct Level *level) {
     for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++) {
         struct entity_Data *data = &level->entities[i];
-        if(data->type >= ENTITY_TYPES)
+        if(!entity_is_valid(data))
             continue;
 
         i32 xt0 = data->x >> LEVEL_TILE_SIZE;
