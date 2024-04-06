@@ -17,10 +17,6 @@
 
 #include "level/entity.h"
 
-static inline void tick_tiles(struct Level *level) {
-    // ...
-}
-
 static inline void insert_solid_entity(struct Level *level,
                                        struct entity_Data *data,
                                        u32 entity_id,
@@ -49,6 +45,10 @@ static inline void remove_solid_entity(struct Level *level,
     const u32 tile = xt + yt * LEVEL_W;
     if(level->solid_entities[tile][data->solid_id] == entity_id)
         level->solid_entities[tile][data->solid_id] = LEVEL_NO_ENTITY;
+}
+
+static inline void tick_tiles(struct Level *level) {
+    // ...
 }
 
 static inline void tick_entities(struct Level *level) {
@@ -86,7 +86,16 @@ void level_tick(struct Level *level) {
     tick_entities(level);
 }
 
+static inline void draw_tiles(struct Level *level) {
+    // ...
+}
+
+static inline void draw_entities(struct Level *level) {
+    // ...
+}
+
 IWRAM_SECTION
 void level_draw(struct Level *level) {
-    // ...
+    draw_tiles(level);
+    draw_entities(level);
 }
