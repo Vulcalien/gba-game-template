@@ -19,6 +19,9 @@
 
 #define ENTITY_TYPES (0)
 
+// TODO add entity types ...
+// e.g. ENTITY_FOO (0)
+
 #define ENTITY_INVALID (-1)
 
 // If specific entity types need bytes to store their data, change this
@@ -103,4 +106,5 @@ inline bool entity_touches(struct entity_Data *data1,
 
 // Entity types
 //extern const struct entity_Type
-    // ...
+    // TODO add entity types ...
+    // e.g. &entity_foo

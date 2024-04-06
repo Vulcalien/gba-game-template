@@ -19,6 +19,9 @@
 
 #define TILE_TYPES (0)
 
+// TODO add tile types ...
+// e.g. TILE_FOO (0)
+
 #define TILE_INVALID (-1)
 
 struct Level;
@@ -37,4 +40,5 @@ inline const struct tile_Type *tile_get_type(u8 id) {
 
 // Tile types
 //extern const struct tile_Type
-    // ...
+    // TODO add tile types ...
+    // e.g. tile_foo
