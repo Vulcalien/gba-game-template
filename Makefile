@@ -14,7 +14,7 @@ SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 
-SRC_SUBDIRS := sound scene
+SRC_SUBDIRS := sound scene entity
 
 # === Compilation ===
 CPPFLAGS := -Iinclude -MMD -MP
