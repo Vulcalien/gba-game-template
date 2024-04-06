@@ -48,7 +48,7 @@ static inline void remove_solid_entity(struct Level *level,
 
     const u32 tile = xt + yt * LEVEL_W;
     if(level->solid_entities[tile][data->solid_id] == entity_id)
-        level->solid_entities[tile][data->solid_id] = ENTITY_INVALID;
+        level->solid_entities[tile][data->solid_id] = LEVEL_NO_ENTITY;
 }
 
 static inline void tick_entities(struct Level *level) {

@@ -32,6 +32,9 @@
 // 'solid_entities' to a u16 array.
 #define LEVEL_ENTITY_LIMIT (255)
 
+// An invalid entity ID.
+#define LEVEL_NO_ENTITY (LEVEL_ENTITY_LIMIT)
+
 #define LEVEL_SOLID_ENTITIES_IN_TILE (4)
 
 struct Level {
