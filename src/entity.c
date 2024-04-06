@@ -20,7 +20,7 @@
 
 const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
     // TODO add entity types ...
-    // e.g. &entity_foo
+    // e.g. [ENTITY_FOO] = &entity_foo
 };
 
 static inline bool blocked_by_tiles(struct Level *level,

@@ -17,5 +17,5 @@
 
 const struct tile_Type * const tile_type_list[TILE_TYPES] = {
     // TODO add tile types ...
-    // e.g. &tile_foo
+    // e.g. [TILE_FOO] = &tile_foo
 };
