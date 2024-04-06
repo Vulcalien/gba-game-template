@@ -13,9 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "level/level.h"
+#include "level.h"
 
-#include "level/entity.h"
+#include "entity.h"
 
 static inline void insert_solid_entity(struct Level *level,
                                        struct entity_Data *data,

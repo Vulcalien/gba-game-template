@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "level/tile.h"
+#include "tile.h"
 
 const struct tile_Type * const tile_type_list[TILE_TYPES] = {
     // TODO add tile types ...

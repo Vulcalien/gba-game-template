@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include "level/entity.h"
+#include "entity.h"
 
-#include "level/level.h"
-#include "level/tile.h"
+#include "level.h"
+#include "tile.h"
 
 const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
     // TODO add entity types ...
