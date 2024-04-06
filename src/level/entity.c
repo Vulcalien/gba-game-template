@@ -18,7 +18,7 @@
 #include "level/level.h"
 #include "level/tile.h"
 
-const struct entity_Type *entity_type_list[ENTITY_TYPES] = {
+const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
     // ...
 };
 

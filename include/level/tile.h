@@ -26,7 +26,7 @@ struct tile_Type {
     bool is_solid;
 };
 
-extern const struct tile_Type *tile_type_list[TILE_TYPES];
+extern const struct tile_Type * const tile_type_list[TILE_TYPES];
 
 ALWAYS_INLINE
 inline const struct tile_Type *tile_get_type(u8 id) {

@@ -59,7 +59,7 @@ struct entity_Type {
                 u32 used_sprites);
 };
 
-extern const struct entity_Type *entity_type_list[ENTITY_TYPES];
+extern const struct entity_Type * const entity_type_list[ENTITY_TYPES];
 
 ALWAYS_INLINE
 inline bool entity_is_valid(struct entity_Data *data) {
