@@ -47,6 +47,17 @@ static inline void remove_solid_entity(struct Level *level,
         level->solid_entities[tile][data->solid_id] = LEVEL_NO_ENTITY;
 }
 
+void level_init(struct Level *level) {
+    // clear 'entities'
+    for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++)
+        level->entities[i].type = ENTITY_INVALID;
+
+    // clear 'solid_entities'
+    for(u32 t = 0; t < LEVEL_SIZE; t++)
+        for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++)
+            level->solid_entities[t][i] = LEVEL_NO_ENTITY;
+}
+
 static inline void tick_tiles(struct Level *level) {
     // ...
 }
