@@ -15,6 +15,8 @@
  */
 #include "sound.h"
 
+#include "sound_p.h"
+
 #include "interrupt.h"
 
 #define DIRECT_SOUND_CONTROL *((vu16 *) 0x04000082)
