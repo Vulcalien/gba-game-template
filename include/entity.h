@@ -42,6 +42,7 @@ struct entity_Data {
     u8 solid_id : 7;
 
     #if ENTITY_EXTRA_DATA_SIZE > 0
+        ALIGNED(4)
         u8 data[ENTITY_EXTRA_DATA_SIZE];
     #endif
 };

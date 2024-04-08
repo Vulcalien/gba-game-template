@@ -64,6 +64,9 @@ typedef volatile int32_t  vi32;
 #define IWRAM_SECTION        __attribute__((section(".iwram")))
 #define IWRAM_RODATA_SECTION __attribute__((section(".iwram.rodata")))
 
+// Variable attributes
+#define ALIGNED(x) __attribute__((aligned(x)))
+
 // Function attributes
 #define ARM   __attribute__((target("arm")))
 #define THUMB __attribute__((target("thumb")))
