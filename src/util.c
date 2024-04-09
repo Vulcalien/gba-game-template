@@ -45,3 +45,24 @@ void srand(u32 val, bool reset) {
     else
         seed += val;
 }
+
+// math functions
+#define PI (0x8000)
+
+i16 math_sin(u16 angle) {
+    // val in range [0, PI * PI / 4]
+    u32 val = (angle % PI) * (PI - (angle % PI));
+
+    // normalize to [0, 0x4000]
+    i16 result = val / ((PI * PI / 4) / 0x4000);
+
+    // correct sign
+    if(angle % (2 * PI) > PI)
+        result = -result;
+
+    return result;
+}
+
+i16 math_cos(u16 angle) {
+    return math_sin(angle + PI / 2);
+}
