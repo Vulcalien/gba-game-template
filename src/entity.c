@@ -118,14 +118,12 @@ static bool move2(struct Level *level, struct entity_Data *data,
 IWRAM_SECTION
 bool entity_move(struct Level *level, struct entity_Data *data,
                  i32 xm, i32 ym) {
-    if(xm == 0 && ym == 0)
-        return true;
+    bool success = true;
 
-    bool stopped = true;
-    if(xm != 0 && move2(level, data, xm, 0))
-        stopped = false;
-    if(ym != 0 && move2(level, data, 0, ym))
-        stopped = false;
+    if(xm != 0 && !move2(level, data, xm, 0))
+        success = false;
+    if(ym != 0 && !move2(level, data, 0, ym))
+        success = false;
 
-    return !stopped;
+    return success;
 }

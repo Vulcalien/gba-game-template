@@ -77,7 +77,7 @@ const struct entity_Type *entity_get_type(struct entity_Data *data) {
     return NULL;
 }
 
-// returns 'true' if the entity was moved by (xm, ym)
+// returns 'true' if the entity moved by exactly (xm, ym)
 extern bool entity_move(struct Level *level, struct entity_Data *data,
                         i32 xm, i32 ym);
 
