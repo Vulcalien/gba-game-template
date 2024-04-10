@@ -88,12 +88,20 @@ static inline bool blocked_by_entities(struct Level *level,
                     continue;
 
                 if(entity_intersects(data2, x0, y0, x1, y1)) {
-                    // if the second entity is not already touching the
+                    // if defined, call 'touch_entity'
+                    if(entity_type->touch_entity) {
+                        bool should_block = entity_type->touch_entity(
+                            level, data, data2
+                        );
+
+                        if(!should_block)
+                            continue;
+                    }
+
+                    // if the second entity is NOT already touching the
                     // first one, then the first one is blocked by it.
                     if(!blocked && !entity_touches(data2, data))
                         blocked = true;
-
-                    // TODO entity touch event
                 }
             }
         }

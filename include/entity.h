@@ -60,6 +60,13 @@ struct entity_Type {
     // returns how many sprites were used
     u32 (*draw)(struct Level *level, struct entity_Data *data,
                 u32 used_sprites);
+
+    // If defined, this is called when this entity (data) touches
+    // another entity (touched_data) while trying to move.
+    // If 'true' is returned, this entity should be blocked by the
+    // touched entity. If not defined, this is the default behavior.
+    bool (*touch_entity)(struct Level *level, struct entity_Data *data,
+                         struct entity_Data *touched_data);
 };
 
 extern const struct entity_Type * const entity_type_list[ENTITY_TYPES];
