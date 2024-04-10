@@ -14,17 +14,17 @@ SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 
-SRC_SUBDIRS := sound scene entity
+SRC_SUBDIRS := scene entity
 
 # === Compilation ===
-CPPFLAGS := -Iinclude -MMD -MP
+CPPFLAGS := -Iinclude -MMD -MP -Ilib/base/include
 CFLAGS   := -O3 -fomit-frame-pointer -marm -mcpu=arm7tdmi\
             -Wall -pedantic
 
 ASFLAGS := -mcpu=arm7tdmi
 
-LDFLAGS := -Tlnkscript -nostartfiles
-LDLIBS  :=
+LDFLAGS := -Tlnkscript -nostartfiles -Llib/base/bin
+LDLIBS  := -l:base.a
 
 ifeq ($(CURRENT_OS),UNIX)
     CC      := arm-none-eabi-gcc
@@ -85,17 +85,21 @@ OUT     := $(BIN_DIR)/$(OUT_FILENAME).$(GBA_EXT)
 
 # === Targets ===
 
-.PHONY: all run build clean release
+.PHONY: all run build build-dependencies clean release
 
-all: build
+all: build-dependencies build
 
 run:
 	$(EMULATOR) $(OUT)
 
 build: $(OUT)
 
+build-dependencies:
+	$(MAKE) -C lib/base build
+
 clean:
 	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR)
+	$(MAKE) -C lib/base clean
 
 # generate GBA file
 $(OUT): $(OUT_ELF)

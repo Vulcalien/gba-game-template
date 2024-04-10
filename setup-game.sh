@@ -21,7 +21,8 @@ mkdir -p "$1"
 
 echo ""
 
-for item in src include lnkscript Makefile COPYING scripts .gitignore
+for item in src include lib scripts\
+            lnkscript Makefile COPYING .gitignore
 do
     echo "Copying ${item}"
     cp -r "${TEMPLATE_DIRECTORY}/${item}" "$1"

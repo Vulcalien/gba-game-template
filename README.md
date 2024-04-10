@@ -27,10 +27,10 @@ script will also initialize a new git repository in that directory.
 ./setup-game.sh <project-dir>
 ```
 
-Alternatively, manually copy these files to the directory of the new
-project:
+Alternatively, manually copy these files and directories to the new
+project's root directory:
 ```
-src include lnkscript Makefile COPYING scripts .gitignore
+src include lib scripts lnkscript Makefile COPYING .gitignore
 ```
 
 ## Features

@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include "main.h"
+#include "base.h"
 
 #define KEY_A      (1 << 0)
 #define KEY_B      (1 << 1)
