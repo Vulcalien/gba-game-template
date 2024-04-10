@@ -42,10 +42,13 @@ modified versions of the ones published by Jeff Frohwein many years ago.
 
 `lnkscript` supplies the linker with information regarding the memory
 layout of the GBA, specifying where code, data and all the various
-sections should be placed.
+sections should be placed. `crt0.s` contains the initialization code,
+which handles copying data and code into memory and calling the
+`AgbMain` function.
 
-`crt0.s` contains the ROM header and the booting sequence. Make sure to
-set these values in the ROM header:
+### ROM header
+`header.s` contains the ROM header, a block of data used to specify
+details about the ROM. Make sure to set these values in the ROM header:
   - Game Title
   - Game Code
   - Maker Code (optional)
