@@ -13,7 +13,7 @@ RELEASE_DIR="release"
 # build ROM
 make clean
 make res
-make build-dependencies
+make build-deps
 make build
 
 # create release directory and copy files into it
