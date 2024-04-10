@@ -85,21 +85,17 @@ OUT     := $(BIN_DIR)/$(OUT_FILENAME).$(GBA_EXT)
 
 # === Targets ===
 
-.PHONY: all run build build-dependencies clean release
+.PHONY: all run build clean
 
-all: build-dependencies build
+all: build-deps build
 
 run:
 	$(EMULATOR) $(OUT)
 
 build: $(OUT)
 
-build-dependencies:
-	$(MAKE) -C lib/base build
-
-clean:
+clean: clean-deps
 	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR)
-	$(MAKE) -C lib/base clean
 
 # generate GBA file
 $(OUT): $(OUT_ELF)
@@ -121,6 +117,14 @@ $(OBJ_DIR)/%.c.$(OBJ_EXT): %.c | $(OBJ_DIRS)
 $(BIN_DIR) $(OBJ_DIRS):
 	$(MKDIR) $(MKDIRFLAGS) "$@"
 
+.PHONY: build-deps clean-deps
+build-deps:
+	$(MAKE) -C lib/base build
+
+clean-deps:
+	$(MAKE) -C lib/base clean
+
+.PHONY: release
 release:
 	scripts/release.sh "$(OUT)"
 
