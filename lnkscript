@@ -39,6 +39,7 @@ SECTIONS
     {
         __text_start = ABSOLUTE(.);
 
+        *(.header)
         *(.crt0)
 
         *(.text)
