@@ -23,7 +23,7 @@ CFLAGS   := -O3 -fomit-frame-pointer -marm -mcpu=arm7tdmi\
 
 ASFLAGS := -mcpu=arm7tdmi
 
-LDFLAGS := -Tlnkscript -nostartfiles -Llib/base/bin
+LDFLAGS := -nostartfiles -Tlib/base/lnkscript -Llib/base/bin
 LDLIBS  := -l:base.a
 
 ifeq ($(CURRENT_OS),UNIX)
