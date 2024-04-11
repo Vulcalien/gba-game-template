@@ -87,14 +87,13 @@ losing performance.
 ### Direct sound
 The template includes a driver for controlling the two direct sound
 channels. These channels use 'signed 8-bit PCM' data. The sample rate is
-16384 by default, but can be set in `sound.h`. Because of a choice in
-the implementation, both channels have the same sample rate.
+16384 by default, but can be set in `sound.h`.
 
 After including `sound.h`, two functions are available:
   - sound_play(sound, length, channel, loop)
   - sound_stop(channel)
 
-'channel' can be either `sound_channel_A` or `sound_channel_B`.
+'channel' can be either `SOUND_CHANNEL_A` or `SOUND_CHANNEL_B`.
 
 If 'sound', the array of samples, has a known size, the `SOUND_PLAY`
 macro can be used to avoid passing the 'length' argument to
