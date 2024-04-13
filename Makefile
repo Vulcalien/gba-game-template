@@ -16,6 +16,9 @@ BIN_DIR := bin
 
 SRC_SUBDIRS := scene entity
 
+RES_DIR      := res
+RES_OUT_DIRS := src/res
+
 # === Compilation ===
 CPPFLAGS := -Iinclude -MMD -MP -Ilib/base/include
 CFLAGS   := -O3 -fomit-frame-pointer -marm -mcpu=arm7tdmi\
@@ -95,7 +98,7 @@ run:
 build: $(OUT)
 
 clean: clean-deps
-	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR)
+	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR) $(RES_OUT_DIRS)
 
 # generate GBA file
 $(OUT): $(OUT_ELF)
@@ -114,7 +117,7 @@ $(OBJ_DIR)/%.c.$(OBJ_EXT): %.c | $(OBJ_DIRS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # create directories
-$(BIN_DIR) $(OBJ_DIRS):
+$(BIN_DIR) $(OBJ_DIRS) $(RES_OUT_DIRS):
 	$(MKDIR) $(MKDIRFLAGS) "$@"
 
 .PHONY: build-deps clean-deps
@@ -123,6 +126,10 @@ build-deps:
 
 clean-deps:
 	$(MAKE) -C lib/base clean
+
+.PHONY: res
+res: $(RES_OUT_DIRS)
+	scripts/convert-resources.py "$(RES_DIR)/resources.json"
 
 .PHONY: release
 release:

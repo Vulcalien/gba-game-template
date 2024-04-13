@@ -21,7 +21,7 @@ mkdir -p "$1"
 
 echo ""
 
-for item in src include lib scripts\
+for item in src include lib res scripts\
             Makefile COPYING .gitignore
 do
     echo "Copying ${item}"
