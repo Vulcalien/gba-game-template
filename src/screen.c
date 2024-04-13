@@ -15,6 +15,8 @@
  */
 #include "screen.h"
 
+#include "sprite.h"
+
 #define DISPLAY_CONTROL *((vu16 *) 0x04000000)
 #define DISPLAY_STATUS  *((vu16 *) 0x04000004)
 
@@ -66,7 +68,7 @@ void screen_init(void) {
 
     // hide all sprites
     for(u32 i = 0; i < 128; i++)
-        OAM[i * 4] = 1 << 9;
+        sprite_hide(i);
 
     // enable V-Blank IRQ
     DISPLAY_STATUS = (1 << 3);
