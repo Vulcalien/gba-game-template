@@ -101,3 +101,12 @@ inline void screen_set_sprite(struct screen_Sprite *sprite, u32 id) {
                  sprite->priority << 10 |
                  sprite->palette  << 12;
 }
+
+ALWAYS_INLINE
+inline void screen_hide_sprite(u32 id) {
+    if(id >= 128)
+        return;
+
+    vu16 *attribs = &OAM[id * 4];
+    attribs[0] = (1 << 9);
+}
