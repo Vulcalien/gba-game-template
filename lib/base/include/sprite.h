@@ -17,6 +17,8 @@
 
 #include "base.h"
 
+#define OAM ((vu16 *) 0x07000000)
+
 struct Sprite {
     // Position
     u32 x : 9;
