@@ -30,18 +30,30 @@
 #define KEY_R      (1 << 8)
 #define KEY_L      (1 << 9)
 
-#define INPUT_DOWN(key)\
-    ((input_keys_is_down & (key)) != 0)
-
-#define INPUT_PRESSED(key)\
-    (((input_keys_is_down  & (key)) != 0) &&\
-     ((input_keys_was_down & (key)) == 0))
-
-#define INPUT_RELEASED(key)\
-    (((input_keys_is_down  & (key)) == 0) &&\
-     ((input_keys_was_down & (key)) != 0))
-
 extern u16 input_keys_is_down;
 extern u16 input_keys_was_down;
 
 extern void input_tick(void);
+
+ALWAYS_INLINE
+inline bool input_down(u16 key) {
+    bool is_down = (input_keys_is_down & key);
+
+    return is_down;
+}
+
+ALWAYS_INLINE
+inline bool input_pressed(u16 key) {
+    bool is_down  = (input_keys_is_down  & key);
+    bool was_down = (input_keys_was_down & key);
+
+    return is_down && !was_down;
+}
+
+ALWAYS_INLINE
+inline bool input_released(u16 key) {
+    bool is_down  = (input_keys_is_down  & key);
+    bool was_down = (input_keys_was_down & key);
+
+    return !is_down && was_down;
+}
