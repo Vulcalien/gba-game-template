@@ -63,10 +63,10 @@ header, so it changes when the ROM header is modified. You can use the
 and then run the script on the binary.
 
 ### Keypad input
-By including `input.h`, three macros become available:
-  - INPUT_DOWN(key)
-  - INPUT_PRESSED(key)
-  - INPUT_RELEASED(key)
+By including `input.h`, three functions become available:
+  - input_down(key)
+  - input_pressed(key)
+  - input_released(key)
 
 'key' can be any of the macros defined in the `input.h` header file,
 such as `KEY_UP`, `KEY_START`...
