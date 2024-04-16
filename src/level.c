@@ -19,15 +19,14 @@
 
 static inline void insert_solid_entity(struct Level *level,
                                        struct entity_Data *data,
-                                       u32 entity_id,
-                                       i32 xt, i32 yt) {
+                                       u32 id, i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
     const u32 tile = xt + yt * LEVEL_W;
     for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
         if(level->solid_entities[tile][i] >= LEVEL_ENTITY_LIMIT) {
-            level->solid_entities[tile][i] = entity_id;
+            level->solid_entities[tile][i] = id;
             data->solid_id = i;
 
             break;
@@ -37,13 +36,12 @@ static inline void insert_solid_entity(struct Level *level,
 
 static inline void remove_solid_entity(struct Level *level,
                                        struct entity_Data *data,
-                                       u32 entity_id,
-                                       i32 xt, i32 yt) {
+                                       u32 id, i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
     const u32 tile = xt + yt * LEVEL_W;
-    if(level->solid_entities[tile][data->solid_id] == entity_id)
+    if(level->solid_entities[tile][data->solid_id] == id)
         level->solid_entities[tile][data->solid_id] = LEVEL_NO_ENTITY;
 }
 
@@ -109,4 +107,31 @@ IWRAM_SECTION
 void level_draw(struct Level *level) {
     draw_tiles(level);
     draw_entities(level);
+}
+
+IWRAM_SECTION
+u32 level_new_entity(struct Level *level) {
+    for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++) {
+        struct entity_Data *data = &level->entities[i];
+        if(!entity_is_valid(data))
+            return i;
+    }
+    return LEVEL_NO_ENTITY;
+}
+
+void level_add_entity(struct Level *level, u32 type, u32 id) {
+    if(id >= LEVEL_ENTITY_LIMIT)
+        return;
+
+    struct entity_Data *data = &level->entities[id];
+    data->type = type;
+    data->should_remove = false;
+
+    const struct entity_Type *entity_type = entity_get_type(data);
+    if(entity_type && entity_type->is_solid) {
+        i32 xt = data->x >> LEVEL_TILE_SIZE;
+        i32 yt = data->y >> LEVEL_TILE_SIZE;
+
+        insert_solid_entity(level, data, id, xt, yt);
+    }
 }
