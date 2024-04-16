@@ -23,14 +23,6 @@ extern void memcpy16(vu16 *dest, const vu16 *src, u32 n);
 extern u16 rand(void);
 extern void srand(u32 val, bool reset);
 
-// === Math functions ===
-// Approximate 'sin' and 'cos' functions
-//
-// 'angle' in range [0, 0xffff]
-// Output in range [-0x4000, 0x4000]
-extern i16 math_sin(u16 angle);
-extern i16 math_cos(u16 angle);
-
 // ===== ===== =====
 
 ALWAYS_INLINE
