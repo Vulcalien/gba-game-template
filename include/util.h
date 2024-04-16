@@ -1,4 +1,4 @@
-/* Copyright 2023-2024 Vulcalien
+/* Copyright 2022 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,6 @@
 #include "main.h"
 
 extern void memcpy16(vu16 *dest, const vu16 *src, u32 n);
-
-// === Pseudorandom Number Generator ===
-extern u16 rand(void);
-extern void srand(u32 val, bool reset);
-
-// ===== ===== =====
 
 ALWAYS_INLINE
 inline void itoa(u32 number, u8 radix, char *array,

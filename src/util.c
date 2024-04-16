@@ -1,4 +1,4 @@
-/* Copyright 2023-2024 Vulcalien
+/* Copyright 2022 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,20 +28,4 @@ void memcpy16(vu16 *dest, const vu16 *src, u32 n) {
     DMA3_COUNT   = n;
     DMA3_CONTROL = 0 << 10 | // Transfer type (0 is 16bit, 1 is 32bit)
                    1 << 15;  // DMA Enable
-}
-
-// pseudorandom number generator
-static u32 seed = 0;
-
-IWRAM_SECTION
-u16 rand(void) {
-    seed = seed * 0x248f7b13 + 0xc21840c5;
-    return seed >> 16;
-}
-
-void srand(u32 val, bool reset) {
-    if(reset)
-        seed = val;
-    else
-        seed += val;
 }
