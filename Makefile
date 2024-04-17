@@ -49,17 +49,11 @@ ELF_EXT := elf
 GBA_EXT := gba
 
 ifeq ($(CURRENT_OS),UNIX)
-    MKDIR      := mkdir
-    MKDIRFLAGS := -p
-
-    RM      := rm
-    RMFLAGS := -rfv
+    MKDIR := mkdir -p
+    RM    := rm -rfv
 else ifeq ($(CURRENT_OS),WINDOWS)
-    MKDIR      := mkdir
-    MKDIRFLAGS :=
-
-    RM      := rmdir
-    RMFLAGS := /Q /S
+    MKDIR := mkdir
+    RM    := rmdir /Q /S
 endif
 
 # === Resources ===
@@ -76,11 +70,11 @@ SRC := $(foreach DIR,$(SRC_DIRS),\
          $(foreach EXT,$(SRC_EXT),\
            $(wildcard $(DIR)/*.$(EXT))))
 
-# list of object files
-OBJ := $(SRC:%=$(OBJ_DIR)/%.$(OBJ_EXT))
-
 # list of object directories
 OBJ_DIRS := $(SRC_DIRS:%=$(OBJ_DIR)/%)
+
+# list of object files
+OBJ := $(SRC:%=$(OBJ_DIR)/%.$(OBJ_EXT))
 
 # output files
 OUT_ELF := $(BIN_DIR)/$(OUT_FILENAME).$(ELF_EXT)
@@ -98,7 +92,7 @@ run:
 build: $(OUT)
 
 clean: clean-deps
-	@$(RM) $(RMFLAGS) $(BIN_DIR) $(OBJ_DIR) $(RES_OUT_DIRS)
+	@$(RM) $(BIN_DIR) $(OBJ_DIR) $(RES_OUT_DIRS)
 
 # generate GBA file
 $(OUT): $(OUT_ELF)
@@ -118,7 +112,7 @@ $(OBJ_DIR)/%.c.$(OBJ_EXT): %.c | $(OBJ_DIRS)
 
 # create directories
 $(BIN_DIR) $(OBJ_DIRS) $(RES_OUT_DIRS):
-	$(MKDIR) $(MKDIRFLAGS) "$@"
+	$(MKDIR) "$@"
 
 .PHONY: build-deps clean-deps
 build-deps:
