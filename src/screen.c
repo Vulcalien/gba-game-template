@@ -67,7 +67,7 @@ void screen_init(void) {
     // TODO ...
 
     // hide all sprites
-    for(u32 i = 0; i < 128; i++)
+    for(u32 i = 0; i < SPRITE_COUNT; i++)
         sprite_hide(i);
 
     // enable V-Blank IRQ

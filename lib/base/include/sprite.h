@@ -17,6 +17,8 @@
 
 #include "base.h"
 
+#define SPRITE_COUNT (128)
+
 #define OAM ((vu16 *) 0x07000000)
 
 struct Sprite {
@@ -50,7 +52,7 @@ struct Sprite {
 
 ALWAYS_INLINE
 inline void sprite_set(struct Sprite *sprite, u32 id) {
-    if(id >= 128)
+    if(id >= SPRITE_COUNT)
         return;
 
     vu16 *attribs = &OAM[id * 4];
@@ -85,7 +87,7 @@ inline void sprite_set(struct Sprite *sprite, u32 id) {
 
 ALWAYS_INLINE
 inline void sprite_hide(u32 id) {
-    if(id >= 128)
+    if(id >= SPRITE_COUNT)
         return;
 
     vu16 *attribs = &OAM[id * 4];
