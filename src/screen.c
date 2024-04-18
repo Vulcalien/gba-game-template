@@ -16,6 +16,7 @@
 #include "screen.h"
 
 #include "sprite.h"
+#include "palette.h"
 
 #define DISPLAY_CONTROL *((vu16 *) 0x04000000)
 #define DISPLAY_STATUS  *((vu16 *) 0x04000004)
@@ -34,9 +35,6 @@
 #define BG1_CONTROL *((vu16 *) 0x0400000a)
 #define BG2_CONTROL *((vu16 *) 0x0400000c)
 #define BG3_CONTROL *((vu16 *) 0x0400000e)
-
-#define BG_PALETTE  ((vu16 *) 0x05000000)
-#define OBJ_PALETTE ((vu16 *) 0x05000200)
 
 void screen_init(void) {
     DISPLAY_CONTROL = 0 << 0  | // Video mode
