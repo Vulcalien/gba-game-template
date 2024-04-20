@@ -79,11 +79,11 @@ static inline bool blocked_by_entities(struct Level *level,
             const u32 tile = x + y * LEVEL_W;
 
             for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
-                const u32 entity_id = level->solid_entities[tile][i];
-                if(entity_id >= LEVEL_ENTITY_LIMIT)
+                level_EntityID id = level->solid_entities[tile][i];
+                if(id >= LEVEL_ENTITY_LIMIT)
                     continue;
 
-                struct entity_Data *data2 = &level->entities[entity_id];
+                struct entity_Data *data2 = &level->entities[id];
                 if(data2 == data)
                     continue;
 

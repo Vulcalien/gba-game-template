@@ -19,7 +19,8 @@
 
 static inline void insert_solid_entity(struct Level *level,
                                        struct entity_Data *data,
-                                       u32 id, i32 xt, i32 yt) {
+                                       level_EntityID id,
+                                       i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
@@ -36,7 +37,8 @@ static inline void insert_solid_entity(struct Level *level,
 
 static inline void remove_solid_entity(struct Level *level,
                                        struct entity_Data *data,
-                                       u32 id, i32 xt, i32 yt) {
+                                       level_EntityID id,
+                                       i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
@@ -110,7 +112,7 @@ void level_draw(struct Level *level) {
 }
 
 IWRAM_SECTION
-u32 level_new_entity(struct Level *level) {
+level_EntityID level_new_entity(struct Level *level) {
     for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++) {
         struct entity_Data *data = &level->entities[i];
         if(!entity_is_valid(data))
@@ -121,7 +123,7 @@ u32 level_new_entity(struct Level *level) {
 
 void level_add_entity(struct Level *level,
                       enum entity_TypeID type,
-                      u32 id) {
+                      level_EntityID id) {
     if(id >= LEVEL_ENTITY_LIMIT)
         return;
 

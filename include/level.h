@@ -28,8 +28,7 @@
 // Tile size: 3 = 8x8, 4 = 16x16, 5 = 32x32
 #define LEVEL_TILE_SIZE (3)
 
-// If this value is more than 255, then change the type of
-// 'solid_entities' to a u16 array.
+typedef u8 level_EntityID;
 #define LEVEL_ENTITY_LIMIT (255)
 
 // An invalid entity ID.
@@ -41,7 +40,9 @@ struct Level {
     enum tile_TypeID tiles[LEVEL_SIZE];
 
     struct entity_Data entities[LEVEL_ENTITY_LIMIT];
-    u8 solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
+
+    level_EntityID
+    solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
 };
 
 extern void level_init(struct Level *level);
@@ -68,13 +69,13 @@ inline void level_set_tile(struct Level *level, i32 x, i32 y,
 // === Entity functions ===
 
 // returns an available entity ID, or an invalid ID if there is none
-extern u32 level_new_entity(struct Level *level);
+extern level_EntityID level_new_entity(struct Level *level);
 
 // Finalizes the entity having the given ID, setting its type and
 // clearing the 'should_remove' bit. Set the entity's properties
 // (such as x and y coordinates) *before* calling this function.
 extern void level_add_entity(struct Level *level,
                              enum entity_TypeID type,
-                             u32 id);
+                             level_EntityID id);
 
 // ===== ===== =====
