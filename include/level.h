@@ -73,6 +73,8 @@ extern u32 level_new_entity(struct Level *level);
 // Finalizes the entity having the given ID, setting its type and
 // clearing the 'should_remove' bit. Set the entity's properties
 // (such as x and y coordinates) *before* calling this function.
-extern void level_add_entity(struct Level *level, u32 type, u32 id);
+extern void level_add_entity(struct Level *level,
+                             enum entity_TypeID type,
+                             u32 id);
 
 // ===== ===== =====

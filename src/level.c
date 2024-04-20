@@ -119,7 +119,9 @@ u32 level_new_entity(struct Level *level) {
     return LEVEL_NO_ENTITY;
 }
 
-void level_add_entity(struct Level *level, u32 type, u32 id) {
+void level_add_entity(struct Level *level,
+                      enum entity_TypeID type,
+                      u32 id) {
     if(id >= LEVEL_ENTITY_LIMIT)
         return;
 
