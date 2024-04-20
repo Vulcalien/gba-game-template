@@ -36,11 +36,11 @@ enum entity_TypeID {
 struct entity_Data {
     enum entity_TypeID type;
 
-    i32 x;
-    i32 y;
-
     u8 should_remove : 1;
     u8 solid_id : 7;
+
+    i32 x;
+    i32 y;
 
     #if ENTITY_EXTRA_DATA_SIZE > 0
         ALIGNED(4)
