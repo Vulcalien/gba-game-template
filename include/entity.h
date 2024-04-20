@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 
 #include "main.h"
 
-#define ENTITY_TYPES (1)
+enum entity_TypeID {
+    ENTITY_PLAYER,
 
-#define ENTITY_PLAYER (0)
-
-#define ENTITY_INVALID (-1)
+    ENTITY_INVALID
+};
+#define ENTITY_TYPES (ENTITY_INVALID)
 
 // If specific entity types need bytes to store their data, change this
 // value. The 'data' array can then be cast into whatever struct of the
@@ -33,7 +34,7 @@
 #define ENTITY_EXTRA_DATA_SIZE (0)
 
 struct entity_Data {
-    u8 type;
+    enum entity_TypeID type;
 
     i32 x;
     i32 y;

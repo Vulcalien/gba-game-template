@@ -17,12 +17,13 @@
 
 #include "main.h"
 
-#define TILE_TYPES (0)
+enum tile_TypeID {
+    // TODO add tile types ...
+    // e.g. TILE_FOO,
 
-// TODO add tile types ...
-// e.g. TILE_FOO (0)
-
-#define TILE_INVALID (-1)
+    TILE_INVALID
+};
+#define TILE_TYPES (TILE_INVALID)
 
 struct Level;
 struct tile_Type {
@@ -32,8 +33,8 @@ struct tile_Type {
 extern const struct tile_Type * const tile_type_list[TILE_TYPES];
 
 ALWAYS_INLINE
-inline const struct tile_Type *tile_get_type(u8 id) {
-    if(id < TILE_TYPES)
+inline const struct tile_Type *tile_get_type(enum tile_TypeID id) {
+    if(id >= 0 && id < TILE_TYPES)
         return tile_type_list[id];
     return NULL;
 }

@@ -38,7 +38,7 @@
 #define LEVEL_SOLID_ENTITIES_IN_TILE (4)
 
 struct Level {
-    u8 tiles[LEVEL_SIZE];
+    enum tile_TypeID tiles[LEVEL_SIZE];
 
     struct entity_Data entities[LEVEL_ENTITY_LIMIT];
     u8 solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
@@ -51,14 +51,16 @@ extern void level_draw(struct Level *level);
 // === Tile functions ===
 
 ALWAYS_INLINE
-inline u8 level_get_tile(struct Level *level, i32 x, i32 y) {
+inline enum tile_TypeID level_get_tile(struct Level *level,
+                                       i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];
     return TILE_INVALID;
 }
 
 ALWAYS_INLINE
-inline void level_set_tile(struct Level *level, i32 x, i32 y, u8 id) {
+inline void level_set_tile(struct Level *level, i32 x, i32 y,
+                           enum tile_TypeID id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;
 }
