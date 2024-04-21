@@ -27,6 +27,11 @@ cd "$RELEASE_DIR"
 git clone $(git remote get-url origin) source
 git -C source gc --aggressive --prune=now
 
+# clone all submodules
+git -C source submodule update --recursive --init
+git -C source submodule foreach --recursive\
+    "git gc --aggressive --prune=now"
+
 # generate checksums
 mkdir checksum
 md5sum $ROM_NAME > checksum/rom.md5
