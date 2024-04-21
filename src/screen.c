@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,7 @@
  */
 #include "screen.h"
 
+#include "background.h"
 #include "sprite.h"
 #include "palette.h"
 
@@ -31,10 +32,35 @@
 
 #define OBJ_TILESET ((vu16 *) 0x06010000)
 
-#define BG0_CONTROL *((vu16 *) 0x04000008)
-#define BG1_CONTROL *((vu16 *) 0x0400000a)
-#define BG2_CONTROL *((vu16 *) 0x0400000c)
-#define BG3_CONTROL *((vu16 *) 0x0400000e)
+static const struct background_Config bg_configs[4] = {
+    // BG0
+    {
+        .priority = 0,
+        .tileset  = 0,
+        .tilemap  = 0
+    },
+
+    // BG1
+    {
+        .priority = 1,
+        .tileset  = 0,
+        .tilemap  = 0
+    },
+
+    // BG2
+    {
+        .priority = 2,
+        .tileset  = 0,
+        .tilemap  = 0
+    },
+
+    // BG3
+    {
+        .priority = 3,
+        .tileset  = 0,
+        .tilemap  = 0
+    }
+};
 
 void screen_init(void) {
     DISPLAY_CONTROL = 0 << 0  | // Video mode
@@ -46,21 +72,9 @@ void screen_init(void) {
                       0 << 11 | // Enable BG 3
                       1 << 12;  // Enable OBJs
 
-    BG0_CONTROL = 0 << 0 | // BG Priority (0 = highest, 3 = lowest)
-                  0 << 2 | // Tileset character block (=16K)
-                  0 << 8;  // Tilemap screen block (=2K)
-
-    BG1_CONTROL = 1 << 0 | // BG Priority (0 = highest, 3 = lowest)
-                  0 << 2 | // Tileset character block (=16K)
-                  0 << 8;  // Tilemap screen block (=2K)
-
-    BG2_CONTROL = 2 << 0 | // BG Priority (0 = highest, 3 = lowest)
-                  0 << 2 | // Tileset character block (=16K)
-                  0 << 8;  // Tilemap screen block (=2K)
-
-    BG3_CONTROL = 3 << 0 | // BG Priority (0 = highest, 3 = lowest)
-                  0 << 2 | // Tileset character block (=16K)
-                  0 << 8;  // Tilemap screen block (=2K)
+    // configure backgrounds
+    for(u32 i = 0; i < 4; i++)
+        background_config(&backgrounds[i], &bg_configs[i]);
 
     // TODO ...
 

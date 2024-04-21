@@ -22,16 +22,4 @@
 
 #define VCOUNT *((vu16 *) 0x04000006)
 
-#define BG0_XOFFSET *((vu16 *) 0x04000010)
-#define BG0_YOFFSET *((vu16 *) 0x04000012)
-
-#define BG1_XOFFSET *((vu16 *) 0x04000014)
-#define BG1_YOFFSET *((vu16 *) 0x04000016)
-
-#define BG2_XOFFSET *((vu16 *) 0x04000018)
-#define BG2_YOFFSET *((vu16 *) 0x0400001a)
-
-#define BG3_XOFFSET *((vu16 *) 0x0400001c)
-#define BG3_YOFFSET *((vu16 *) 0x0400001e)
-
 extern void screen_init(void);
