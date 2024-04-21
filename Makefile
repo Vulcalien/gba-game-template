@@ -20,14 +20,19 @@ RES_DIR      := res
 RES_OUT_DIRS := src/res
 
 # === Compilation ===
-CPPFLAGS := -Iinclude -MMD -MP -Ilib/base/include
+CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS   := -O3 -fomit-frame-pointer -marm -mcpu=arm7tdmi\
             -Wall -pedantic
 
 ASFLAGS := -mcpu=arm7tdmi
 
-LDFLAGS := -nostartfiles -Tlib/base/lnkscript -Llib/base/bin
-LDLIBS  := -l:base.a
+LDFLAGS := -nostartfiles -Tlib/base/lnkscript
+LDLIBS  :=
+
+# base library
+CPPFLAGS += -Ilib/base/include
+LDFLAGS  += -Llib/base/bin
+LDLIBS   += -l:base.a
 
 ifeq ($(CURRENT_OS),UNIX)
     CC      := arm-none-eabi-gcc
