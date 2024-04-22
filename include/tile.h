@@ -30,16 +30,11 @@ struct tile_Type {
     bool is_solid;
 };
 
-extern const struct tile_Type * const tile_type_list[TILE_TYPES];
+extern const struct tile_Type tile_type_list[TILE_TYPES];
 
 ALWAYS_INLINE
 inline const struct tile_Type *tile_get_type(enum tile_TypeID id) {
     if(id >= 0 && id < TILE_TYPES)
-        return tile_type_list[id];
+        return &tile_type_list[id];
     return NULL;
 }
-
-// Tile types
-//extern const struct tile_Type
-    // TODO add tile types ...
-    // e.g. tile_foo
