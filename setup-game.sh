@@ -19,18 +19,23 @@ fi
 echo "Creating the directory"
 mkdir -p "$1"
 
-echo ""
+echo "\nCopying template files:"
 
-for item in src include lib res scripts\
+for item in src include res scripts\
             Makefile COPYING .gitignore
 do
-    echo "Copying ${item}"
+    echo "- ${item}"
     cp -r "${TEMPLATE_DIRECTORY}/${item}" "$1"
 done
 
-echo ""
-
-echo "Initializing git repository"
+echo "\nInitializing git repository"
 git -C "$1" init
 
-echo "Done!"
+echo "\nRetrieving base library"
+git -C "$1" submodule add\
+    https://github.com/Vulcalien/gba-base-library.git lib/base
+
+echo "\nInitializing all submodules"
+git -C "$1" submodule update --init --recursive
+
+echo "\nDone!"
