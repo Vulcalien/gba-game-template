@@ -27,12 +27,6 @@ script will also initialize a new git repository in that directory.
 ./setup-game.sh <project-dir>
 ```
 
-Alternatively, manually copy these files and directories to the new
-project's root directory:
-```
-src include lib res scripts Makefile COPYING .gitignore
-```
-
 ## Features
 
 ### Compilation files
