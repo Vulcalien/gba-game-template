@@ -32,7 +32,7 @@
 
 #define OBJ_TILESET ((vu16 *) 0x06010000)
 
-static const struct background_Config bg_configs[4] = {
+static const struct Background bg_configs[BACKGROUND_COUNT] = {
     // BG0
     {
         .priority = 0,
@@ -73,8 +73,8 @@ void screen_init(void) {
                       1 << 12;  // Enable OBJs
 
     // configure backgrounds
-    for(u32 i = 0; i < 4; i++)
-        background_config(&backgrounds[i], &bg_configs[i]);
+    for(u32 i = 0; i < BACKGROUND_COUNT; i++)
+        background_config(&bg_configs[i], i);
 
     // TODO ...
 
