@@ -127,6 +127,9 @@ def tileset_args(element):
         tile_width, tile_height, palette, bpp
     )
 
+def palette_args(element):
+    return '--bpp 16'
+
 def image_args(element):
     bpp = int(element['bpp'])
 
@@ -146,8 +149,8 @@ FILE_TYPES = {
     },
 
     'palettes': {
-        'script': '%s/res/palette-to-array.py',
-        'args_function': None
+        'script': '%s/res/image-to-array.py',
+        'args_function': palette_args
     },
 
     'images': {
