@@ -188,25 +188,33 @@ def convert(element, file_type):
     print(cmd)
     os.system(cmd)
 
-def parse_file(f):
-    content = None
+def parse_json(f):
+    try:
+        return json.load(f)
+    except json.JSONDecodeError as e:
+        print('Error: invalid JSON:', e)
 
-    ext = os.path.splitext(f.name)[1]
-    if ext == '.json':
+def parse_toml(f):
+    if toml_support:
         try:
-            content = json.load(f)
-        except json.JSONDecodeError as e:
-            print('Error: invalid JSON:', e)
-    elif ext == '.toml':
-        if toml_support:
-            try:
-                content = tomllib.load(f)
-            except tomllib.TOMLDecodeError as e:
-                print('Error: invalid TOML:', e)
-        else:
-            print('Error: TOML is not supported by this version of ' +
-                  'Python')
+            return tomllib.load(f)
+        except tomllib.TOMLDecodeError as e:
+            print('Error: invalid TOML:', e)
     else:
+        print('Error: TOML is not supported by this version of Python')
+
+def parse_file(f):
+    parsers = {
+        '.json': parse_json,
+        '.toml': parse_toml
+    }
+
+    content = None
+    ext = os.path.splitext(f.name)[1]
+
+    try:
+        content = parsers[ext](f)
+    except KeyError:
         print('Error: unknown extension:', ext)
 
     return content
