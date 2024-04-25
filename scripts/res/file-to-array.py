@@ -17,7 +17,7 @@
 
 import sys, argparse
 
-from datawriter import DataWriter
+from utils import DataWriter
 
 # Setup argparse
 parser = argparse.ArgumentParser(

@@ -13,6 +13,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from PIL import Image
+
+# return a map of colors loaded from a palette file
+def load_palette(path: str, bpp: int):
+    color_map = {}
+
+    palette_colors = 2 ** bpp
+
+    img = Image.open(path).convert('RGB')
+    for y in range(img.height):
+        for x in range(img.width):
+            pix = img.getpixel( (x, y) )
+
+            if pix not in color_map:
+                color_map[pix] = (x + y * img.width) % palette_colors
+
+    return color_map
+
 class DataWriter:
 
     output   = None
