@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 Vulcalien
+# Copyright 2023-2024 Vulcalien
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 import sys, argparse
 from sys import exit
 from PIL import Image
+
+from datawriter import DataWriter
 
 # Setup argparse
 parser = argparse.ArgumentParser(
@@ -57,8 +59,12 @@ args = parser.parse_args()
 # Open image
 img = Image.open(args.input).convert('RGB')
 
-tileset_w = (img.width  // 8) // args.tile_width
-tileset_h = (img.height // 8) // args.tile_height
+tileset_w    = (img.width  // 8) // args.tile_width
+tileset_h    = (img.height // 8) // args.tile_height
+tileset_size = tileset_w * tileset_h
+
+big_tile_size      = args.tile_width * args.tile_height
+bytes_per_8x8_tile = (32 if args.bpp == 4 else 64)
 
 # Map the colors by reading the palette image
 color_map = {}
@@ -73,60 +79,54 @@ for y in range(palette_img.height):
             color_map[pix] = i
 
 # Scan the tileset and write output
-f = args.output
+writer = DataWriter(args.output, 'u8')
 
-f.write(
-    '{static} const u8 {name}[{a} * {b} * {c}] = {{\n'.format(
-        static=('static' if args.static else ''),
-        name=args.name,
-        a=(tileset_w * tileset_h),
-        b=(args.tile_width * args.tile_height),
-        c=(32 if args.bpp == 4 else 64)
-    )
-)
+def assert_color_in_palette(pix):
+    if pix not in color_map:
+        col = pix[0] << 16 | pix[1] << 8 | pix[2]
+        col = hex(col)[2:].zfill(6)
+        exit('Error: color not present in the palette: #' + col)
 
-### helper functions ###
-def scan_8pixel_line(x0, y):
-    # 8bpp
+def scan_8x8_tile_8bpp(x0, y0):
+    for y in range(8):
+        for x in range(8):
+            pix = img.getpixel( (x0 + x, y0 + y) )
+            assert_color_in_palette(pix)
+            writer.write(color_map[pix])
+
+def scan_8x8_tile_4bpp(x0, y0):
+    for y in range(8):
+        for x in range(0, 8, 2):
+            pix0 = img.getpixel( (x0 + x,     y0 + y) )
+            pix1 = img.getpixel( (x0 + x + 1, y0 + y) )
+
+            assert_color_in_palette(pix0)
+            assert_color_in_palette(pix1)
+
+            writer.write(color_map[pix1] << 4 | color_map[pix0])
+
+def scan_8x8_tile(x0, y0):
     if args.bpp == 8:
-        for xpix in range(8):
-            pix = img.getpixel( (x0 + xpix, y) )
-
-            if pix not in color_map:
-                col = pix[0] << 16 | pix[1] << 8 | pix[2]
-                col = hex(col)[2:].zfill(6)
-                exit('Error: color not present in the palette: #' + col)
-
-            f.write('0x' + hex(color_map[pix])[2:].zfill(2) + ',')
-
-    # 4 bpp
+        scan_8x8_tile_8bpp(x0, y0)
     elif args.bpp == 4:
-        for xpix in (1, 0, 3, 2, 5, 4, 7, 6):
-            pix = img.getpixel( (x0 + xpix, y) )
+        scan_8x8_tile_4bpp(x0, y0)
 
-            if pix not in color_map:
-                col = pix[0] << 16 | pix[1] << 8 | pix[2]
-                col = hex(col)[2:].zfill(6)
-                exit('Error: color not present in the palette: #' + col)
+def scan_big_tile(x0, y0):
+    for ysubtile in range(args.tile_height):
+        for xsubtile in range(args.tile_width):
+            scan_8x8_tile(
+                x0 + xsubtile * 8,
+                y0 + ysubtile * 8
+            )
 
-            if xpix & 1 == 1:
-                f.write('0x')
-            f.write(hex(color_map[pix])[2:])
-            if xpix & 1 == 0:
-                f.write(',')
-### ---------------- ###
-
+writer.begin(
+    args.name, args.static,
+    tileset_size * big_tile_size * bytes_per_8x8_tile
+)
 for yt in range(tileset_h):
     for xt in range(tileset_w):
-        for ysubtile in range(args.tile_height):
-            for xsubtile in range(args.tile_width):
-                for ypix in range(8):
-                    scan_8pixel_line(
-                        (xt * args.tile_width  + xsubtile) * 8,
-                        (yt * args.tile_height + ysubtile) * 8 + ypix
-                    )
-
-                    f.write('\n')
-                f.write('\n')
-
-f.write('};\n')
+        scan_big_tile(
+            xt * args.tile_width  * 8,
+            yt * args.tile_height * 8
+        )
+writer.end()
