@@ -47,8 +47,10 @@ img = Image.open(args.input).convert('RGB')
 
 palette_size = img.width * img.height
 
-# Get and convert colors
-colors = []
+# Scan the palette and write output
+writer = DataWriter(args.output, 'u16')
+
+writer.begin(args.name, args.static, palette_size)
 for i in range(palette_size):
     pix = img.getpixel( (i % img.width, i // img.width) )
 
@@ -57,13 +59,5 @@ for i in range(palette_size):
     b = pix[2] >> 3
 
     col = (b << 10) | (g << 5) | r
-
-    colors.append(col)
-
-# Write output
-writer = DataWriter(args.output, 'u16')
-
-writer.begin(args.name, args.static, palette_size)
-for i in range(palette_size):
-    writer.write(colors[i])
+    writer.write(col)
 writer.end()
