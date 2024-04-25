@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 Vulcalien
+# Copyright 2023-2024 Vulcalien
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
 
 import sys, argparse
 from PIL import Image
+
+from datawriter import DataWriter
 
 # Setup argparse
 parser = argparse.ArgumentParser(
@@ -56,26 +58,12 @@ for i in range(palette_size):
 
     col = (b << 10) | (g << 5) | r
 
-    color_code = '0x' + hex(col)[2:].zfill(4)
-    colors.append(color_code)
+    colors.append(col)
 
 # Write output
-f = args.output
+writer = DataWriter(args.output, 'u16')
 
-f.write(
-    '{static} const u16 {name}[{a} * 16 + {b}] = {{\n'.format(
-        static=('static' if args.static else ''),
-        name=args.name,
-        a=(palette_size // 16),
-        b=(palette_size %  16)
-    )
-)
-
+writer.begin(args.name, args.static, palette_size)
 for i in range(palette_size):
-    f.write(colors[i] + ',')
-    if i % 8 == 7:
-        f.write('\n')
-    if i % 16 == 15 or i == palette_size - 1:
-        f.write('\n')
-
-f.write('};\n')
+    writer.write(colors[i])
+writer.end()

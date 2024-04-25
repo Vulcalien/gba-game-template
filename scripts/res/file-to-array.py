@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2023 Vulcalien
+# Copyright 2023-2024 Vulcalien
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import sys, argparse
+
+from datawriter import DataWriter
 
 # Setup argparse
 parser = argparse.ArgumentParser(
@@ -43,18 +45,9 @@ args = parser.parse_args()
 contents = args.input.read()
 
 # Write output
-f = args.output
+writer = DataWriter(args.output, 'u8')
 
-f.write(
-    '{static} const u8 {name}[{size}] = {{\n'.format(
-        static=('static' if args.static else ''),
-        name=args.name,
-        size=len(contents)
-    )
-)
-
+writer.begin(args.name, args.static, len(contents))
 for i in range(len(contents)):
-    f.write('0x' + hex(contents[i])[2:].zfill(2) + ',')
-    if i % 8 == 7:
-        f.write('\n')
-f.write('\n};\n')
+    writer.write(contents[i])
+writer.end()
