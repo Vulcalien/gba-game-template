@@ -29,6 +29,7 @@
             "tile_height": 4,
 
             "palette": "my/input/palette.png",
+            "transparent": "#ff00ff",
             "bpp": 4,
 
             "static": true
@@ -117,30 +118,33 @@ args = parser.parse_args()
 # Functions
 
 def tileset_args(element):
-    tile_width  = int(element['tile_width'])
-    tile_height = int(element['tile_height'])
+    args = ''
 
-    palette = str(element['palette'])
-    bpp     = int(element['bpp'])
+    args += ' --tile-width "%d"'  % int(element['tile_width'])
+    args += ' --tile-height "%d"' % int(element['tile_height'])
 
-    return "--tile-width %d --tile-height %d --palette %s --bpp %d" % (
-        tile_width, tile_height, palette, bpp
-    )
+    args += ' --palette "%s"' % str(element['palette'])
+    args += ' --bpp "%d"'     % int(element['bpp'])
+
+    if 'transparent' in element:
+        args += ' --transparent "%s"' % str(element['transparent'])
+
+    return args
 
 def palette_args(element):
     return '--bpp 16'
 
 def image_args(element):
+    args = ''
+
     bpp = int(element['bpp'])
+    args += ' --bpp %d' % bpp
 
     if bpp in (4, 8):
         palette = str(element['palette'])
-    else:
-        palette = None
+        args += ' --palette %s' % palette
 
-    return "--bpp %d %s" % (
-        bpp, (('--palette %s' % palette) if palette else '')
-    )
+    return args
 
 FILE_TYPES = {
     'tilesets': {

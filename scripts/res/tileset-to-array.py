@@ -45,6 +45,9 @@ parser.add_argument('--tile-height',
 parser.add_argument('--palette',
                     type=argparse.FileType('rb'), required=True,
                     help='specify the filename of the palette file')
+parser.add_argument('--transparent',
+                    type=str, default=None,
+                    help='specify a color to be considered transparent')
 
 parser.add_argument('-o', '--output',
                     type=argparse.FileType('w'), default=sys.stdout,
@@ -68,6 +71,15 @@ bytes_per_8x8_tile = (32 if args.bpp == 4 else 64)
 
 # Read the palette file
 color_map = load_palette(args.palette, args.bpp)
+
+if args.transparent is not None:
+    hex_code = args.transparent.lstrip('#')
+    val = (
+        int(hex_code[0:2], 16),
+        int(hex_code[2:4], 16),
+        int(hex_code[4:6], 16)
+    )
+    color_map[val] = 0
 
 # Scan the tileset and write output
 writer = DataWriter(args.output, 'u8')
