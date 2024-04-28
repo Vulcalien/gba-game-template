@@ -23,11 +23,11 @@ cp "$ROM_PATH" COPYING README.md "$RELEASE_DIR"
 
 cd "$RELEASE_DIR"
 
-# clone repository
+# clone repository into 'source'
 git clone $(git remote get-url origin) source
 git -C source gc --aggressive --prune=now
 
-# clone all submodules
+# clone all submodules inside 'source'
 git -C source submodule update --recursive --init
 git -C source submodule foreach --recursive\
     "git gc --aggressive --prune=now"
