@@ -74,7 +74,7 @@ void screen_init(void) {
 
     // configure backgrounds
     for(u32 i = 0; i < BACKGROUND_COUNT; i++)
-        background_config(&bg_configs[i], i);
+        background_config(i, &bg_configs[i]);
 
     // TODO ...
 
