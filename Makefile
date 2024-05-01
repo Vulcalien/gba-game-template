@@ -48,6 +48,11 @@ else ifeq ($(CURRENT_OS),WINDOWS)
     EMULATOR :=
 endif
 
+# if LINK_MAP=1, generate a link map
+ifeq ($(LINK_MAP),1)
+    LDFLAGS += -Wl,-Map=$(BIN_DIR)/output.map
+endif
+
 # === Extensions & Commands ===
 OBJ_EXT := o
 ELF_EXT := elf
