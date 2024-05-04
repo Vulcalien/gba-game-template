@@ -22,32 +22,79 @@ const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
     [ENTITY_PLAYER] = &entity_player
 };
 
+ALWAYS_INLINE
+static inline bool tile_blocks(struct Level *level, i32 x, i32 y) {
+    const struct tile_Type *tile_type = tile_get_type(
+        level_get_tile(level, x, y)
+    );
+
+    if(!tile_type || tile_type->is_solid)
+        return true;
+    return false;
+}
+
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct entity_Data *data,
-                                    i32 xm, i32 ym) {
-    const struct entity_Type *entity_type = entity_get_type(data);
+                                    i32 *xm, i32 *ym) {
+    const struct entity_Type *e_type = entity_get_type(data);
 
-    i32 xto0 = (data->x - entity_type->xr)     >> LEVEL_TILE_SIZE;
-    i32 yto0 = (data->y - entity_type->yr)     >> LEVEL_TILE_SIZE;
-    i32 xto1 = (data->x + entity_type->xr - 1) >> LEVEL_TILE_SIZE;
-    i32 yto1 = (data->y + entity_type->yr - 1) >> LEVEL_TILE_SIZE;
+    const i32 old_x0 = data->x - e_type->xr;
+    const i32 old_y0 = data->y - e_type->yr;
+    const i32 old_x1 = data->x + e_type->xr - 1;
+    const i32 old_y1 = data->y + e_type->yr - 1;
 
-    i32 xt0 = (data->x + xm - entity_type->xr)     >> LEVEL_TILE_SIZE;
-    i32 yt0 = (data->y + ym - entity_type->yr)     >> LEVEL_TILE_SIZE;
-    i32 xt1 = (data->x + xm + entity_type->xr - 1) >> LEVEL_TILE_SIZE;
-    i32 yt1 = (data->y + ym + entity_type->yr - 1) >> LEVEL_TILE_SIZE;
+    const i32 old_xt0 = old_x0 >> LEVEL_TILE_SIZE;
+    const i32 old_yt0 = old_y0 >> LEVEL_TILE_SIZE;
+    const i32 old_xt1 = old_x1 >> LEVEL_TILE_SIZE;
+    const i32 old_yt1 = old_y1 >> LEVEL_TILE_SIZE;
 
-    for(i32 y = yt0; y <= yt1; y++) {
-        for(i32 x = xt0; x <= xt1; x++) {
-            if(x >= xto0 && x <= xto1 && y >= yto0 && y <= yto1)
-                continue;
+    // For each possible direction (left, right, up, down) iterate from
+    // closest to farther tile and, in case a blocking tile is found,
+    // decrease xm or ym.
+    // Note: the tile the entity is currently in is ignored.
+    if(*xm < 0) { // left
+        const i32 new_xt0 = (old_x0 + *xm) >> LEVEL_TILE_SIZE;
 
-            const struct tile_Type *tile = tile_get_type(
-                level_get_tile(level, x, y)
-            );
+        for(i32 x = old_xt0 - 1; x >= new_xt0; x--) {
+            for(i32 y = old_yt0; y <= old_yt1; y++) {
+                if(tile_blocks(level, x, y)) {
+                    *xm = ((x + 1) << LEVEL_TILE_SIZE) - old_x0;
+                    return true;
+                }
+            }
+        }
+    } else if(*xm > 0) { // right
+        const i32 new_xt1 = (old_x1 + *xm) >> LEVEL_TILE_SIZE;
 
-            if(!tile || tile->is_solid)
-                return true;
+        for(i32 x = old_xt1 + 1; x <= new_xt1; x++) {
+            for(i32 y = old_yt0; y <= old_yt1; y++) {
+                if(tile_blocks(level, x, y)) {
+                    *xm = (x << LEVEL_TILE_SIZE) - 1 - old_x1;
+                    return true;
+                }
+            }
+        }
+    } else if(*ym < 0) { // up
+        const i32 new_yt0 = (old_y0 + *ym) >> LEVEL_TILE_SIZE;
+
+        for(i32 y = old_yt0 - 1; y >= new_yt0; y--) {
+            for(i32 x = old_xt0; x <= old_xt1; x++) {
+                if(tile_blocks(level, x, y)) {
+                    *ym = ((y + 1) << LEVEL_TILE_SIZE) - old_y0;
+                    return true;
+                }
+            }
+        }
+    } else if(*ym > 0) { // down
+        const i32 new_yt1 = (old_y1 + *ym) >> LEVEL_TILE_SIZE;
+
+        for(i32 y = old_yt1 + 1; y <= new_yt1; y++) {
+            for(i32 x = old_xt0; x <= old_xt1; x++) {
+                if(tile_blocks(level, x, y)) {
+                    *ym = (y << LEVEL_TILE_SIZE) - 1 - old_y1;
+                    return true;
+                }
+            }
         }
     }
     return false;
@@ -112,15 +159,19 @@ static inline bool blocked_by_entities(struct Level *level,
 IWRAM_SECTION
 static bool move2(struct Level *level, struct entity_Data *data,
                   i32 xm, i32 ym) {
-    if(blocked_by_tiles(level, data, xm, ym))
-        return false;
+    bool success = true;
 
-    if(blocked_by_entities(level, data, xm, ym))
-        return false;
+    if(blocked_by_tiles(level, data, &xm, &ym))
+        success = false;
+
+    if(blocked_by_entities(level, data, xm, ym)) {
+        success = false;
+        xm = ym = 0;
+    }
 
     data->x += xm;
     data->y += ym;
-    return true;
+    return success;
 }
 
 IWRAM_SECTION
