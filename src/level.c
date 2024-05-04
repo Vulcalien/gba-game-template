@@ -50,8 +50,8 @@ static inline void remove_solid_entity(struct Level *level,
 
 void level_init(struct Level *level) {
     // clear 'entities'
-    for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++)
-        level->entities[i].type = ENTITY_INVALID;
+    for(level_EntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++)
+        level->entities[id].type = ENTITY_INVALID;
 
     // clear 'solid_entities'
     for(u32 t = 0; t < LEVEL_SIZE; t++)
@@ -64,8 +64,8 @@ static inline void tick_tiles(struct Level *level) {
 }
 
 static inline void tick_entities(struct Level *level) {
-    for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++) {
-        struct entity_Data *data = &level->entities[i];
+    for(level_EntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++) {
+        struct entity_Data *data = &level->entities[id];
         if(!entity_is_valid(data))
             continue;
 
@@ -77,7 +77,7 @@ static inline void tick_entities(struct Level *level) {
 
         if(data->should_remove) {
             if(entity_type->is_solid)
-                remove_solid_entity(level, data, i, xt0, yt0);
+                remove_solid_entity(level, data, id, xt0, yt0);
 
             data->type = ENTITY_INVALID;
         } else if(entity_type->is_solid) {
@@ -85,8 +85,8 @@ static inline void tick_entities(struct Level *level) {
             i32 yt1 = data->y >> LEVEL_TILE_SIZE;
 
             if(xt1 != xt0 || yt1 != yt0) {
-                remove_solid_entity(level, data, i, xt0, yt0);
-                insert_solid_entity(level, data, i, xt1, yt1);
+                remove_solid_entity(level, data, id, xt0, yt0);
+                insert_solid_entity(level, data, id, xt1, yt1);
             }
         }
     }
@@ -128,10 +128,10 @@ void level_draw(struct Level *level) {
 
 IWRAM_SECTION
 level_EntityID level_new_entity(struct Level *level) {
-    for(u32 i = 0; i < LEVEL_ENTITY_LIMIT; i++) {
-        struct entity_Data *data = &level->entities[i];
+    for(level_EntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++) {
+        struct entity_Data *data = &level->entities[id];
         if(!entity_is_valid(data))
-            return i;
+            return id;
     }
     return LEVEL_NO_ENTITY;
 }
