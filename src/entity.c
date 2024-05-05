@@ -35,7 +35,7 @@ static inline bool tile_blocks(struct Level *level, i32 x, i32 y) {
 
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct entity_Data *data,
-                                    i32 *xm, i32 *ym) {
+                                    i32 * const xm, i32 * const ym) {
     const struct entity_Type *e_type = entity_get_type(data);
 
     const i32 old_x0 = data->x - e_type->xr;
