@@ -48,8 +48,8 @@ static inline bool blocked_by_tiles(struct Level *level,
     const i32 old_xt1 = old_x1 >> LEVEL_TILE_SIZE;
     const i32 old_yt1 = old_y1 >> LEVEL_TILE_SIZE;
 
-    // For each possible direction (left, right, up, down) iterate from
-    // closest to farther tile and, in case a blocking tile is found,
+    // For each possible direction (left, right, up, down) iterate tiles
+    // from closest to farthest and, in case a blocking tile is found,
     // decrease xm or ym.
     // Note: the tile the entity is currently in is ignored.
     if(*xm < 0) { // left
