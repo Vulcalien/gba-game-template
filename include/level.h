@@ -43,6 +43,11 @@ struct Level {
 
     level_EntityID
     solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
+
+    struct {
+        i32 x;
+        i32 y;
+    } offset;
 };
 
 extern void level_init(struct Level *level);

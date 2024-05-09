@@ -60,7 +60,7 @@ struct entity_Type {
 
     // returns how many sprites were used
     u32 (*draw)(struct Level *level, struct entity_Data *data,
-                u32 used_sprites);
+                i32 x, i32 y, u32 used_sprites);
 
     // If defined, this is called when this entity (data) touches
     // another entity (touched_data) while trying to move.

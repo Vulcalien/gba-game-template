@@ -109,8 +109,13 @@ static inline void draw_entities(struct Level *level) {
         if(!entity_is_valid(data))
             continue;
 
+        const i32 draw_x = data->x - level->offset.x;
+        const i32 draw_y = data->y - level->offset.y;
+
         const struct entity_Type *entity_type = entity_get_type(data);
-        used_sprites += entity_type->draw(level, data, used_sprites);
+        used_sprites += entity_type->draw(
+            level, data, draw_x, draw_y, used_sprites
+        );
 
         if(used_sprites >= SPRITE_COUNT)
             break;
