@@ -23,14 +23,17 @@ const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
 };
 
 ALWAYS_INLINE
-static inline bool tile_blocks(struct Level *level, i32 x, i32 y) {
+static inline bool tile_blocks(struct Level *level, i32 x, i32 y,
+                               struct entity_Data *data) {
     const struct tile_Type *tile_type = tile_get_type(
         level_get_tile(level, x, y)
     );
 
-    if(!tile_type || tile_type->is_solid)
+    // invalid tiles (e.g. those outside the level) block entities
+    if(!tile_type)
         return true;
-    return false;
+
+    return tile_type->is_solid;
 }
 
 static inline bool blocked_by_tiles(struct Level *level,
@@ -57,7 +60,7 @@ static inline bool blocked_by_tiles(struct Level *level,
 
         for(i32 x = old_xt0 - 1; x >= new_xt0; x--) {
             for(i32 y = old_yt0; y <= old_yt1; y++) {
-                if(tile_blocks(level, x, y)) {
+                if(tile_blocks(level, x, y, data)) {
                     *xm = ((x + 1) << LEVEL_TILE_SIZE) - old_x0;
                     return true;
                 }
@@ -68,7 +71,7 @@ static inline bool blocked_by_tiles(struct Level *level,
 
         for(i32 x = old_xt1 + 1; x <= new_xt1; x++) {
             for(i32 y = old_yt0; y <= old_yt1; y++) {
-                if(tile_blocks(level, x, y)) {
+                if(tile_blocks(level, x, y, data)) {
                     *xm = (x << LEVEL_TILE_SIZE) - 1 - old_x1;
                     return true;
                 }
@@ -79,7 +82,7 @@ static inline bool blocked_by_tiles(struct Level *level,
 
         for(i32 y = old_yt0 - 1; y >= new_yt0; y--) {
             for(i32 x = old_xt0; x <= old_xt1; x++) {
-                if(tile_blocks(level, x, y)) {
+                if(tile_blocks(level, x, y, data)) {
                     *ym = ((y + 1) << LEVEL_TILE_SIZE) - old_y0;
                     return true;
                 }
@@ -90,7 +93,7 @@ static inline bool blocked_by_tiles(struct Level *level,
 
         for(i32 y = old_yt1 + 1; y <= new_yt1; y++) {
             for(i32 x = old_xt0; x <= old_xt1; x++) {
-                if(tile_blocks(level, x, y)) {
+                if(tile_blocks(level, x, y, data)) {
                     *ym = (y << LEVEL_TILE_SIZE) - 1 - old_y1;
                     return true;
                 }
