@@ -28,8 +28,7 @@ extern const struct Scene *scene;
 #define SCENE_SET(new_scene)\
     scene_set((new_scene), false, NULL)
 
-ALWAYS_INLINE
-inline void scene_set(const struct Scene *new_scene,
+INLINE void scene_set(const struct Scene *new_scene,
                       bool call_init, void *data) {
     scene = new_scene;
 

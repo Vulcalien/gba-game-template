@@ -32,8 +32,7 @@ struct tile_Type {
 
 extern const struct tile_Type tile_type_list[TILE_TYPES];
 
-ALWAYS_INLINE
-inline const struct tile_Type *tile_get_type(enum tile_TypeID id) {
+INLINE const struct tile_Type *tile_get_type(enum tile_TypeID id) {
     if(id >= 0 && id < TILE_TYPES)
         return &tile_type_list[id];
     return NULL;

@@ -56,16 +56,14 @@ extern void level_draw(struct Level *level);
 
 // === Tile functions ===
 
-ALWAYS_INLINE
-inline enum tile_TypeID level_get_tile(struct Level *level,
+INLINE enum tile_TypeID level_get_tile(struct Level *level,
                                        i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];
     return TILE_INVALID;
 }
 
-ALWAYS_INLINE
-inline void level_set_tile(struct Level *level, i32 x, i32 y,
+INLINE void level_set_tile(struct Level *level, i32 x, i32 y,
                            enum tile_TypeID id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;

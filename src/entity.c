@@ -22,9 +22,8 @@ const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
     [ENTITY_PLAYER] = &entity_player
 };
 
-ALWAYS_INLINE
-static inline bool tile_blocks(struct Level *level, i32 x, i32 y,
-                               struct entity_Data *data) {
+INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
+                        struct entity_Data *data) {
     const struct tile_Type *tile_type = tile_get_type(
         level_get_tile(level, x, y)
     );
