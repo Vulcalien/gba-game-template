@@ -41,14 +41,15 @@ static void vblank(void) {
 }
 
 int AgbMain(void) {
-    screen_init();
-    SCENE_SET(&scene_start);
-
+    // initialize drivers
     interrupt_init();
     sound_init();
 
     interrupt_enable(IRQ_VBLANK);
     interrupt_set_isr(IRQ_VBLANK, vblank);
+
+    screen_init();
+    scene_set(&scene_start, true, NULL);
 
     while(true) {
         tick();
