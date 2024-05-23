@@ -18,6 +18,9 @@
 # Resource List File example:
 """ resources.json
 {
+    "input_dir": "res",
+    "output_dir": "src/res",
+
     "tilesets": [
         {
             "name": "my_tileset",
@@ -117,7 +120,7 @@ args = parser.parse_args()
 
 # Functions
 
-def tileset_args(element):
+def tileset_args(element: dict):
     args = ''
 
     args += ' --tile-width "%d"'  % int(element['tile_width'])
@@ -131,10 +134,10 @@ def tileset_args(element):
 
     return args
 
-def palette_args(element):
+def palette_args(element: dict):
     return '--bpp 16'
 
-def image_args(element):
+def image_args(element: dict):
     args = ''
 
     bpp = int(element['bpp'])
@@ -170,7 +173,8 @@ FILE_TYPES = {
 
 PARENT_PATH = os.path.relpath(sys.path[0])
 
-def convert(element, file_type):
+def convert(element: dict, file_type: dict,
+            input_dir: str, output_dir: str):
     input_file  = str(element['input'])
     output_file = str(element['output'])
     name        = str(element['name'])
@@ -181,8 +185,8 @@ def convert(element, file_type):
 
     cmd = ' '.join((
         file_type['script'] % PARENT_PATH,
-        '-i', input_file,
-        '-o', output_file,
+        '-i', f'{input_dir}/{input_file}',
+        '-o', f'{output_dir}/{output_file}',
         '-n', name,
         '-s' if static else ''
     ))
@@ -202,13 +206,14 @@ def parse_json(f):
         print('Error: invalid JSON:', e)
 
 def parse_toml(f):
-    if toml_support:
-        try:
-            return tomllib.load(f)
-        except tomllib.TOMLDecodeError as e:
-            print('Error: invalid TOML:', e)
-    else:
+    if not toml_support:
         print('Error: TOML is not supported by this version of Python')
+        return
+
+    try:
+        return tomllib.load(f)
+    except tomllib.TOMLDecodeError as e:
+        print('Error: invalid TOML:', e)
 
 def parse_file(f):
     parsers = {
@@ -234,7 +239,12 @@ for f in args.res_list_files:
     if content is None:
         continue
 
+    input_dir  = content.get('input_dir',  '.')
+    output_dir = content.get('output_dir', '.')
+
     for file_type in FILE_TYPES:
-        if file_type in content:
-            for element in content[file_type]:
-                convert(element, FILE_TYPES[file_type])
+        for element in content.get(file_type, []):
+            convert(
+                element, FILE_TYPES[file_type],
+                input_dir, output_dir
+            )
