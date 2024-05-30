@@ -15,17 +15,9 @@
  */
 #include "util.h"
 
-#define DMA3_SOURCE *((vu32 *) 0x040000d4)
-#define DMA3_DEST   *((vu32 *) 0x040000d8)
-
-#define DMA3_COUNT   *((vu16 *) 0x040000dc)
-#define DMA3_CONTROL *((vu16 *) 0x040000de)
+#include "dma.h"
 
 void memcpy16(vu16 *dest, const vu16 *src, u32 n) {
-    DMA3_SOURCE  = (u32) src;
-    DMA3_DEST    = (u32) dest;
-
-    DMA3_COUNT   = n;
-    DMA3_CONTROL = 0 << 10 | // Transfer type (0 is 16bit, 1 is 32bit)
-                   1 << 15;  // DMA Enable
+    dma_config(DMA3, &(struct DMA) { .size = DMA_SIZE_16_BIT });
+    dma_transfer(DMA3, dest, src, n / 2);
 }
