@@ -18,6 +18,6 @@
 #include "dma.h"
 
 void memcpy16(vu16 *dest, const vu16 *src, u32 n) {
-    dma_config(DMA3, &(struct DMA) { .size = DMA_SIZE_16_BIT });
+    dma_config(DMA3, &(struct DMA) { .chunk = DMA_CHUNK_16_BIT });
     dma_transfer(DMA3, dest, src, n / 2);
 }
