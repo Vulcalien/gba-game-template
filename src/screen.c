@@ -82,9 +82,6 @@ void screen_init(void) {
     for(u32 i = 0; i < SPRITE_COUNT; i++)
         sprite_hide(i);
 
-    // enable V-Blank IRQ
-    DISPLAY_STATUS = (1 << 3);
-
     // disable forced blank
     DISPLAY_CONTROL &= ~(1 << 7);
 }
