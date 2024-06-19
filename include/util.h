@@ -17,8 +17,6 @@
 
 #include "main.h"
 
-extern void memcpy16(vu16 *dest, const vu16 *src, u32 n);
-
 INLINE void itoa(u32 number, u8 radix, char *array,
                  u8 digits, bool zero_fill) {
     u32 pos = 0;
