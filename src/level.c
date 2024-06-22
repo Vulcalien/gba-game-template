@@ -15,6 +15,8 @@
  */
 #include "level.h"
 
+#include "memory.h"
+
 #include "entity.h"
 #include "sprite.h"
 
@@ -135,8 +137,14 @@ IWRAM_SECTION
 level_EntityID level_new_entity(struct Level *level) {
     for(level_EntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++) {
         struct entity_Data *data = &level->entities[id];
-        if(!entity_is_valid(data))
+        if(!entity_is_valid(data)) {
+            // clear entity data
+            #if ENTITY_EXTRA_DATA_SIZE > 0
+            memset(data->data, 0, ENTITY_EXTRA_DATA_SIZE);
+            #endif
+
             return id;
+        }
     }
     return LEVEL_NO_ENTITY;
 }
