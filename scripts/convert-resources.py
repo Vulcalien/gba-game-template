@@ -100,6 +100,7 @@
 #   - in 'images', 'palette' is ignored and not required if 'bpp' is 16
 
 import sys, os, argparse, json
+from concurrent.futures import ThreadPoolExecutor
 
 try:
     import tomllib
@@ -242,9 +243,10 @@ for f in args.res_list_files:
     input_dir  = content.get('input_dir',  '.')
     output_dir = content.get('output_dir', '.')
 
-    for file_type in FILE_TYPES:
-        for element in content.get(file_type, []):
-            convert(
-                element, FILE_TYPES[file_type],
-                input_dir, output_dir
-            )
+    with ThreadPoolExecutor() as executor:
+        for file_type in FILE_TYPES:
+            for element in content.get(file_type, []):
+                executor.submit(convert,
+                    element, FILE_TYPES[file_type],
+                    input_dir, output_dir
+                )
