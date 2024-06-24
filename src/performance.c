@@ -15,7 +15,7 @@
  */
 #include "performance.h"
 
-#include "screen.h"
+#include <gba/display.h>
 
 static bool show_performance = false;
 static u16 tick_vcount;
@@ -25,12 +25,12 @@ static u16 ticks = 0, frames = 0;
 static u16 tps   = 0, fps    = 0;
 
 void performance_tick(void) {
-    tick_vcount = VCOUNT;
+    tick_vcount = display_get_vcount();
     ticks++;
 }
 
 void performance_draw(void) {
-    draw_vcount = VCOUNT;
+    draw_vcount = display_get_vcount();
     frames++;
 
     if(!show_performance)

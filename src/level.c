@@ -15,10 +15,10 @@
  */
 #include "level.h"
 
-#include "memory.h"
+#include <memory.h>
+#include <gba/sprite.h>
 
 #include "entity.h"
-#include "sprite.h"
 
 static inline void insert_solid_entity(struct Level *level,
                                        struct entity_Data *data,

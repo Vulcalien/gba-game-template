@@ -15,10 +15,11 @@
  */
 #include "main.h"
 
+#include <gba/interrupt.h>
+#include <gba/sound.h>
+#include <gba/input.h>
+
 #include "screen.h"
-#include "interrupt.h"
-#include "sound.h"
-#include "input.h"
 #include "performance.h"
 #include "scene.h"
 
