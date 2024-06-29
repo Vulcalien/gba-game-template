@@ -123,8 +123,7 @@ static inline void draw_entities(struct Level *level) {
             break;
     }
 
-    for(u32 i = used_sprites; i < SPRITE_COUNT; i++)
-        sprite_hide(i);
+    sprite_hide_range(used_sprites, SPRITE_COUNT);
 }
 
 IWRAM_SECTION

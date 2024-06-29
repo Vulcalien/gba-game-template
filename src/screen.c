@@ -18,7 +18,6 @@
 #include <gba/display.h>
 #include <gba/background.h>
 #include <gba/sprite.h>
-#include <gba/palette.h>
 
 #define WINDOW_IN  *((vu16 *) 0x04000048)
 #define WINDOW_OUT *((vu16 *) 0x0400004a)
@@ -80,9 +79,7 @@ void screen_init(void) {
 
     // TODO ...
 
-    // hide all sprites
-    for(u32 i = 0; i < SPRITE_COUNT; i++)
-        sprite_hide(i);
+    sprite_hide_all();
 
     // disable forced blank
     display_force_blank(false);
