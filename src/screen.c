@@ -29,36 +29,6 @@
 
 #define OBJ_TILESET ((vu16 *) 0x06010000)
 
-static const struct Background bg_configs[BACKGROUND_COUNT] = {
-    // BG0
-    {
-        .priority = 0,
-        .tileset  = 0,
-        .tilemap  = 0
-    },
-
-    // BG1
-    {
-        .priority = 1,
-        .tileset  = 0,
-        .tilemap  = 0
-    },
-
-    // BG2
-    {
-        .priority = 2,
-        .tileset  = 0,
-        .tilemap  = 0
-    },
-
-    // BG3
-    {
-        .priority = 3,
-        .tileset  = 0,
-        .tilemap  = 0
-    }
-};
-
 void screen_init(void) {
     display_config(&(struct Display) {
         .mode = 0,
@@ -74,8 +44,26 @@ void screen_init(void) {
     });
 
     // configure backgrounds
-    for(u32 i = 0; i < BACKGROUND_COUNT; i++)
-        background_config(i, &bg_configs[i]);
+    background_config(BG0, &(struct Background) {
+        .priority = 0,
+        .tileset  = 0,
+        .tilemap  = 0
+    });
+    background_config(BG1, &(struct Background) {
+        .priority = 1,
+        .tileset  = 0,
+        .tilemap  = 0
+    });
+    background_config(BG2, &(struct Background) {
+        .priority = 2,
+        .tileset  = 0,
+        .tilemap  = 0
+    });
+    background_config(BG3, &(struct Background) {
+        .priority = 3,
+        .tileset  = 0,
+        .tilemap  = 0
+    });
 
     // TODO ...
 
