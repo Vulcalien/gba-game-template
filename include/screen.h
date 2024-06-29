@@ -20,6 +20,4 @@
 #define SCREEN_W (240)
 #define SCREEN_H (160)
 
-#define VCOUNT *((vu16 *) 0x04000006)
-
 extern void screen_init(void);
