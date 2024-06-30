@@ -133,7 +133,7 @@ clean-deps:
 
 .PHONY: res
 res: $(RES_OUT_DIRS)
-	scripts/convert-resources.py "$(RES_DIR)/resources.json"
+	scripts/convert-resources "$(RES_DIR)/resources.json"
 
 .PHONY: release
 release:

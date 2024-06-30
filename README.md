@@ -111,8 +111,8 @@ as used by the GBA. Both input and output are in hexadecimal numerals.
 `header-checksum.py` calculates the header checksum of the given '.gba'
 binary file. The resulting number can then be written in the ROM header.
 
-`convert-resources.py` converts all resources listed in a JSON file into
-a GBA-readable format. It supports images, tilesets, images and binary
+`convert-resources` converts all resources listed in a JSON file into a
+GBA-readable format. It supports images, tilesets, images and binary
 files. See the example included in the script for information on how to
 write the JSON file.
 

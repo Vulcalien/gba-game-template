@@ -152,22 +152,22 @@ def image_args(element: dict):
 
 FILE_TYPES = {
     'tilesets': {
-        'script': '%s/res/tileset-to-array.py',
+        'script': '%s/res/tileset-to-array',
         'args_function': tileset_args
     },
 
     'palettes': {
-        'script': '%s/res/image-to-array.py',
+        'script': '%s/res/image-to-array',
         'args_function': palette_args
     },
 
     'images': {
-        'script': '%s/res/image-to-array.py',
+        'script': '%s/res/image-to-array',
         'args_function': image_args
     },
 
     'files': {
-        'script': '%s/res/file-to-array.py',
+        'script': '%s/res/file-to-array',
         'args_function': None
     }
 }
