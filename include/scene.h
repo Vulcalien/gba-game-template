@@ -1,4 +1,4 @@
-/* Copyright 2023 Vulcalien
+/* Copyright 2023-2024 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +17,15 @@
 
 #include "main.h"
 
-struct Scene {
+extern const struct Scene {
     void (*init)(void *data);
     void (*tick)(void);
     void (*draw)(void);
-};
+} *scene;
 
-extern const struct Scene *scene;
-
-#define SCENE_SET(new_scene)\
-    scene_set((new_scene), false, NULL)
-
-INLINE void scene_set(const struct Scene *new_scene,
-                      bool call_init, void *data) {
+INLINE void scene_set(const struct Scene *new_scene, void *data) {
     scene = new_scene;
-
-    if(call_init && scene->init)
-        scene->init(data);
+    scene->init(data);
 }
 
 // Scenes
