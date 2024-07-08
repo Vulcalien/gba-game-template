@@ -17,7 +17,7 @@
 
 #include "main.h"
 
-enum entity_TypeID {
+enum EntityTypeID {
     ENTITY_PLAYER,
 
     ENTITY_INVALID
@@ -33,8 +33,8 @@ enum entity_TypeID {
 // the necessary data into that array.
 #define ENTITY_EXTRA_DATA_SIZE (0)
 
-struct entity_Data {
-    enum entity_TypeID type;
+struct EntityData {
+    enum EntityTypeID type;
 
     u8 should_remove : 1;
     u8 solid_id : 7;
@@ -49,47 +49,47 @@ struct entity_Data {
 };
 
 struct Level;
-struct entity_Type {
+struct EntityType {
     // entity radius (width and height)
     u8 xr;
     u8 yr;
 
     bool is_solid;
 
-    void (*tick)(struct Level *level, struct entity_Data *data);
+    void (*tick)(struct Level *level, struct EntityData *data);
 
     // returns how many sprites were used
-    u32 (*draw)(struct Level *level, struct entity_Data *data,
+    u32 (*draw)(struct Level *level, struct EntityData *data,
                 i32 x, i32 y, u32 used_sprites);
 
     // If defined, this is called when this entity (data) touches
     // another entity (touched_data) while trying to move.
     // If 'true' is returned, this entity should be blocked by the
     // touched entity. If not defined, this is the default behavior.
-    bool (*touch_entity)(struct Level *level, struct entity_Data *data,
-                         struct entity_Data *touched_data);
+    bool (*touch_entity)(struct Level *level, struct EntityData *data,
+                         struct EntityData *touched_data);
 };
 
-extern const struct entity_Type * const entity_type_list[ENTITY_TYPES];
+extern const struct EntityType * const entity_type_list[ENTITY_TYPES];
 
-INLINE bool entity_is_valid(struct entity_Data *data) {
+INLINE bool entity_is_valid(struct EntityData *data) {
     return (data->type >= 0 && data->type < ENTITY_TYPES);
 }
 
 INLINE
-const struct entity_Type *entity_get_type(struct entity_Data *data) {
+const struct EntityType *entity_get_type(struct EntityData *data) {
     if(entity_is_valid(data))
         return entity_type_list[data->type];
     return NULL;
 }
 
 // returns 'true' if the entity moved by exactly (xm, ym)
-extern bool entity_move(struct Level *level, struct entity_Data *data,
+extern bool entity_move(struct Level *level, struct EntityData *data,
                         i32 xm, i32 ym);
 
-INLINE bool entity_intersects(struct entity_Data *data,
+INLINE bool entity_intersects(struct EntityData *data,
                               i32 x0, i32 y0, i32 x1, i32 y1) {
-    const struct entity_Type *entity_type = entity_get_type(data);
+    const struct EntityType *entity_type = entity_get_type(data);
 
     return (data->x + entity_type->xr - 1 >= x0) &&
            (data->y + entity_type->yr - 1 >= y0) &&
@@ -97,9 +97,9 @@ INLINE bool entity_intersects(struct entity_Data *data,
            (data->y - entity_type->yr     <= y1);
 }
 
-INLINE bool entity_touches(struct entity_Data *data1,
-                           struct entity_Data *data2) {
-    const struct entity_Type *e2_type = entity_get_type(data2);
+INLINE bool entity_touches(struct EntityData *data1,
+                           struct EntityData *data2) {
+    const struct EntityType *e2_type = entity_get_type(data2);
 
     return entity_intersects(
         data1,
@@ -109,5 +109,5 @@ INLINE bool entity_touches(struct entity_Data *data1,
 }
 
 // Entity types
-extern const struct entity_Type
+extern const struct EntityType
     entity_player;

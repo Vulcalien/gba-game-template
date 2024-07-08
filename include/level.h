@@ -28,7 +28,7 @@
 // Tile size: 3 = 8x8, 4 = 16x16, 5 = 32x32
 #define LEVEL_TILE_SIZE (3)
 
-typedef u8 level_EntityID;
+typedef u8 LevelEntityID;
 #define LEVEL_ENTITY_LIMIT (255)
 
 // An invalid entity ID.
@@ -37,11 +37,11 @@ typedef u8 level_EntityID;
 #define LEVEL_SOLID_ENTITIES_IN_TILE (4)
 
 struct Level {
-    enum tile_TypeID tiles[LEVEL_SIZE];
+    enum TileTypeID tiles[LEVEL_SIZE];
 
-    struct entity_Data entities[LEVEL_ENTITY_LIMIT];
+    struct EntityData entities[LEVEL_ENTITY_LIMIT];
 
-    level_EntityID
+    LevelEntityID
     solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
 
     struct {
@@ -56,15 +56,15 @@ extern void level_draw(struct Level *level);
 
 // === Tile functions ===
 
-INLINE enum tile_TypeID level_get_tile(struct Level *level,
-                                       i32 x, i32 y) {
+INLINE enum TileTypeID level_get_tile(struct Level *level,
+                                      i32 x, i32 y) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         return level->tiles[x + y * LEVEL_W];
     return TILE_INVALID;
 }
 
 INLINE void level_set_tile(struct Level *level, i32 x, i32 y,
-                           enum tile_TypeID id) {
+                           enum TileTypeID id) {
     if(x >= 0 && y >= 0 && x < LEVEL_W && y < LEVEL_H)
         level->tiles[x + y * LEVEL_W] = id;
 }
@@ -72,13 +72,13 @@ INLINE void level_set_tile(struct Level *level, i32 x, i32 y,
 // === Entity functions ===
 
 // returns an available entity ID, or an invalid ID if there is none
-extern level_EntityID level_new_entity(struct Level *level);
+extern LevelEntityID level_new_entity(struct Level *level);
 
 // Finalizes the entity having the given ID, setting its type and
 // clearing the 'should_remove' bit. Set the entity's properties
 // (such as x and y coordinates) *before* calling this function.
 extern void level_add_entity(struct Level *level,
-                             enum entity_TypeID type,
-                             level_EntityID id);
+                             enum EntityTypeID type,
+                             LevelEntityID id);
 
 // ===== ===== =====

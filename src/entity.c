@@ -18,13 +18,13 @@
 #include "level.h"
 #include "tile.h"
 
-const struct entity_Type * const entity_type_list[ENTITY_TYPES] = {
+const struct EntityType * const entity_type_list[ENTITY_TYPES] = {
     [ENTITY_PLAYER] = &entity_player
 };
 
 static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
-                               struct entity_Data *data) {
-    const struct tile_Type *tile_type = tile_get_type(
+                               struct EntityData *data) {
+    const struct TileType *tile_type = tile_get_type(
         level_get_tile(level, x, y)
     );
 
@@ -36,9 +36,9 @@ static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
 }
 
 static inline bool blocked_by_tiles(struct Level *level,
-                                    struct entity_Data *data,
+                                    struct EntityData *data,
                                     i32 * const xm, i32 * const ym) {
-    const struct entity_Type *e_type = entity_get_type(data);
+    const struct EntityType *e_type = entity_get_type(data);
 
     // old corners
     const i32 old_x0 = data->x - e_type->xr;
@@ -104,9 +104,9 @@ static inline bool blocked_by_tiles(struct Level *level,
 }
 
 static inline bool blocked_by_entities(struct Level *level,
-                                       struct entity_Data *data,
+                                       struct EntityData *data,
                                        i32 xm, i32 ym) {
-    const struct entity_Type *entity_type = entity_get_type(data);
+    const struct EntityType *entity_type = entity_get_type(data);
 
     i32 x0 = data->x + xm - entity_type->xr;
     i32 y0 = data->y + ym - entity_type->yr;
@@ -129,11 +129,11 @@ static inline bool blocked_by_entities(struct Level *level,
             const u32 tile = x + y * LEVEL_W;
 
             for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
-                level_EntityID id = level->solid_entities[tile][i];
+                LevelEntityID id = level->solid_entities[tile][i];
                 if(id >= LEVEL_ENTITY_LIMIT)
                     continue;
 
-                struct entity_Data *data2 = &level->entities[id];
+                struct EntityData *data2 = &level->entities[id];
                 if(data2 == data)
                     continue;
 
@@ -160,7 +160,7 @@ static inline bool blocked_by_entities(struct Level *level,
 }
 
 IWRAM_SECTION
-static bool move2(struct Level *level, struct entity_Data *data,
+static bool move2(struct Level *level, struct EntityData *data,
                   i32 xm, i32 ym) {
     bool success = true;
 
@@ -178,7 +178,7 @@ static bool move2(struct Level *level, struct entity_Data *data,
 }
 
 IWRAM_SECTION
-bool entity_move(struct Level *level, struct entity_Data *data,
+bool entity_move(struct Level *level, struct EntityData *data,
                  i32 xm, i32 ym) {
     bool success = true;
 

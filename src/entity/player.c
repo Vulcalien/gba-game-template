@@ -16,19 +16,19 @@
 #include "entity.h"
 
 IWRAM_SECTION
-static void player_tick(struct Level *level, struct entity_Data *data) {
+static void player_tick(struct Level *level, struct EntityData *data) {
     // ...
 }
 
 IWRAM_SECTION
-static u32 player_draw(struct Level *level, struct entity_Data *data,
+static u32 player_draw(struct Level *level, struct EntityData *data,
                        i32 x, i32 y, u32 used_sprites) {
     // ...
 
     return 0;
 }
 
-const struct entity_Type entity_player = {
+const struct EntityType entity_player = {
     // TODO set proper values
     .xr = 0,
     .yr = 0,

@@ -15,7 +15,7 @@
  */
 #include "tile.h"
 
-const struct tile_Type tile_type_list[TILE_TYPES] = {
+const struct TileType tile_type_list[TILE_TYPES] = {
     // TODO add tile types ...
     // e.g. [TILE_FOO] = { ... }
 };

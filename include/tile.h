@@ -17,7 +17,7 @@
 
 #include "main.h"
 
-enum tile_TypeID {
+enum TileTypeID {
     // TODO add tile types ...
     // e.g. TILE_FOO,
 
@@ -26,13 +26,13 @@ enum tile_TypeID {
 #define TILE_TYPES (TILE_INVALID)
 
 struct Level;
-struct tile_Type {
+struct TileType {
     bool is_solid;
 };
 
-extern const struct tile_Type tile_type_list[TILE_TYPES];
+extern const struct TileType tile_type_list[TILE_TYPES];
 
-INLINE const struct tile_Type *tile_get_type(enum tile_TypeID id) {
+INLINE const struct TileType *tile_get_type(enum TileTypeID id) {
     if(id >= 0 && id < TILE_TYPES)
         return &tile_type_list[id];
     return NULL;
