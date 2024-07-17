@@ -31,9 +31,9 @@ done
 echo "\nInitializing git repository"
 git -C "$1" init
 
-echo "\nRetrieving base library"
+echo "\nRetrieving libsimplegba library"
 git -C "$1" submodule add\
-    https://github.com/Vulcalien/gba-base-library.git lib/base
+    https://github.com/Vulcalien/libsimplegba.git lib/libsimplegba
 
 echo "\nInitializing all submodules"
 git -C "$1" submodule update --init --recursive
