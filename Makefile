@@ -137,6 +137,6 @@ res: $(RES_OUT_DIRS)
 
 .PHONY: release
 release:
-	tools/release.sh "$(OUT)"
+	tools/release "$(OUT)"
 
 -include $(OBJ:.$(OBJ_EXT)=.d)
