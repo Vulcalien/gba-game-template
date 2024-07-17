@@ -102,23 +102,21 @@ Include `scene.h` to use the scene system. The `scene_set` function sets
 the current scene, the only one being updated and drawn every tick.
 
 ### Helper scripts
-A set of helper Python scripts contained in the 'scripts' directory can
-be used to simplify certain operations.
+A set of helper scripts contained in the 'tools' directory can be used
+to simplify certain operations.
 
-`color-convert.py` converts 24-bit color codes into 15-bit color codes,
-as used by the GBA. Both input and output are in hexadecimal numerals.
+`color-convert` converts 24-bit color codes into 15-bit color codes, as
+used by the GBA. Both input and output are in hexadecimal numerals.
 
-`header-checksum.py` calculates the header checksum of the given '.gba'
+`header-checksum` calculates the header checksum of the given '.gba'
 binary file. The resulting number can then be written in the ROM header.
 
-`convert-resources` converts all resources listed in a JSON file into a
+`convert-resources` converts resources listed in a JSON file into a
 GBA-readable format. It supports images, tilesets, images and binary
-files. See the example included in the script for information on how to
-write the JSON file.
+files.
 
 ## License
 This template is released under the GNU General Public License, either
 version 3 of the License or any later version. Any work that uses this
-template or parts of it must be released under a
-[GPL-Compatible Free Software
-license](https://www.gnu.org/licenses/license-list.html).
+template or parts of it must be released under a [GPL-Compatible Free
+Software license](https://www.gnu.org/licenses/license-list.html).
