@@ -21,7 +21,7 @@ mkdir -p "$1"
 
 echo "\nCopying template files:"
 
-for item in src include res scripts\
+for item in src include res tools\
             Makefile COPYING .gitignore
 do
     echo "- ${item}"
