@@ -19,16 +19,6 @@
 #include <gba/background.h>
 #include <gba/sprite.h>
 
-#define WINDOW_IN  *((vu16 *) 0x04000048)
-#define WINDOW_OUT *((vu16 *) 0x0400004a)
-
-#define CHAR_BLOCK_0 ((vu16 *) 0x06000000)
-#define CHAR_BLOCK_1 ((vu16 *) 0x06004000)
-#define CHAR_BLOCK_2 ((vu16 *) 0x06008000)
-#define CHAR_BLOCK_3 ((vu16 *) 0x0600c000)
-
-#define OBJ_TILESET ((vu16 *) 0x06010000)
-
 void screen_init(void) {
     display_config(&(struct Display) {
         .mode = 0,

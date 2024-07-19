@@ -17,7 +17,4 @@
 
 #include "main.h"
 
-#define SCREEN_W (240)
-#define SCREEN_H (160)
-
 extern void screen_init(void);
