@@ -16,13 +16,18 @@
 #include "performance.h"
 
 #include <gba/display.h>
+#include <debug/mgba.h>
 
-static bool show_performance = false;
+#define PRINT_TO_MGBA
+
 static u16 tick_vcount;
 static u16 draw_vcount;
 
 static u16 ticks = 0, frames = 0;
 static u16 tps   = 0, fps    = 0;
+
+static bool show_performance = false;
+static bool should_refresh = false;
 
 void performance_tick(void) {
     tick_vcount = display_get_vcount();
@@ -33,10 +38,17 @@ void performance_draw(void) {
     draw_vcount = display_get_vcount();
     frames++;
 
-    if(!show_performance)
+    if(!should_refresh)
         return;
+    should_refresh = false;
 
-    // TODO draw performance overlay
+    #ifdef PRINT_TO_MGBA
+    mgba_open();
+    mgba_printf(
+        "tps %u - fps %u - tick_vcount %x - draw_vcount %x",
+        tps, fps, tick_vcount, draw_vcount
+    );
+    #endif
 }
 
 IWRAM_SECTION
@@ -52,5 +64,7 @@ void performance_vblank(void) {
 
         ticks = 0;
         frames = 0;
+
+        should_refresh = show_performance;
     }
 }
