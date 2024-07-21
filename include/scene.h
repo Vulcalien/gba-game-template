@@ -28,6 +28,8 @@ INLINE void scene_set(const struct Scene *new_scene, void *data) {
     scene->init(data);
 }
 
+// Note: the value pointed to by 'data' is not used immediately, so
+// ***its lifetime must be static***.
 extern void scene_transition_to(const struct Scene *next, void *data);
 
 // Scenes
