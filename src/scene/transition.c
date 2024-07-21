@@ -52,17 +52,17 @@ static void transition_tick(void) {
 
 THUMB
 static void transition_draw(void) {
-    if(time < TRANSITION_HALFTIME)
-        previous_scene->draw();
-    else if(time > TRANSITION_HALFTIME)
-        next_scene->draw();
-
     // calculate how much to fade
     u32 fade = math_sin(
         time * MATH_PI / (2 * TRANSITION_HALFTIME)
     ) * 20 / 0x4000;
 
     display_darken(NULL, fade);
+
+    if(time < TRANSITION_HALFTIME)
+        previous_scene->draw();
+    else if(time > TRANSITION_HALFTIME)
+        next_scene->draw();
 }
 
 static const struct Scene scene_transition = {
