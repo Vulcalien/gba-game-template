@@ -62,10 +62,9 @@ struct EntityType {
     u32 (*draw)(struct Level *level, struct EntityData *data,
                 i32 x, i32 y, u32 used_sprites);
 
-    // If defined, this is called when this entity (data) touches
-    // another entity (touched_data) while trying to move.
-    // If 'true' is returned, this entity should be blocked by the
-    // touched entity. If not defined, this is the default behavior.
+    // If defined, called when this entity (data) is moving and touches
+    // another entity (touched_data). Returns 'true' if this entity
+    // should be blocked by the touched entity, 'false' otherwise.
     bool (*touch_entity)(struct Level *level, struct EntityData *data,
                          struct EntityData *touched_data);
 };
