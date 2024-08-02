@@ -138,7 +138,7 @@ static inline bool blocked_by_entities(struct Level *level,
                     continue;
 
                 if(entity_intersects(data2, x0, y0, x1, y1)) {
-                    // by default, a solid entity blocks another
+                    // by default, solid entities block movement
                     bool should_block = true;
 
                     // if defined, call 'touch_entity' event
