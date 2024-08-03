@@ -38,13 +38,13 @@ static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct EntityData *data,
                                     i32 * const xm, i32 * const ym) {
-    const struct EntityType *e_type = entity_get_type(data);
+    const struct EntityType *type = entity_get_type(data);
 
     // old corners
-    const i32 old_x0 = data->x - e_type->xr;
-    const i32 old_y0 = data->y - e_type->yr;
-    const i32 old_x1 = data->x + e_type->xr - 1;
-    const i32 old_y1 = data->y + e_type->yr - 1;
+    const i32 old_x0 = data->x - type->xr;
+    const i32 old_y0 = data->y - type->yr;
+    const i32 old_x1 = data->x + type->xr - 1;
+    const i32 old_y1 = data->y + type->yr - 1;
 
     // old tile corners
     const i32 old_xt0 = old_x0 >> LEVEL_TILE_SIZE;
