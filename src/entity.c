@@ -106,12 +106,12 @@ static inline bool blocked_by_tiles(struct Level *level,
 static inline bool blocked_by_entities(struct Level *level,
                                        struct EntityData *data,
                                        i32 xm, i32 ym) {
-    const struct EntityType *entity_type = entity_get_type(data);
+    const struct EntityType *type = entity_get_type(data);
 
-    i32 x0 = data->x + xm - entity_type->xr;
-    i32 y0 = data->y + ym - entity_type->yr;
-    i32 x1 = data->x + xm + entity_type->xr - 1;
-    i32 y1 = data->y + ym + entity_type->yr - 1;
+    i32 x0 = data->x + xm - type->xr;
+    i32 y0 = data->y + ym - type->yr;
+    i32 x1 = data->x + xm + type->xr - 1;
+    i32 y1 = data->y + ym + type->yr - 1;
 
     i32 xt0 = (x0 >> LEVEL_TILE_SIZE) - 1;
     i32 yt0 = (y0 >> LEVEL_TILE_SIZE) - 1;
@@ -133,17 +133,17 @@ static inline bool blocked_by_entities(struct Level *level,
                 if(id >= LEVEL_ENTITY_LIMIT)
                     continue;
 
-                struct EntityData *data2 = &level->entities[id];
-                if(data2 == data)
+                struct EntityData *touched_data = &level->entities[id];
+                if(touched_data == data)
                     continue;
 
-                if(entity_intersects(data2, x0, y0, x1, y1)) {
+                if(entity_intersects(touched_data, x0, y0, x1, y1)) {
                     // by default, solid entities block movement
                     bool should_block = true;
 
                     // if defined, call 'touch_entity' event
-                    if(entity_type->touch_entity)
-                        if(!entity_type->touch_entity(level, data, data2))
+                    if(type->touch_entity)
+                        if(!type->touch_entity(level, data, touched_data))
                             should_block = false;
 
                     if(!should_block)
@@ -151,7 +151,7 @@ static inline bool blocked_by_entities(struct Level *level,
 
                     // if the second entity is NOT already touching the
                     // first one, then the first one is blocked by it.
-                    if(!blocked && !entity_touches(data2, data))
+                    if(!blocked && !entity_touches(touched_data, data))
                         blocked = true;
                 }
             }
