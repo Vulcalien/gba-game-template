@@ -20,34 +20,38 @@
 
 #include "entity.h"
 
-static inline void insert_solid_entity(struct Level *level,
-                                       struct EntityData *data,
-                                       LevelEntityID id,
-                                       i32 xt, i32 yt) {
+static inline void partition_insert(struct Level *level,
+                                    struct EntityData *data,
+                                    LevelEntityID id,
+                                    i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
     const u32 tile = xt + yt * LEVEL_W;
-    for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
-        if(level->solid_entities[tile][i] >= LEVEL_ENTITY_LIMIT) {
-            level->solid_entities[tile][i] = id;
-            data->solid_id = i;
+    LevelEntityID *partition = level->entity_partitions[tile];
+
+    for(u32 i = 0; i < LEVEL_ENTITIES_IN_PARTITION; i++) {
+        if(partition[i] >= LEVEL_ENTITY_LIMIT) {
+            partition[i] = id;
+            data->partition_index = i;
 
             break;
         }
     }
 }
 
-static inline void remove_solid_entity(struct Level *level,
-                                       struct EntityData *data,
-                                       LevelEntityID id,
-                                       i32 xt, i32 yt) {
+static inline void partition_remove(struct Level *level,
+                                    struct EntityData *data,
+                                    LevelEntityID id,
+                                    i32 xt, i32 yt) {
     if(xt < 0 || yt < 0 || xt >= LEVEL_W || yt >= LEVEL_H)
         return;
 
     const u32 tile = xt + yt * LEVEL_W;
-    if(level->solid_entities[tile][data->solid_id] == id)
-        level->solid_entities[tile][data->solid_id] = LEVEL_NO_ENTITY;
+    LevelEntityID *partition = level->entity_partitions[tile];
+
+    if(partition[data->partition_index] == id)
+        partition[data->partition_index] = LEVEL_NO_ENTITY;
 }
 
 void level_init(struct Level *level) {
@@ -55,10 +59,10 @@ void level_init(struct Level *level) {
     for(LevelEntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++)
         level->entities[id].type = ENTITY_INVALID;
 
-    // clear 'solid_entities'
+    // clear entity partitions
     for(u32 t = 0; t < LEVEL_SIZE; t++)
-        for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++)
-            level->solid_entities[t][i] = LEVEL_NO_ENTITY;
+        for(u32 i = 0; i < LEVEL_ENTITIES_IN_PARTITION; i++)
+            level->entity_partitions[t][i] = LEVEL_NO_ENTITY;
 }
 
 static inline void tick_tiles(struct Level *level) {
@@ -78,17 +82,17 @@ static inline void tick_entities(struct Level *level) {
         entity_type->tick(level, data);
 
         if(data->should_remove) {
-            if(entity_type->is_solid)
-                remove_solid_entity(level, data, id, xt0, yt0);
+            if(entity_type->is_partitioned)
+                partition_remove(level, data, id, xt0, yt0);
 
             data->type = ENTITY_INVALID;
-        } else if(entity_type->is_solid) {
+        } else if(entity_type->is_partitioned) {
             i32 xt1 = data->x >> LEVEL_TILE_SIZE;
             i32 yt1 = data->y >> LEVEL_TILE_SIZE;
 
             if(xt1 != xt0 || yt1 != yt0) {
-                remove_solid_entity(level, data, id, xt0, yt0);
-                insert_solid_entity(level, data, id, xt1, yt1);
+                partition_remove(level, data, id, xt0, yt0);
+                partition_insert(level, data, id, xt1, yt1);
             }
         }
     }
@@ -159,10 +163,10 @@ void level_add_entity(struct Level *level,
     data->should_remove = false;
 
     const struct EntityType *entity_type = entity_get_type(data);
-    if(entity_type && entity_type->is_solid) {
+    if(entity_type && entity_type->is_partitioned) {
         i32 xt = data->x >> LEVEL_TILE_SIZE;
         i32 yt = data->y >> LEVEL_TILE_SIZE;
 
-        insert_solid_entity(level, data, id, xt, yt);
+        partition_insert(level, data, id, xt, yt);
     }
 }

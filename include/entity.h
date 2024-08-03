@@ -37,7 +37,7 @@ struct EntityData {
     enum EntityTypeID type;
 
     u8 should_remove : 1;
-    u8 solid_id : 7;
+    u8 partition_index : 7; // entity's index within partition
 
     i32 x;
     i32 y;
@@ -54,7 +54,7 @@ struct EntityType {
     u8 xr;
     u8 yr;
 
-    bool is_solid;
+    bool is_partitioned;
 
     void (*tick)(struct Level *level, struct EntityData *data);
 

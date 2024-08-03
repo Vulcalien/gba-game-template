@@ -34,7 +34,7 @@ typedef u8 LevelEntityID;
 // An invalid entity ID.
 #define LEVEL_NO_ENTITY (LEVEL_ENTITY_LIMIT)
 
-#define LEVEL_SOLID_ENTITIES_IN_TILE (4)
+#define LEVEL_ENTITIES_IN_PARTITION 4
 
 struct Level {
     enum TileTypeID tiles[LEVEL_SIZE];
@@ -42,7 +42,7 @@ struct Level {
     struct EntityData entities[LEVEL_ENTITY_LIMIT];
 
     LevelEntityID
-    solid_entities[LEVEL_SIZE][LEVEL_SOLID_ENTITIES_IN_TILE];
+    entity_partitions[LEVEL_SIZE][LEVEL_ENTITIES_IN_PARTITION];
 
     struct {
         i32 x;

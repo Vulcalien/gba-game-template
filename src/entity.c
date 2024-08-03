@@ -128,8 +128,8 @@ static inline bool blocked_by_entities(struct Level *level,
         for(u32 x = xt0; x <= xt1; x++) {
             const u32 tile = x + y * LEVEL_W;
 
-            for(u32 i = 0; i < LEVEL_SOLID_ENTITIES_IN_TILE; i++) {
-                LevelEntityID id = level->solid_entities[tile][i];
+            for(u32 i = 0; i < LEVEL_ENTITIES_IN_PARTITION; i++) {
+                LevelEntityID id = level->entity_partitions[tile][i];
                 if(id >= LEVEL_ENTITY_LIMIT)
                     continue;
 
