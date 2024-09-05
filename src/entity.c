@@ -22,6 +22,7 @@ const struct EntityType * const entity_type_list[ENTITY_TYPES] = {
     [ENTITY_PLAYER] = &entity_player
 };
 
+// Returns 'true' if the tile blocks the movement, 'false' otherwise.
 static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
                                struct EntityData *data) {
     const struct TileType *tile_type = tile_get_type(
@@ -35,6 +36,22 @@ static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
     return tile_type->is_solid;
 }
 
+// This function determines whether the entity would be blocked by a
+// solid tile if moved by (xm, ym). If the entity would be blocked, the
+// absolute value of 'xm' and 'ym' is reduced or even set to zero.
+//
+// Return value:
+//   'true' if the entity would be blocked, 'false' otherwise.
+//   If 'true' is returned, the values of (xm, ym) are adjusted.
+//
+// Constraints:
+//   The movement must be limited to one axis at a time (i.e. xm == 0 or
+//   ym == 0).
+//
+// Implementation:
+//   This algorithm visits tiles from closest to the player to farthest,
+//   so that if a blocking tile is found, tiles farther away are
+//   skipped.
 static inline bool blocked_by_tiles(struct Level *level,
                                     struct EntityData *data,
                                     i32 * const xm, i32 * const ym) {
@@ -96,6 +113,8 @@ static inline bool blocked_by_tiles(struct Level *level,
                 else if(*ym > 0) // down
                     *ym = (a << LEVEL_TILE_SIZE) - 1 - old_y1;
 
+                // the closest blocking tile was already found: no need
+                // to continue checking other tiles
                 return true;
             }
         }
@@ -160,6 +179,16 @@ static inline bool blocked_by_entities(struct Level *level,
     return blocked;
 }
 
+// This function attempts to move the entity along one axis.
+//
+// Return value:
+//   'true' if the entity was moved without being blocked by anything,
+//   'false' otherwise. The entity's position may be updated in both
+//   cases.
+//
+// Constraints:
+//   The movement must be limited to one axis at a time (i.e. xm == 0 or
+//   ym == 0).
 IWRAM_SECTION
 static bool move2(struct Level *level, struct EntityData *data,
                   i32 xm, i32 ym) {
