@@ -157,7 +157,7 @@ static inline bool blocked_by_entities(struct Level *level,
                     continue;
 
                 if(entity_intersects(touched_data, x0, y0, x1, y1)) {
-                    // by default, solid entities block movement
+                    // by default, partitioned entities block movement
                     bool should_block = true;
 
                     // if defined, call 'touch_entity' event
