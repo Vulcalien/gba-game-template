@@ -207,6 +207,7 @@ static bool move2(struct Level *level, struct EntityData *data,
     return success;
 }
 
+// See the header file for documentation.
 IWRAM_SECTION
 bool entity_move(struct Level *level, struct EntityData *data,
                  i32 xm, i32 ym) {

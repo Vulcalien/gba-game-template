@@ -76,7 +76,13 @@ const struct EntityType *entity_get_type(struct EntityData *data) {
     return NULL;
 }
 
-// returns 'true' if the entity moved by exactly (xm, ym)
+// This function attempts to move the entity by (xm, ym) while checking
+// if its path is blocked.
+//
+// Return value:
+//   'true' if the entity was moved without being blocked by anything
+//   (including the case where xm == 0 and ym == 0), 'false' otherwise.
+//   The entity's position may be updated in both cases.
 extern bool entity_move(struct Level *level, struct EntityData *data,
                         i32 xm, i32 ym);
 
