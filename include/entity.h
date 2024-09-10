@@ -24,13 +24,7 @@ enum EntityTypeID {
 };
 #define ENTITY_TYPES (ENTITY_INVALID)
 
-// If specific entity types need bytes to store their data, change this
-// value. The 'data' array can then be cast into whatever struct of the
-// same size.
-//
-// This will increase the size of all entities, no matter their type. If
-// this is not acceptable, only store an array index in 'data' and put
-// the necessary data into that array.
+// Number of extra bytes reserved for private use by entity types.
 #define ENTITY_EXTRA_DATA_SIZE (0)
 
 struct EntityData {
