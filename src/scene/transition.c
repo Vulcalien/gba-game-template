@@ -54,7 +54,7 @@ THUMB
 static void transition_draw(void) {
     // calculate how much to fade
     u32 fade = math_sin(
-        time * MATH_PI / (2 * TRANSITION_HALFTIME)
+        time * math_brad(90) / TRANSITION_HALFTIME
     ) * 20 / 0x4000;
 
     display_darken(NULL, fade);
