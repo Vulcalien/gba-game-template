@@ -126,7 +126,6 @@ static inline void draw_entities(struct Level *level) {
         if(used_sprites >= SPRITE_COUNT)
             break;
     }
-
     sprite_hide_range(used_sprites, SPRITE_COUNT);
 }
 
