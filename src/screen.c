@@ -20,18 +20,8 @@
 #include <gba/sprite.h>
 
 void screen_init(void) {
-    display_config(&(struct Display) {
-        .mode = 0,
-
-        .oam_hblank  = 0,
-        .obj_mapping = 1,
-
-        .enable_bg0 = 0,
-        .enable_bg1 = 0,
-        .enable_bg2 = 0,
-        .enable_bg3 = 0,
-        .enable_obj = 1
-    });
+    display_config(DISPLAY_MODE_0);
+    sprite_hide_all();
 
     // configure backgrounds
     background_config(BG0, &(struct Background) {
@@ -57,8 +47,5 @@ void screen_init(void) {
 
     // TODO ...
 
-    sprite_hide_all();
-
-    // disable forced blank
     display_force_blank(false);
 }
