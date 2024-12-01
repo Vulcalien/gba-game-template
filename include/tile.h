@@ -27,7 +27,7 @@ enum TileTypeID {
 
 struct Level;
 struct TileType {
-    bool is_solid;
+    bool solid;
 };
 
 extern const struct TileType tile_type_list[TILE_TYPES];

@@ -33,7 +33,7 @@ static INLINE bool tile_blocks(struct Level *level, i32 x, i32 y,
     if(!tile_type)
         return true;
 
-    return tile_type->is_solid;
+    return tile_type->solid;
 }
 
 // This function determines whether the entity would be blocked by a
