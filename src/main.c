@@ -16,7 +16,7 @@
 #include "main.h"
 
 #include <gba/interrupt.h>
-#include <gba/sound.h>
+#include <gba/audio.h>
 #include <gba/input.h>
 
 #include "screen.h"
@@ -43,7 +43,7 @@ static void vblank(void) {
 
 int AgbMain(void) {
     interrupt_init();
-    sound_init();
+    audio_init();
 
     // enable VBlank interrupt
     interrupt_toggle(IRQ_VBLANK, true);
