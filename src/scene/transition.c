@@ -25,10 +25,10 @@ static u32 time;
 
 static const struct Scene *previous_scene;
 static const struct Scene *next_scene;
-static void *next_init_data;
+static u32 next_init_data;
 
 THUMB
-static void transition_init(void *data) {
+static void transition_init(u32 data) {
     time = 0;
 }
 
@@ -72,7 +72,7 @@ static const struct Scene scene_transition = {
 };
 
 THUMB
-void scene_transition_to(const struct Scene *next, void *data) {
+void scene_transition_to(const struct Scene *next, u32 data) {
     // if already transitioning, ignore this request
     if(scene == &scene_transition)
         return;
@@ -81,5 +81,5 @@ void scene_transition_to(const struct Scene *next, void *data) {
     next_scene     = next;
     next_init_data = data;
 
-    scene_set(&scene_transition, NULL);
+    scene_set(&scene_transition, 0);
 }

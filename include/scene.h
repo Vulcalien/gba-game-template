@@ -18,19 +18,17 @@
 #include "main.h"
 
 extern const struct Scene {
-    void (*init)(void *data);
+    void (*init)(u32 data);
     void (*tick)(void);
     void (*draw)(void);
 } *scene;
 
-INLINE void scene_set(const struct Scene *new_scene, void *data) {
+INLINE void scene_set(const struct Scene *new_scene, u32 data) {
     scene = new_scene;
     scene->init(data);
 }
 
-// Note: the value pointed to by 'data' is not used immediately, so
-// ***its lifetime must be static***.
-extern void scene_transition_to(const struct Scene *next, void *data);
+extern void scene_transition_to(const struct Scene *next, u32 data);
 
 // Scenes
 extern const struct Scene
