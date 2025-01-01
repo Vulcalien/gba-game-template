@@ -24,6 +24,7 @@
 #include "scene.h"
 
 static inline void tick(void) {
+    audio_update();
     input_update();
     scene->tick();
 
