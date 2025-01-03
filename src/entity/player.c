@@ -33,7 +33,7 @@ const struct EntityType entity_player = {
     .xr = 0,
     .yr = 0,
 
-    .is_partitioned = true,
+    .partitioned = true,
 
     .tick = player_tick,
     .draw = player_draw

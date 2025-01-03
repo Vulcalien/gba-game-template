@@ -82,11 +82,11 @@ static inline void tick_entities(struct Level *level) {
         entity_type->tick(level, data);
 
         if(data->should_remove) {
-            if(entity_type->is_partitioned)
+            if(entity_type->partitioned)
                 partition_remove(level, data, id, xt0, yt0);
 
             data->type = ENTITY_INVALID;
-        } else if(entity_type->is_partitioned) {
+        } else if(entity_type->partitioned) {
             i32 xt1 = data->x >> LEVEL_TILE_SIZE;
             i32 yt1 = data->y >> LEVEL_TILE_SIZE;
 
@@ -162,7 +162,7 @@ void level_add_entity(struct Level *level,
     data->should_remove = false;
 
     const struct EntityType *entity_type = entity_get_type(data);
-    if(entity_type && entity_type->is_partitioned) {
+    if(entity_type && entity_type->partitioned) {
         i32 xt = data->x >> LEVEL_TILE_SIZE;
         i32 yt = data->y >> LEVEL_TILE_SIZE;
 

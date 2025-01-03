@@ -1,4 +1,4 @@
-/* Copyright 2023-2024 Vulcalien
+/* Copyright 2023-2025 Vulcalien
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@ enum EntityTypeID {
 struct EntityData {
     enum EntityTypeID type;
 
-    u8 should_remove : 1;
-    u8 partition_index : 7; // entity's index within partition
+    bool should_remove;
+    u8 partition_index; // entity's index within partition
 
     i32 x;
     i32 y;
@@ -44,11 +44,10 @@ struct EntityData {
 
 struct Level;
 struct EntityType {
-    // entity radius (width and height)
-    u8 xr;
-    u8 yr;
+    u8 xr; // horizontal radius
+    u8 yr; // vertical radius
 
-    bool is_partitioned;
+    bool partitioned;
 
     void (*tick)(struct Level *level, struct EntityData *data);
 
