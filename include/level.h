@@ -21,18 +21,25 @@
 #include "entity.h"
 
 // Level size (in tiles)
-#define LEVEL_W (30)
-#define LEVEL_H (20)
+#define LEVEL_W 30
+#define LEVEL_H 20
 #define LEVEL_SIZE (LEVEL_W * LEVEL_H)
 
 // Tile size: 3 = 8x8, 4 = 16x16, 5 = 32x32
-#define LEVEL_TILE_SIZE (3)
+#define LEVEL_TILE_SIZE 3
 
-typedef u8 LevelEntityID;
-#define LEVEL_ENTITY_LIMIT (255)
+#define LEVEL_ENTITY_LIMIT 255
+
+#if LEVEL_ENTITY_LIMIT <= U8_MAX
+    typedef u8 LevelEntityID;
+#elif LEVEL_ENTITY_LIMIT <= U16_MAX
+    typedef u16 LevelEntityID;
+#elif LEVEL_ENTITY_LIMIT <= U32_MAX
+    typedef u32 LevelEntityID;
+#endif
 
 // An invalid entity ID.
-#define LEVEL_NO_ENTITY (LEVEL_ENTITY_LIMIT)
+#define LEVEL_NO_ENTITY LEVEL_ENTITY_LIMIT
 
 #define LEVEL_ENTITIES_IN_PARTITION 4
 
