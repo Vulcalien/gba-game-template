@@ -24,8 +24,8 @@ enum EntityTypeID {
 };
 #define ENTITY_TYPES (ENTITY_INVALID)
 
-// Number of extra bytes reserved for private use by entity types.
-#define ENTITY_EXTRA_DATA_SIZE (0)
+// number of extra bytes reserved for private use by entity types
+#define ENTITY_EXTRA_SIZE 4
 
 struct EntityData {
     enum EntityTypeID type;
@@ -36,10 +36,7 @@ struct EntityData {
     i32 x;
     i32 y;
 
-    #if ENTITY_EXTRA_DATA_SIZE > 0
-        ALIGNED(4)
-        u8 data[ENTITY_EXTRA_DATA_SIZE];
-    #endif
+    u8 extra[ENTITY_EXTRA_SIZE] ALIGNED(4);
 };
 
 struct Level;

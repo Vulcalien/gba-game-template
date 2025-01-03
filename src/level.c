@@ -140,10 +140,7 @@ LevelEntityID level_new_entity(struct Level *level) {
     for(LevelEntityID id = 0; id < LEVEL_ENTITY_LIMIT; id++) {
         struct EntityData *data = &level->entities[id];
         if(!entity_is_valid(data)) {
-            // clear entity data
-            #if ENTITY_EXTRA_DATA_SIZE > 0
-            memory_clear(data->data, ENTITY_EXTRA_DATA_SIZE);
-            #endif
+            memory_clear(data->extra, ENTITY_EXTRA_SIZE);
 
             return id;
         }
