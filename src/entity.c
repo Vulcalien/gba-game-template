@@ -143,8 +143,8 @@ static inline bool blocked_by_entities(struct Level *level,
     if(yt1 >= LEVEL_H) yt1 = LEVEL_H - 1;
 
     bool blocked = false;
-    for(u32 y = yt0; y <= yt1; y++) {
-        for(u32 x = xt0; x <= xt1; x++) {
+    for(i32 y = yt0; y <= yt1; y++) {
+        for(i32 x = xt0; x <= xt1; x++) {
             const u32 tile = x + y * LEVEL_W;
 
             for(u32 i = 0; i < LEVEL_ENTITIES_IN_PARTITION; i++) {
