@@ -3,4 +3,4 @@
 	url = https://github.com/Vulcalien/libsimplegba.git
 [submodule "convert-resources-gba"]
 	path = tools/external/convert-resources
-	url = git@github.com:Vulcalien/convert-resources-gba.git
+	url = https://github.com/Vulcalien/convert-resources-gba.git
