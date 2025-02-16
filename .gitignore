@@ -1,12 +1,9 @@
-# Binary
+# binary
 /obj
 /bin
 
-# Converted resources
+# converted resources
 src/res
 
-# Release files
+# release files
 /release
-
-# vim
-*.swp
