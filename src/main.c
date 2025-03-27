@@ -16,6 +16,7 @@
 #include "main.h"
 
 #include <gba/interrupt.h>
+#include <gba/backup.h>
 #include <gba/audio.h>
 #include <gba/input.h>
 
@@ -47,7 +48,8 @@ int AgbMain(void) {
     interrupt_toggle(IRQ_VBLANK, true);
     interrupt_set_isr(IRQ_VBLANK, vblank);
 
-    audio_init();
+    backup_init(BACKUP_SRAM);
+    audio_init(AUDIO_BASIC);
     screen_init();
 
     scene_set(&scene_start, 0);
