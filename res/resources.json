@@ -1,4 +1,12 @@
 {
     "input_dir": "res",
-    "output_dir": "src/res"
+    "output_dir": "src/res",
+
+    "files": [
+        {
+            "name": "song",
+            "input": "editing.raw",
+            "output": "song.c"
+        }
+    ]
 }
