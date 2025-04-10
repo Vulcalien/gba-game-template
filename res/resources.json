@@ -5,8 +5,14 @@
     "files": [
         {
             "name": "song",
-            "input": "editing.raw",
+            "input": "sound.raw",
             "output": "song.c"
+        },
+
+        {
+            "name": "song_1",
+            "input": "editing.raw",
+            "output": "song_1.c"
         }
     ]
 }

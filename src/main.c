@@ -28,6 +28,7 @@
 #include <debug/mgba.h>
 #include <gba/system.h>
 #include <math.h>
+#include <random.h>
 
 SBSS_SECTION
 i8 sinewave[16384];
@@ -41,20 +42,20 @@ static inline void tick(void) {
     time += profiler_stop();
 
     i++;
-    if(i == 1) {
-        /*mgba_printf(*/
-            /*"%u\t%u.%u%%",*/
-            /*time,*/
-            /*time * 100 / (SYSTEM_FREQUENCY / 3),*/
-            /*time * 1000 / (SYSTEM_FREQUENCY / 3) % 10*/
-        /*);*/
-        if(time > 300) {
-            mgba_printf(
-                "%u\t%u.%u", time,
-                    time * 2133 / SYSTEM_FREQUENCY,
-                    time * 1667 / (128*1024) % 100
-                );
-        }
+    if(i == 60) {
+        mgba_printf(
+            "%u\t%u.%u%%",
+            time,
+            time * 100 / (SYSTEM_FREQUENCY / 1),
+            time * 500 / (SYSTEM_FREQUENCY / 2) % 10
+        );
+        /*if(time > 300) {*/
+            /*mgba_printf(*/
+                /*"%u\t%u.%u", time,*/
+                    /*time * 2133 / SYSTEM_FREQUENCY,*/
+                    /*time * 1667 / (128*1024) % 100*/
+                /*);*/
+        /*}*/
         i = 0;
         time = 0;
     }
@@ -65,15 +66,21 @@ static inline void tick(void) {
     static u32 pitch = 0x1000;
     static u32 panning = 0;
     if(input_pressed(KEY_A)) {
-        audio_pause(-1);
+        audio_resume(-1);
         /*pitch += 0x100;*/
         /*panning += 1;*/
     }
     if(input_pressed(KEY_B)) {
-        audio_resume(-1);
+        audio_pause(-1);
         /*pitch -= 0x100;*/
         /*panning -= 1;*/
     }
+
+    static i32 xz = 0;
+    xz++;
+    /*panning = math_sin(xz * 3000) * 64 / 0x4000;*/
+    /*pitch = 0x1000 + xz / 1;*/
+    /*pitch = 0x800;*/
 
     audio_volume(-1, 32);
     audio_pitch(-1, pitch);
@@ -90,25 +97,30 @@ static inline void draw(void) {
 
 IWRAM_SECTION
 static void vblank(void) {
-    performance_vblank();
+    /*performance_vblank();*/
+    /*audio_update();*/
 }
 
 #include "res/song.c"
+#include "res/song_1.c"
 
 int AgbMain(void) {
+    audio_init(AUDIO_MIXER);
+
     // enable VBlank interrupt
     interrupt_toggle(IRQ_VBLANK, true);
     interrupt_set_isr(IRQ_VBLANK, vblank);
 
     for(u32 i = 0; i < sizeof(sinewave); i++) {
-        sinewave[i] = math_sin(i * 4 * 300) / 129;
+        sinewave[i] = math_sin(i * 4 * 200) / 129;
     }
 
     mgba_open();
 
     backup_init(BACKUP_SRAM);
-    audio_init(AUDIO_MIXER);
     screen_init();
+
+    /*audio_sample_rate(32768);*/
 
     for(u32 i = 0; i < 8; i++) {
         audio_play(i, sinewave, sizeof(sinewave));
@@ -119,16 +131,13 @@ int AgbMain(void) {
         }
     }
 
-    /*audio_panning(0, AUDIO_PANNING_MIN);*/
-    /*audio_play(0, song, sizeof(song));*/
-    /*audio_loop(0, sizeof(song));*/
+    audio_play(0, song, sizeof(song));
+    audio_loop(0, sizeof(song));
+    audio_panning(0, AUDIO_PANNING_MIN);
 
-    /*audio_panning(-1, +50);*/
-    /*audio_play(1, song, sizeof(song));*/
-    /*audio_loop(1, sizeof(song));*/
-
-    audio_panning(-1, AUDIO_PANNING_MAX);
-    /*audio_loop(-1, sizeof(song));*/
+    audio_play(1, song_1, sizeof(song_1));
+    audio_loop(1, sizeof(song_1));
+    audio_panning(1, AUDIO_PANNING_MAX);
 
     scene_set(&scene_start, 0);
     while(true) {
