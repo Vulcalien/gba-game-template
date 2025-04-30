@@ -23,4 +23,10 @@ vsync:
     swi     0x05
     bx      lr
 
+.global bios_sqrt
+.thumb_func
+bios_sqrt:
+    swi     0x08
+    bx      lr
+
 .end

@@ -33,16 +33,24 @@
 SBSS_SECTION
 i8 sinewave[16384];
 
+extern i32 bios_sqrt(u32 x);
+
 static inline void tick(void) {
     static u32 i = 0;
     static u32 time = 0;
 
+    u32 in = random(RANDOM_MAX + 1);
     profiler_start();
-    audio_update();
+    /*audio_update();*/
+
+    /*i32 res = bios_sqrt(in);*/
+    i32 res = math_sqrt(in);
+
     time += profiler_stop();
 
     i++;
     if(i == 60) {
+        mgba_printf("sqrt(%u) = %u", in, res);
         mgba_printf(
             "%u\t%u.%u%%",
             time,
