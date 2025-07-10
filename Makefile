@@ -26,7 +26,7 @@ CFLAGS   := -O3 -fomit-frame-pointer -marm -mcpu=arm7tdmi\
 
 ASFLAGS := -mcpu=arm7tdmi
 
-LDFLAGS := -nostartfiles -Tlib/libsimplegba/lnkscript
+LDFLAGS := -nostartfiles -Tlib/libsimplegba/lnkscript -Wl,--print-memory-usage
 LDLIBS  := -lm
 
 # libsimplegba

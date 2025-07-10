@@ -30,27 +30,44 @@
 #include <math.h>
 #include <random.h>
 
+#include <gba/sprite.h>
+#include <gba/display.h>
+#include <memory.h>
+
+#include "res/song.c"
+#include "res/song_1.c"
+/*#include "res/anakin.c"*/
+
 SBSS_SECTION
 i8 sinewave[16384];
 
-extern i32 bios_sqrt(u32 x);
-
 static inline void tick(void) {
+    vi32 gh[1];
+    memset(gh, 5, 4);
     static u32 i = 0;
     static u32 time = 0;
 
-    u32 in = random(RANDOM_MAX + 1);
+    input_update();
+
+    #define N 5
+    i8 a[N] = {1};
+    i8 b[N] = {2};
+
     profiler_start();
     /*audio_update();*/
+    i32 r;
+    for(int i = 0; i < 1500; i++)
+        r = memory_compare_8(a, b, N);
 
-    /*i32 res = bios_sqrt(in);*/
-    i32 res = math_sqrt(in);
-
+    static bool c = true;
+    if(c) {
+        c = false;
+        mgba_printf("result: %d", r);
+    }
     time += profiler_stop();
 
     i++;
     if(i == 60) {
-        mgba_printf("sqrt(%u) = %u", in, res);
         mgba_printf(
             "%u\t%u.%u%%",
             time,
@@ -68,19 +85,22 @@ static inline void tick(void) {
         time = 0;
     }
 
-    input_update();
     scene->tick();
+
+    if(input_repeat(KEY_START)) {
+        audio_play(0, song, sizeof(song));
+    }
 
     static u32 pitch = 0x1000;
     static u32 panning = 0;
-    if(input_pressed(KEY_A)) {
-        audio_resume(-1);
-        /*pitch += 0x100;*/
+    if(input_press(KEY_A)) {
+        /*audio_resume(-1);*/
+        pitch += 0x400;
         /*panning += 1;*/
     }
-    if(input_pressed(KEY_B)) {
-        audio_pause(-1);
-        /*pitch -= 0x100;*/
+    if(input_press(KEY_B)) {
+        /*audio_pause(-1);*/
+        pitch -= 0x400;
         /*panning -= 1;*/
     }
 
@@ -90,15 +110,27 @@ static inline void tick(void) {
     /*pitch = 0x1000 + xz / 1;*/
     /*pitch = 0x800;*/
 
-    audio_volume(-1, 32);
+    /*audio_volume(-1, 16);*/
     audio_pitch(-1, pitch);
-    audio_panning(-1, panning);
+    /*audio_panning(-1, panning);*/
 
     performance_tick();
 }
 
 static inline void draw(void) {
-    scene->draw();
+    /*scene->draw();*/
+
+    memory_set_32(display_charblock(4), 0x11, 32);
+    DISPLAY_OBJ_PALETTE[1] = 0x7fff;
+
+    static int x = 0;
+    if(input_repeat(KEY_A)) {
+        x = (x + 1) % 32;
+        sprite_config(0, &(struct Sprite) {
+            .x = x * 8,
+            .y = 76,
+        });
+    }
 
     performance_draw();
 }
@@ -109,10 +141,8 @@ static void vblank(void) {
     /*audio_update();*/
 }
 
-#include "res/song.c"
-#include "res/song_1.c"
-
 int AgbMain(void) {
+    input_init(30, 10);
     audio_init(AUDIO_MIXER);
 
     // enable VBlank interrupt
@@ -131,21 +161,27 @@ int AgbMain(void) {
     /*audio_sample_rate(32768);*/
 
     for(u32 i = 0; i < 8; i++) {
-        audio_play(i, sinewave, sizeof(sinewave));
-        audio_loop(i, sizeof(sinewave));
+        /*audio_play(i, sinewave, sizeof(sinewave));*/
+        /*audio_loop(i, sizeof(sinewave));*/
+        /*audio_play(i, song_1, sizeof(song_1));*/
+        /*audio_loop(i, sizeof(song_1));*/
         for(u32 i = 0; i < 20; i++) {
             /*audio_update();*/
             /*vsync();*/
         }
     }
 
-    audio_play(0, song, sizeof(song));
-    audio_loop(0, sizeof(song));
-    audio_panning(0, AUDIO_PANNING_MIN);
+    /*audio_play(0, song, sizeof(song));*/
+    /*audio_loop(0, sizeof(song));*/
+    /*audio_panning(0, AUDIO_PANNING_MIN);*/
 
-    audio_play(1, song_1, sizeof(song_1));
-    audio_loop(1, sizeof(song_1));
-    audio_panning(1, AUDIO_PANNING_MAX);
+    /*audio_play(1, song_1, sizeof(song_1));*/
+    /*audio_loop(1, sizeof(song_1));*/
+    /*audio_panning(1, -32);*/
+
+    /*audio_play(2, anakin, sizeof(anakin));*/
+    /*audio_loop(2, sizeof(anakin));*/
+    /*audio_panning(2, 32);*/
 
     scene_set(&scene_start, 0);
     while(true) {

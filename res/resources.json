@@ -5,7 +5,8 @@
     "files": [
         {
             "name": "song",
-            "input": "sound.raw",
+            "input": "delivery.raw",
+            "_input": "sound.raw",
             "output": "song.c"
         },
 
@@ -13,6 +14,18 @@
             "name": "song_1",
             "input": "editing.raw",
             "output": "song_1.c"
+        }
+    ], "a": [
+        {
+            "name": "elrond",
+            "input": "elrond.raw",
+            "output": "song_1.c"
+        },
+
+        {
+            "name": "anakin",
+            "input": "anakin.raw",
+            "output": "anakin.c"
         }
     ]
 }

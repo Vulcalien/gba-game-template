@@ -21,7 +21,7 @@
 
 void screen_init(void) {
     display_config(DISPLAY_MODE_0);
-    sprite_hide_all();
+    sprite_hide(-1);
 
     // configure backgrounds
     background_config(BG0, &(struct Background) {
