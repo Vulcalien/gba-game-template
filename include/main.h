@@ -16,7 +16,6 @@
 #pragma once
 
 #include <base.h>
-#include "bios.h"
 
 #define ASSERT_SIZE(x, size) static_assert(   \
     sizeof(x) == (size),                      \
