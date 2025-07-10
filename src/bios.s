@@ -13,16 +13,7 @@
 @ You should have received a copy of the GNU General Public License
 @ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-@ --- vsync --- @
-.global vsync
 .text
-.thumb
-.thumb_func
-
-vsync:
-    swi     0x05
-    bx      lr
-
 .global bios_sqrt
 .thumb_func
 bios_sqrt:

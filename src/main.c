@@ -187,7 +187,7 @@ int AgbMain(void) {
     while(true) {
         tick();
 
-        vsync();
+        interrupt_wait(IRQ_VBLANK);
         draw();
     }
     return 0;
