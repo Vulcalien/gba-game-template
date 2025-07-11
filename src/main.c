@@ -15,11 +15,6 @@
  */
 #include "main.h"
 
-#include <gba/interrupt.h>
-#include <gba/backup.h>
-#include <gba/audio.h>
-#include <gba/input.h>
-
 #include "screen.h"
 #include "performance.h"
 #include "scene.h"

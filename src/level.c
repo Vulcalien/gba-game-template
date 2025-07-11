@@ -15,9 +15,6 @@
  */
 #include "level.h"
 
-#include <memory.h>
-#include <gba/sprite.h>
-
 #include "entity.h"
 
 static inline void partition_insert(struct Level *level,

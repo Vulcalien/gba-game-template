@@ -15,10 +15,6 @@
  */
 #include "screen.h"
 
-#include <gba/display.h>
-#include <gba/background.h>
-#include <gba/sprite.h>
-
 void screen_init(void) {
     display_config(DISPLAY_MODE_0);
     sprite_hide(-1);
