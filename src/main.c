@@ -19,16 +19,6 @@
 #include "performance.h"
 #include "scene.h"
 
-#include <debug/profiler.h>
-#include <debug/mgba.h>
-#include <gba/system.h>
-#include <math.h>
-#include <random.h>
-
-#include <gba/sprite.h>
-#include <gba/display.h>
-#include <memory.h>
-
 #include "res/song.c"
 #include "res/song_1.c"
 /*#include "res/anakin.c"*/
