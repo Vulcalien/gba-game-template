@@ -15,9 +15,6 @@
  */
 #include "performance.h"
 
-#include <gba/display.h>
-#include <debug/mgba.h>
-
 #define PRINT_TO_MGBA
 
 static u16 tick_vcount;

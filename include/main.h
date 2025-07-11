@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include <base.h>
+#include <libsimplegba.h>
 
 #define ASSERT_SIZE(x, size) static_assert(   \
     sizeof(x) == (size),                      \

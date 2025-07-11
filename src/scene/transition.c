@@ -15,9 +15,6 @@
  */
 #include "scene.h"
 
-#include <gba/display.h>
-#include <math.h>
-
 // it's best if this value is a power of 2, to avoid division
 #define TRANSITION_HALFTIME 32
 
