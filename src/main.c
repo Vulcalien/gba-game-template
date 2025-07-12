@@ -126,7 +126,7 @@ static void vblank(void) {
     /*audio_update();*/
 }
 
-int AgbMain(void) {
+void AgbMain(void) {
     input_init(30, 10);
     audio_init(AUDIO_MIXER);
 
@@ -175,5 +175,4 @@ int AgbMain(void) {
         interrupt_wait(IRQ_VBLANK);
         draw();
     }
-    return 0;
 }
