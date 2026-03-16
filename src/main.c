@@ -130,9 +130,11 @@ void AgbMain(void) {
     input_init(30, 10);
     audio_init(AUDIO_MIXER);
 
+    mgba_open();
+
     // enable VBlank interrupt
     interrupt_toggle(IRQ_VBLANK, true);
-    interrupt_set_isr(IRQ_VBLANK, vblank);
+    interrupt_isr(IRQ_VBLANK, vblank);
 
     for(u32 i = 0; i < sizeof(sinewave); i++) {
         sinewave[i] = math_sin(i * 4 * 200) / 129;
