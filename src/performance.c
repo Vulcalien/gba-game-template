@@ -40,7 +40,6 @@ void performance_draw(void) {
     should_refresh = false;
 
     #ifdef PRINT_TO_MGBA
-    mgba_open();
     mgba_printf(
         "tps %u - fps %u - tick_vcount %x - draw_vcount %x",
         tps, fps, tick_vcount, draw_vcount
