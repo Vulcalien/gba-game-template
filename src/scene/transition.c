@@ -54,7 +54,7 @@ static void transition_draw(void) {
         time * math_brad(90) / TRANSITION_HALFTIME
     ) * 20 / 0x4000;
 
-    display_darken(NULL, fade);
+    effects_darken(NULL, fade);
 
     if(time < TRANSITION_HALFTIME)
         previous_scene->draw();

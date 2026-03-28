@@ -43,10 +43,11 @@ void AgbMain(void) {
     interrupt_toggle(IRQ_VBLANK, true);
     interrupt_isr(IRQ_VBLANK, vblank);
 
+    input_init(30, 2);
+    audio_init(AUDIO_MIXER);
     backup_init(BACKUP_SRAM);
-    audio_init(AUDIO_BASIC);
-    screen_init();
 
+    screen_init();
     scene_set(&scene_start, 0);
 
     while(true) {
