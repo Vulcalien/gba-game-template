@@ -6,10 +6,6 @@
 .arm
 _start:
 
-    @@@@@@@@@@@@@@@@@@@@@@
-    @     ROM Header     @
-    @@@@@@@@@@@@@@@@@@@@@@
-
     @ ROM Entry Point
         b start_vector
 
@@ -54,18 +50,5 @@ _start:
 
     @ Reserved (2 Bytes)
         .space  2, 0x00
-
-    @@@@@@@@@@@@@@@@@@@@@@@@@@
-    @     ROM Header End     @
-    @@@@@@@@@@@@@@@@@@@@@@@@@@
-
-    @ Cart Backup ID
-        @ Backup types:
-        @   SRAM_Vnnn     - 32  KB
-        @   FLASH512_Vnnn - 64  KB
-        @   FLASH1M_Vnnn  - 128 KB
-        @   EEPROM_Vnnn   - 512 B or 8 KB
-        .ascii  "SRAM_Vnnn"
-        .align  2
 
 .end
