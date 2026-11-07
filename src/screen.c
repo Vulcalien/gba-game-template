@@ -16,6 +16,7 @@
 #include "screen.h"
 
 void screen_init(void) {
+    display_config(DISPLAY_MODE_0);
     sprite_hide(-1);
 
     // configure backgrounds
@@ -42,5 +43,5 @@ void screen_init(void) {
 
     // TODO ...
 
-    display_config(DISPLAY_MODE_0);
+    display_blank(false);
 }
