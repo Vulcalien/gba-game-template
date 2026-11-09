@@ -18,3 +18,4 @@
 #include "main.h"
 
 extern void screen_init(void);
+extern void screen_write(const char *text, i32 x, i32 y);

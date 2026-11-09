@@ -109,8 +109,10 @@ $(OUT): $(OUT_ELF)
 	$(OBJCOPY) -O binary $^ $@
 
 # generate ELF file
-$(OUT_ELF): $(OBJ) | $(BIN_DIR)
+$(OUT_ELF): lib/libsimplegba/bin/libsimplegba.a $(OBJ) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
+
+lib/libsimplegba/bin/libsimplegba.a: build-deps
 
 # compile .s files
 $(OBJ_DIR)/%.s.$(OBJ_EXT): %.s | $(OBJ_DIRS)

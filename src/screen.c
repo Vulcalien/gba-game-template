@@ -15,6 +15,8 @@
  */
 #include "screen.h"
 
+#include "res/font.c"
+
 void screen_init(void) {
     display_config(DISPLAY_MODE_0);
     sprite_hide(-1);
@@ -23,7 +25,7 @@ void screen_init(void) {
     background_config(BG0, &(struct Background) {
         .priority = 0,
         .tileset  = 0,
-        .tilemap  = 0
+        .tilemap  = 8
     });
     background_config(BG1, &(struct Background) {
         .priority = 1,
@@ -41,7 +43,18 @@ void screen_init(void) {
         .tilemap  = 0
     });
 
+    background_toggle(BG0, true);
+    display_palette(0)[1] = 0x7fff;
+    memory_copy(display_charblock(0), font, sizeof(font));
+
     // TODO ...
 
     display_blank(false);
+}
+
+void screen_write(const char *text, i32 x, i32 y) {
+    char c;
+    for(i32 i = 0; (c = *text++) != '\0'; i++) {
+        display_screenblock(8)[y * 32 + x + i] = c - ' ';
+    }
 }

@@ -50,8 +50,29 @@ void AgbMain(void) {
     screen_init();
     scene_set(&scene_start, 0);
 
+    linkcable_init();
+
     while(true) {
+        linkcable_update();
         tick();
+
+        static u16 out = 1;
+        if(input_repeat(KEY_A)) {
+            out++;
+            linkcable_send(-1, &out, 4);
+        }
+
+        u16 in[16];
+        i32 src;
+        for(i32 i = 0; i < 5; i++) {
+            i32 val = linkcable_receive(&src, &in, 32);
+            if(val) {
+                display_palette(0)[0] = 0x7fff;
+                mgba_printf("read (%d) from %d = %d", val, src, in[0]);
+            } else {
+                display_palette(0)[0] = 0;
+            }
+        }
 
         interrupt_wait(IRQ_VBLANK);
         draw();

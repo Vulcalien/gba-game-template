@@ -1,4 +1,15 @@
 {
     "input_dir": "res",
-    "output_dir": "src/res"
+    "output_dir": "src/res",
+
+    "tilesets": [
+        {
+            "tile_size": 1,
+            "name": "font",
+            "input": "font.png",
+            "output": "font.c",
+            "bpp": 4,
+            "colors": { "080808": 0, "f7f7f7": 1 }
+        }
+    ]
 }
