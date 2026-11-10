@@ -65,7 +65,8 @@ void AgbMain(void) {
     interrupt_toggle(IRQ_TIMER3, true);
     interrupt_isr(IRQ_TIMER3, timer3_isr);
 
-    linkcable_config(512 * 8);
+    linkcable_init();
+    /*linkcable_speed(LINKCABLE_BITRATE_MAX);*/
 
     while(true) {
         tick();
@@ -81,6 +82,12 @@ void AgbMain(void) {
             linkcable_send(-1, &out, 4);
         }
         linkcable_send(-1, &out, 32);
+
+        if(input_repeat(KEY_START)) {
+            static i32 v = 0;
+            v ^= 1;
+            linkcable_speed(v ? 1024 : 50000);
+        }
 
         u16 in[16];
         /*i32 src;*/
