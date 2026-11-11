@@ -57,7 +57,9 @@ void AgbMain(void) {
     audio_init(AUDIO_MIXER);
     backup_init(BACKUP_SRAM);
 
-    screen_init();
+    i32 x = DISPLAY_WIDTH / 2, y = DISPLAY_HEIGHT / 2;
+
+    /*screen_init();*/
     scene_set(&scene_start, 0);
 
     timer_config(TIMER3, TIMER_PRESCALER_1024);
@@ -68,44 +70,76 @@ void AgbMain(void) {
     linkcable_init();
     /*linkcable_speed(LINKCABLE_BITRATE_MAX);*/
 
+    display_config(3);
+    display_blank(false);
     while(true) {
         tick();
 
-        if(should_print) {
-            mgba_printf("received %d bits", to_print_received);
-            should_print = false;
+        /*if(should_print) {*/
+            /*mgba_printf("received %d bits", to_print_received);*/
+            /*should_print = false;*/
+        /*}*/
+
+        x -= input_down(KEY_LEFT) - input_down(KEY_RIGHT);
+        y -= input_down(KEY_UP) - input_down(KEY_DOWN);
+
+        interrupt_wait(IRQ_VBLANK);
+        memory_clear(display_raster(0), DISPLAY_WIDTH * DISPLAY_HEIGHT * 2);
+        display_raster(0)[x + y * 240] = 0x7fff;
+        u8 outbuf[] = {
+            0 << 4 | x & 0x0f,
+            1 << 4 | (x >> 4) & 0x0f,
+            2 << 4 | y & 0x0f,
+            3 << 4 | (y >> 4) & 0x0f
+        };
+        linkcable_broadcast(&outbuf, sizeof(outbuf));
+
+        static u8 other_pos[4][2];
+        u8 inbuf;
+        i32 src;
+        while(linkcable_receive(&src, &inbuf, 1)) {
+            u8 *pos = &other_pos[src];
+            i32 data = inbuf & 0x0f;
+            switch(inbuf >> 4) {
+                case 0:
+                    pos[0] = pos[0] & 0xf0 | data;
+                    break;
+                case 1:
+                    pos[0] = pos[0] & 0x0f | data << 4;
+                    break;
+                case 2:
+                    pos[1] = pos[1] & 0xf0 | data;
+                    break;
+                case 3:
+                    pos[1] = pos[1] & 0x0f | data << 4;
+                    break;
+            }
+        }
+
+        for(i32 i = 0; i < 4; i++) {
+            display_raster(0)[other_pos[i][0] + other_pos[i][1] * 240] = 0x001f;
         }
 
         static u16 out = 1;
         if(input_repeat(KEY_A)) {
             /*out++;*/
-            linkcable_send(-1, &out, 4);
+            /*linkcable_send(-1, &out, 4);*/
         }
-        linkcable_send(-1, &out, 32);
 
         if(input_repeat(KEY_START)) {
             static i32 v = 0;
             v ^= 1;
-            linkcable_speed(v ? 1024 : 50000);
+            u32 speed = v ? 1024 : 4096;
+            mgba_printf("new speed: %d bps", speed);
+            linkcable_speed(speed);
         }
 
-        u16 in[16];
-        /*i32 src;*/
-        /*for(i32 i = 0; i < 5; i++) {*/
-            /*i32 val = linkcable_receive(&src, &in, 32);*/
-            /*if(val) {*/
-                /*display_palette(0)[0] = 0x7fff;*/
-                /*mgba_printf("read (%d) from %d = %d", val, src, in[0]);*/
-            /*} else {*/
-                /*display_palette(0)[0] = 0;*/
-            /*}*/
-        /*}*/
+        /*u16 in[16];*/
+        /*i32 r;*/
+        /*while((r = linkcable_receive(NULL, &in, 32)))*/
+            /*received_bytes += r;*/
 
-        i32 r;
-        while((r = linkcable_receive(NULL, &in, 32)))
-            received_bytes += r;
-
-        interrupt_wait(IRQ_VBLANK);
-        draw();
+        /*interrupt_wait(IRQ_VBLANK);*/
+        /*draw();*/
     }
 }
