@@ -80,19 +80,22 @@ void AgbMain(void) {
             /*should_print = false;*/
         /*}*/
 
-        x -= input_down(KEY_LEFT) - input_down(KEY_RIGHT);
-        y -= input_down(KEY_UP) - input_down(KEY_DOWN);
+        if(input_down(KEY_LEFT) - input_down(KEY_RIGHT) || input_down(KEY_UP) - input_down(KEY_DOWN)) {
+            x -= input_down(KEY_LEFT) - input_down(KEY_RIGHT);
+            y -= input_down(KEY_UP) - input_down(KEY_DOWN);
+
+            u8 outbuf[] = {
+                0 << 4 | x & 0x0f,
+                1 << 4 | (x >> 4) & 0x0f,
+                2 << 4 | y & 0x0f,
+                3 << 4 | (y >> 4) & 0x0f
+            };
+            linkcable_broadcast(&outbuf, sizeof(outbuf));
+        }
 
         interrupt_wait(IRQ_VBLANK);
         memory_clear(display_raster(0), DISPLAY_WIDTH * DISPLAY_HEIGHT * 2);
         display_raster(0)[x + y * 240] = 0x7fff;
-        u8 outbuf[] = {
-            0 << 4 | x & 0x0f,
-            1 << 4 | (x >> 4) & 0x0f,
-            2 << 4 | y & 0x0f,
-            3 << 4 | (y >> 4) & 0x0f
-        };
-        linkcable_broadcast(&outbuf, sizeof(outbuf));
 
         static u8 other_pos[4][2];
         u8 inbuf;
