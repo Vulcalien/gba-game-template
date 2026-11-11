@@ -57,7 +57,8 @@ void AgbMain(void) {
     audio_init(AUDIO_MIXER);
     backup_init(BACKUP_SRAM);
 
-    i32 x = DISPLAY_WIDTH / 2, y = DISPLAY_HEIGHT / 2;
+    i32 x = 0, y = 0;
+    i32 other_pos[4][2];
 
     /*screen_init();*/
     scene_set(&scene_start, 0);
@@ -85,10 +86,10 @@ void AgbMain(void) {
             y -= input_down(KEY_UP) - input_down(KEY_DOWN);
 
             u8 outbuf[] = {
-                0 << 4 | x & 0x0f,
-                1 << 4 | (x >> 4) & 0x0f,
-                2 << 4 | y & 0x0f,
-                3 << 4 | (y >> 4) & 0x0f
+                input_down(KEY_LEFT)  << 0 |
+                input_down(KEY_RIGHT) << 1 |
+                input_down(KEY_UP)    << 2 |
+                input_down(KEY_DOWN)  << 3
             };
             linkcable_broadcast(&outbuf, sizeof(outbuf));
         }
@@ -97,26 +98,11 @@ void AgbMain(void) {
         memory_clear(display_raster(0), DISPLAY_WIDTH * DISPLAY_HEIGHT * 2);
         display_raster(0)[x + y * 240] = 0x7fff;
 
-        static u8 other_pos[4][2];
         u8 inbuf;
         i32 src;
         while(linkcable_receive(&src, &inbuf, 1)) {
-            u8 *pos = &other_pos[src];
-            i32 data = inbuf & 0x0f;
-            switch(inbuf >> 4) {
-                case 0:
-                    pos[0] = pos[0] & 0xf0 | data;
-                    break;
-                case 1:
-                    pos[0] = pos[0] & 0x0f | data << 4;
-                    break;
-                case 2:
-                    pos[1] = pos[1] & 0xf0 | data;
-                    break;
-                case 3:
-                    pos[1] = pos[1] & 0x0f | data << 4;
-                    break;
-            }
+            other_pos[src][0] -= (inbuf & 1) - ((inbuf >> 1) & 1);
+            other_pos[src][1] -= ((inbuf >> 2) & 1) - ((inbuf >> 3) & 1);
         }
 
         for(i32 i = 0; i < 4; i++) {
