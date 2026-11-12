@@ -48,6 +48,10 @@ static void timer3_isr(void) {
     should_print = true;
 }
 
+static void keypad_isr(void) {
+    mgba_printf("YEYYY");
+}
+
 void AgbMain(void) {
     // enable VBlank interrupt
     interrupt_toggle(IRQ_VBLANK, true);
@@ -73,7 +77,25 @@ void AgbMain(void) {
 
     display_config(3);
     display_blank(false);
+
+    interrupt_config(IRQ_KEYPAD, KEY_L | BIT(15));
+    interrupt_isr(IRQ_KEYPAD, keypad_isr);
+    interrupt_toggle(IRQ_KEYPAD, true);
     while(true) {
+        if(input_press(KEY_SELECT)) {
+            static bool enable = 0;
+            enable ^= 1;
+
+            mgba_printf("interrupt enable: %d", enable);
+            vu16 *ie = (vu16 *) 0x04000200;
+            if(enable)
+                *ie |= BIT(IRQ_KEYPAD);
+            else
+                *ie &= ~BIT(IRQ_KEYPAD);
+
+            /*interrupt_toggle(IRQ_KEYPAD, enable);*/
+        }
+
         tick();
 
         /*if(should_print) {*/
