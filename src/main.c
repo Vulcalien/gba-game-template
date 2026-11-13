@@ -38,6 +38,9 @@ static void vblank(void) {
     performance_vblank();
 }
 
+#define IE *((vu16 *) 0x04000200)
+#define IF *((vu16 *) 0x04000202)
+
 static u32 received_bytes = 0;
 static i32 to_print_received;
 static bool should_print = false;
@@ -46,6 +49,14 @@ static void timer3_isr(void) {
     to_print_received = received_bytes * 8;
     received_bytes = 0;
     should_print = true;
+
+    mgba_printf("waiting");
+    while(!(IF & BIT(IRQ_KEYPAD))) ;
+    mgba_printf("got it");
+    /*interrupt_toggle(IRQ_KEYPAD, false);*/
+    /*interrupt_toggle(IRQ_KEYPAD, true);*/
+
+    interrupt_toggle(IRQ_TIMER3, false);
 }
 
 static void keypad_isr(void) {
@@ -55,7 +66,7 @@ static void keypad_isr(void) {
 void AgbMain(void) {
     // enable VBlank interrupt
     interrupt_toggle(IRQ_VBLANK, true);
-    interrupt_isr(IRQ_VBLANK, vblank);
+    interrupt_handler(IRQ_VBLANK, vblank);
 
     input_init(30, 2);
     audio_init(AUDIO_MIXER);
@@ -70,7 +81,7 @@ void AgbMain(void) {
     timer_config(TIMER3, TIMER_PRESCALER_1024);
     timer_start(TIMER3, SYSTEM_FREQUENCY / 1024);
     interrupt_toggle(IRQ_TIMER3, true);
-    interrupt_isr(IRQ_TIMER3, timer3_isr);
+    interrupt_handler(IRQ_TIMER3, timer3_isr);
 
     linkcable_init();
     /*linkcable_speed(LINKCABLE_BITRATE_MAX);*/
@@ -79,19 +90,15 @@ void AgbMain(void) {
     display_blank(false);
 
     interrupt_config(IRQ_KEYPAD, KEY_L | BIT(15));
-    interrupt_isr(IRQ_KEYPAD, keypad_isr);
+    interrupt_handler(IRQ_KEYPAD, keypad_isr);
     interrupt_toggle(IRQ_KEYPAD, true);
     while(true) {
         if(input_press(KEY_SELECT)) {
-            static bool enable = 0;
+            static bool enable = 1;
             enable ^= 1;
 
             mgba_printf("interrupt enable: %d", enable);
-            vu16 *ie = (vu16 *) 0x04000200;
-            if(enable)
-                *ie |= BIT(IRQ_KEYPAD);
-            else
-                *ie &= ~BIT(IRQ_KEYPAD);
+            interrupt_mask(IRQ_KEYPAD, !enable);
 
             /*interrupt_toggle(IRQ_KEYPAD, enable);*/
         }
